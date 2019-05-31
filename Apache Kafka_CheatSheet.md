@@ -109,9 +109,9 @@ For more details: [https://github.com/edenhill/kafkacat](https://github.com/eden
 #### To Read message from a offset and limit the records
  > kafkacat -b dev-msg01:9092 -C -t no.norwegian.profile.event.ProfileChanged-dev -o beginning -c 1
 ### Kafka Log compact option
-[enter link description here](https://kafka.apache.org/10/documentation.html#design_compactionbasics)
-A topic or existing topic config can be altered to 
+[Kafka Log Compact documentation](https://kafka.apache.org/10/documentation.html#design_compactionbasics)
+On Topic level set segment.ms=36000 cleanup.policy=compact and retention.ms=36
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE5NjgzNDU5NzksNjAwOTAyODMwLDIxNT
-MwNTk1MiwxODc5MDY2ODY0LC0xMzEwNTYwNjk4XX0=
+eyJoaXN0b3J5IjpbMjk3NzM5OTQ4LDYwMDkwMjgzMCwyMTUzMD
+U5NTIsMTg3OTA2Njg2NCwtMTMxMDU2MDY5OF19
 -->
