@@ -3,7 +3,7 @@
 # Apache Kafka
 1. [Setup Kafka Cluster](#Setup)
 2. [Kafka Topic](#Topic)
-	   a. [Read from an Offset](#Offset)
+	   a. [Read from an Offset](#<a name="Delete Topic config"></a>)
 3. [Kafka Producer](#Producer)
 4. [Kafka Consumer](#Consumer)
 		a. [Read from an Offset](#Offset)
@@ -42,9 +42,10 @@ Create topics with 2 partitions and 2 replication factors as we have two broker 
 > bin/kafka-topics.sh --zookeeper \<hostname\>:2181 --describe -- topic test-topic
 <a name="Alter kafka topic config"></a>
 ### Alter kafka topic config to log compact (archieve old message)
+<a name="Delete Topic config"></a>
 #### Delete kafka topic config
 > kafka-configs --zookeeper dev-msg01:2181  --entity-type topics --entity-name test-topic --alter --delete-config cleanup.policy
-
+<a name="Add Topic config"></a>
 #### Add Kafka topic config 
 > kafka-configs --zookeeper dev-msg01:2181  --entity-type topics --entity-name test-topic --alter --add-config cleanup.policy=compact
 
@@ -106,6 +107,6 @@ For more details: [https://github.com/edenhill/kafkacat](https://github.com/eden
 #### To Read message from a offset and limit the records
  > kafkacat -b dev-msg01:9092 -C -t no.norwegian.profile.event.ProfileChanged-dev -o beginning -c 1
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE1ODE1MzIwMzgsMjE1MzA1OTUyLDE4Nz
-kwNjY4NjQsLTEzMTA1NjA2OThdfQ==
+eyJoaXN0b3J5IjpbOTA2Mjc1Mzc2LDIxNTMwNTk1MiwxODc5MD
+Y2ODY0LC0xMzEwNTYwNjk4XX0=
 -->
