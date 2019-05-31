@@ -110,8 +110,8 @@ For more details: [https://github.com/edenhill/kafkacat](https://github.com/eden
  > kafkacat -b dev-msg01:9092 -C -t no.norwegian.profile.event.ProfileChanged-dev -o beginning -c 1
 ### Kafka Log compact option
 [Kafka Log Compact documentation](https://kafka.apache.org/10/documentation.html#design_compactionbasics)
-On Topic level set segment.ms=36000 cleanup.policy=compact and retention.ms=36
+On Topic level set segment.ms=36000 cleanup.policy=compact and retention.ms=36000
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMjk3NzM5OTQ4LDYwMDkwMjgzMCwyMTUzMD
-U5NTIsMTg3OTA2Njg2NCwtMTMxMDU2MDY5OF19
+eyJoaXN0b3J5IjpbLTE4NDc4NzExMTIsNjAwOTAyODMwLDIxNT
+MwNTk1MiwxODc5MDY2ODY0LC0xMzEwNTYwNjk4XX0=
 -->
