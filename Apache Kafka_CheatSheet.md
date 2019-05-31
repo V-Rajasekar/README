@@ -39,6 +39,10 @@ Create topics with 2 partitions and 2 replication factors as we have two broker 
 ### Checking Topic and paritions summary
 
 > bin/kafka-topics.sh --zookeeper \<hostname\>:2181 --describe -- topic test-topic
+<a name="Alter kafka topic config"></a>
+### Alter kafka topic config to log compact (archieve old message)
+
+
 <a name="Producer"></a>
 ### Creating a producer and send message
 > bin/kafka-console-producer.sh --broker-list locahost:9092 --topic test-topic
@@ -97,5 +101,5 @@ For more details: [https://github.com/edenhill/kafkacat](https://github.com/eden
 #### To Read message from a offset and limit the records
  > kafkacat -b dev-msg01:9092 -C -t no.norwegian.profile.event.ProfileChanged-dev -o beginning -c 1
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTE0MTM3OTgwMCwtMTMxMDU2MDY5OF19
+eyJoaXN0b3J5IjpbMTg3OTA2Njg2NCwtMTMxMDU2MDY5OF19
 -->
