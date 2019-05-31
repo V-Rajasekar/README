@@ -64,8 +64,9 @@ Create topics with 2 partitions and 2 replication factors as we have two broker 
 
 <a name="ResetOffset"></a>
 ### Reset consumer offset  to latest
-#### Reset offset to the latest (
+#### Reset offset to the latest (preview)
 >kafka-consumer-groups --bootstrap-server \<hostname\>:9092 ProfileChanged-topic --group ProfileSync-bo --reset-offsets --to-latest
+`The above command allows you to preview the (new)resetOffset appending --execut`
 #### Reset offset to the earliest
 >kafka-consumer-groups --bootstrap-server \<hostname\>:9092 --topic no.norwegian.profile.event.ProfileChanged --group profile-sync-amadeus --reset-offsets --to-earliest --execute
 #### Reset offset to a given offset
@@ -96,5 +97,5 @@ For more details: [https://github.com/edenhill/kafkacat](https://github.com/eden
 #### To Read message from a offset and limit the records
  > kafkacat -b dev-msg01:9092 -C -t no.norwegian.profile.event.ProfileChanged-dev -o beginning -c 1
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTY5Njg3MTExOCwtMTMxMDU2MDY5OF19
+eyJoaXN0b3J5IjpbMjIzNjAxOTQsLTEzMTA1NjA2OThdfQ==
 -->
