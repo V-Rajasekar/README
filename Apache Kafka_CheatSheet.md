@@ -3,6 +3,7 @@
 # Apache Kafka
 1. [Setup Kafka Cluster](#Setup)
 2. [Kafka Topic](#Topic)
+	   a. [Read from an Offset](#Offset)
 3. [Kafka Producer](#Producer)
 4. [Kafka Consumer](#Consumer)
 		a. [Read from an Offset](#Offset)
@@ -105,6 +106,6 @@ For more details: [https://github.com/edenhill/kafkacat](https://github.com/eden
 #### To Read message from a offset and limit the records
  > kafkacat -b dev-msg01:9092 -C -t no.norwegian.profile.event.ProfileChanged-dev -o beginning -c 1
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMjE1MzA1OTUyLDE4NzkwNjY4NjQsLTEzMT
-A1NjA2OThdfQ==
+eyJoaXN0b3J5IjpbLTE1ODE1MzIwMzgsMjE1MzA1OTUyLDE4Nz
+kwNjY4NjQsLTEzMTA1NjA2OThdfQ==
 -->
