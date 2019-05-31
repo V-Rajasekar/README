@@ -3,7 +3,9 @@
 # Apache Kafka
 1. [Setup Kafka Cluster](#Setup)
 2. [Kafka Topic](#Topic)
-	   a. [Read from an Offset](#<a name="Delete Topic config"></a>)
+	   a. [View config](#Delete Topic config)
+   	   b. [Delete config](#Delete Topic config)
+	   c. [Add config](#add Topic config)
 3. [Kafka Producer](#Producer)
 4. [Kafka Consumer](#Consumer)
 		a. [Read from an Offset](#Offset)
@@ -107,6 +109,6 @@ For more details: [https://github.com/edenhill/kafkacat](https://github.com/eden
 #### To Read message from a offset and limit the records
  > kafkacat -b dev-msg01:9092 -C -t no.norwegian.profile.event.ProfileChanged-dev -o beginning -c 1
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbOTA2Mjc1Mzc2LDIxNTMwNTk1MiwxODc5MD
-Y2ODY0LC0xMzEwNTYwNjk4XX0=
+eyJoaXN0b3J5IjpbLTkwODEyNTIxNSwyMTUzMDU5NTIsMTg3OT
+A2Njg2NCwtMTMxMDU2MDY5OF19
 -->
