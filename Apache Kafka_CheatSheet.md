@@ -41,6 +41,7 @@ Create topics with 2 partitions and 2 replication factors as we have two broker 
 > bin/kafka-topics.sh --zookeeper \<hostname\>:2181 --describe -- topic test-topic
 <a name="Alter kafka topic config"></a>
 ### Alter kafka topic config to log compact (archieve old message)
+#### delete kafka topic config
 > kafka-configs --zookeeper dev-msg01:2181  --entity-type topics --entity-name test-topic --alter --delete-config cleanup.policy
 > kafka-configs --zookeeper dev-msg01:2181  --entity-type topics --entity-name test-topic --alter --add-config cleanup.policy=compact
 
@@ -102,6 +103,6 @@ For more details: [https://github.com/edenhill/kafkacat](https://github.com/eden
 #### To Read message from a offset and limit the records
  > kafkacat -b dev-msg01:9092 -C -t no.norwegian.profile.event.ProfileChanged-dev -o beginning -c 1
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTExOTk2MDU0MjgsMTg3OTA2Njg2NCwtMT
-MxMDU2MDY5OF19
+eyJoaXN0b3J5IjpbMzU0NDE0NzEyLDE4NzkwNjY4NjQsLTEzMT
+A1NjA2OThdfQ==
 -->
