@@ -13,10 +13,12 @@ Create a docker file with the name Dockerfile
 docker build -t py_numpy .
   
 - Having  some fun with ubuntu:
+
 	FROM ubuntu:latest 
 	RUN apt-get update && apt-get -y install fortune cowsay 
 	CMD /usr/games/fortune | /usr/games/cowsay
+	-
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTU5MDY3NTcwNywtMTY1NjA2NDY2NV19
+eyJoaXN0b3J5IjpbMTQ1NzkyOTQ0MCwtMTY1NjA2NDY2NV19
 -->
