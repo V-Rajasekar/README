@@ -3,8 +3,7 @@
 ##  Docker Files
 
 ### Build and Run a docker image using Dockerfile
-docker build -t  <image_name> <Dockerfile_path>
-  
+ 
 - Having  some fun with ubuntu:
 ##### Dockerfile
 ```
@@ -18,7 +17,19 @@ docker build -t  <image_name> <Dockerfile_path>
 #####  Running the docker image.
 `docker run --rm ubuntu_fun`
 
-### Docker files more
+### Running a python project with a docker file
+create a project 
+/docker/helloworld.py
+```
+import numpy py
+print("sin value{}" format)
+Create a docker file with the name Dockerfile
+
+- Adding a python package:
+```
+      FROM python:3
+      RUN pip3 install numpy
+```
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMjA1MDg2MzU4MSwtMTY1NjA2NDY2NV19
+eyJoaXN0b3J5IjpbMTExOTExNDc1MywtMTY1NjA2NDY2NV19
 -->
