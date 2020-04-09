@@ -12,7 +12,9 @@ Create a docker file with the name Dockerfile
 - Building a docker file and creating a image py_numpy
 docker build -t py_numpy .
   
-
+- Having  some fun with ubuntu:
+`FROM ubuntu:latest
+RUN apt-get update && apr-get -y install fortune co`
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTM2NzAzNzg3MF19
+eyJoaXN0b3J5IjpbLTE4NTE3Mzk0NjBdfQ==
 -->
