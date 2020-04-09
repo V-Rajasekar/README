@@ -96,11 +96,8 @@ option: -v <host-dir>:<container-dir>
 
 #### Running a Mysql Container
 
-`docker run --rm -d --name my_mysql \
-
--e MYSQL_ROOT_PASSWORD=spme-pwd \
-
-mysql:latest`
+`docker run --rm -d --name my_mysql -e 
+MYSQL_ROOT_PASSWORD=spme-pwd mysql:latest`
 
 #### Logging into the container and into the mysql console
 
@@ -114,5 +111,5 @@ mysql:latest`
 
 `docker exec -it my_nginx /bin/bash`
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE5NDU4NTgwMDVdfQ==
+eyJoaXN0b3J5IjpbMTExNTEwODY3N119
 -->
