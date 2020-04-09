@@ -12,8 +12,9 @@
 	CMD /usr/games/fortune | /usr/games/cowsay
 ```
 ##### Building the docker image
-`docker build -t ubuntu_fun .`
+`docker build -t ubuntu_fun .`[^1]
 
+[^1]: Bui docker build -t <image_name> <Dockerfile_path>
 #####  Running the docker image.
 `docker run --rm ubuntu_fun`
 
@@ -31,5 +32,6 @@ print("sin value{}" format(sin(0)))
       RUN pip3 install numpy
 ```
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTg1NDg1NzE3OCwtMTY1NjA2NDY2NV19
+eyJoaXN0b3J5IjpbLTE3NzgwNjAyNzQsLTE2NTYwNjQ2NjVdfQ
+==
 -->
