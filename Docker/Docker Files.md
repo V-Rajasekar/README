@@ -2,6 +2,9 @@
 
 ##  Docker Files
 
+### Anatomy of a Dockerfile
+A docum
+
 ### Build and Run a docker image using Dockerfile
  
 - Having  some fun with ubuntu:
@@ -32,5 +35,6 @@ print("sin value{}" format(sin(0)))
       RUN pip3 install numpy
 ```
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMjU2OTc4MTU0LC0xNjU2MDY0NjY1XX0=
+eyJoaXN0b3J5IjpbMTI0MzEyNDMsMjU2OTc4MTU0LC0xNjU2MD
+Y0NjY1XX0=
 -->
