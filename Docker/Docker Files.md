@@ -7,19 +7,16 @@ A dockerfile contains all the steps that are required to create an image and wou
 
 A typical Dockerfile might look something like the one shown here. 
 ```
-FROM tomcat:jre8-alpine
-LABEL "mainainer"="rajasekar.vadivelu@gmail.com"
-# For wget to work
-RUN   apk update \                                                                                                                                                                                                                        
-&&   apk add ca-certificates wget \                                                                                                                                                                                                      
-&&   update-ca-certificates 
-```
-# Copy tomcat server.xml
-WORKDIR /usr/local/tomcat
-
-# Start tomcat
-CMD ["catalina.sh", "run"]
-
+	FROM tomcat:jre8-alpine
+	LABEL "mainainer"="rajasekar.vadivelu@gmail.com"
+	# For wget to work
+	RUN   apk update \                                                                                                                                                                                                                        
+	&&   apk add ca-certificates wget \                                                                                                                                                                                                      
+	&&   update-ca-certificates 
+	# Copy tomcat server.xml
+	WORKDIR /usr/local/tomcat
+	# Start tomcat
+	CMD ["catalina.sh", "run"]
 ```
 
 ### Build and Run a docker image using Dockerfile
@@ -52,6 +49,6 @@ print("sin value{}" format(sin(0)))
       RUN pip3 install numpy
 ```
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTc1NDU0MzkwNCwtMTc0NzE4MDczOCwyNT
+eyJoaXN0b3J5IjpbMjA0OTMwMjAzMiwtMTc0NzE4MDczOCwyNT
 Y5NzgxNTQsLTE2NTYwNjQ2NjVdfQ==
 -->
