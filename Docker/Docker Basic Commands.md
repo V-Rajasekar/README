@@ -11,10 +11,9 @@ To start a container either build your own docker image or use existing image cr
 
 [https://registry.hub.docker.com/](https://registry.hub.docker.com/)
 
-docker run Redis
+`docker run Redis`
 
 ####   Searching an image
-
 `edocker search --filter=start=3 Redis  # Show all Redis images starting with 3 stars`
 #### List running containers
 
@@ -111,5 +110,5 @@ MYSQL_ROOT_PASSWORD=spme-pwd mysql:latest`
 
 `docker exec -it my_nginx /bin/bash`
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTExNTEwODY3N119
+eyJoaXN0b3J5IjpbOTAwNDI1OTgzLDExMTUxMDg2NzddfQ==
 -->
