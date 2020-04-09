@@ -13,7 +13,7 @@ LABEL "mainainer"="rajasekar.vadivelu@gmail.com"
 RUN   apk update \                                                                                                                                                                                                                        
 &&   apk add ca-certificates wget \                                                                                                                                                                                                      
 &&   update-ca-certificates 
-
+```
 # Copy tomcat server.xml
 WORKDIR /usr/local/tomcat
 
@@ -52,6 +52,6 @@ print("sin value{}" format(sin(0)))
       RUN pip3 install numpy
 ```
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE3NDcxODA3MzgsMjU2OTc4MTU0LC0xNj
-U2MDY0NjY1XX0=
+eyJoaXN0b3J5IjpbLTc1NDU0MzkwNCwtMTc0NzE4MDczOCwyNT
+Y5NzgxNTQsLTE2NTYwNjQ2NjVdfQ==
 -->
