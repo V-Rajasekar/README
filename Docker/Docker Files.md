@@ -18,18 +18,18 @@
 `docker run --rm ubuntu_fun`
 
 ### Running a python project with a docker file
-create a project 
-/docker/helloworld.py
+##### Python project 
+- /docker/helloworld.py
 ```
 import numpy py
-print("sin value{}" format)
-Create a docker file with the name Dockerfile
-
-- Adding a python package:
+print("sin value{}" format(sin(0)))
 ```
+- Dockerfile
+```
+    # Adding a python package:
       FROM python:3
       RUN pip3 install numpy
 ```
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTExOTExNDc1MywtMTY1NjA2NDY2NV19
+eyJoaXN0b3J5IjpbMTg1NDg1NzE3OCwtMTY1NjA2NDY2NV19
 -->
