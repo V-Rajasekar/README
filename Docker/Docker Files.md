@@ -14,7 +14,7 @@
 ##### Building the docker image
 `docker build -t ubuntu_fun .`[^1]
 
-[^1]: Bui docker build -t <image_name> <Dockerfile_path>
+[^1]: Docker image build syntax `docker build -t <image_name> <Dockerfile_path>`
 #####  Running the docker image.
 `docker run --rm ubuntu_fun`
 
@@ -32,6 +32,5 @@ print("sin value{}" format(sin(0)))
       RUN pip3 install numpy
 ```
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE3NzgwNjAyNzQsLTE2NTYwNjQ2NjVdfQ
-==
+eyJoaXN0b3J5IjpbMjU2OTc4MTU0LC0xNjU2MDY0NjY1XX0=
 -->
