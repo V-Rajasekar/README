@@ -17,8 +17,9 @@ docker build -t py_numpy .
 	FROM ubuntu:latest 
 	RUN apt-get update && apt-get -y install fortune cowsay 
 	CMD /usr/games/fortune | /usr/games/cowsay
-	-
+----
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTQ1NzkyOTQ0MCwtMTY1NjA2NDY2NV19
+eyJoaXN0b3J5IjpbLTE5MDQ2ODQyMjksLTE2NTYwNjQ2NjVdfQ
+==
 -->
