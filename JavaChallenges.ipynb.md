@@ -1,10 +1,10 @@
 
 # Java Challenges
-[count](#count the occurrence of a char )
+[count](#count)
 [Specification](#Specification) 
 
 ### Specification
-### count the occurrence of a char 
+
 ### count the occurrence of a char in a string
 	count the occurrence of a given character in a string?
 ### print the first non-repeated character from a string?
@@ -105,8 +105,8 @@
 ### What is the difference between Comparison and Non-Comparison Sorting Algorithms? (answer)
 ### do implement Sieve of Eratosthenes Algorithms for Prime Number?
 ### find sub array with maximum sum?
-
+### count
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTMxNTI2MDkyNSw0MDc5ODIzMzUsLTMzOT
+eyJoaXN0b3J5IjpbLTMwNzIxNDIwMSw0MDc5ODIzMzUsLTMzOT
 g1NzE2NF19
 -->
