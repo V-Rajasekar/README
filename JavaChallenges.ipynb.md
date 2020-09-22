@@ -1,6 +1,6 @@
 
 # Java Challenges
-[count the occurrence of a char in string](#"count char in string")
+[count the occurrence of a char in string](#count char)
 [Specification](#Specification) 
 
 ### Specification
@@ -105,8 +105,8 @@
 ### What is the difference between Comparison and Non-Comparison Sorting Algorithms? (answer)
 ### do implement Sieve of Eratosthenes Algorithms for Prime Number?
 ### find sub array with maximum sum?
-### count char in string
+### count char
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTEwMjAyMDcxNzksNDA3OTgyMzM1LC0zMz
-k4NTcxNjRdfQ==
+eyJoaXN0b3J5IjpbLTQ2MDg0NzUyNyw0MDc5ODIzMzUsLTMzOT
+g1NzE2NF19
 -->
