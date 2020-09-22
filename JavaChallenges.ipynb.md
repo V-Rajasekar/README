@@ -3,7 +3,8 @@
 
  1. String
 		 a. [count the occurrence of a char in string](#count-char)
-		. [Specification](#Specification) 
+		 
+ 2. Array
 
 ### Specification
 
@@ -109,6 +110,6 @@
 ### find sub array with maximum sum?
 ### count char
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTY3NTQ1Mjg2LDQwNzk4MjMzNSwtMzM5OD
-U3MTY0XX0=
+eyJoaXN0b3J5IjpbMTI3MzY2Mzk0OSw0MDc5ODIzMzUsLTMzOT
+g1NzE2NF19
 -->
