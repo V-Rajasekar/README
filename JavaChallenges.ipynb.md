@@ -5,7 +5,7 @@
 
 ### Specification
 
-### 1 count the occurrence of a char in a string
+### 1 "count the occurrence of a char in a string"
 	count the occurrence of a given character in a string?
 ### print the first non-repeated character from a string?
 ### bubble sort algorithm
@@ -107,6 +107,6 @@
 ### find sub array with maximum sum?
 ### count char
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTY0NDQ2Mzc5OCw0MDc5ODIzMzUsLTMzOT
-g1NzE2NF19
+eyJoaXN0b3J5IjpbLTE3MDAyMjg1NDYsNDA3OTgyMzM1LC0zMz
+k4NTcxNjRdfQ==
 -->
