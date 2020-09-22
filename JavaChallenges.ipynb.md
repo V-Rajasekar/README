@@ -2,7 +2,8 @@
 # Java Challenges
 [count the occurrence of a char in a string](# count the occurrence of a given character in a string?)
 [Specification](#specification) 
-##
+
+## Specification
 
 ### count the occurrence of a given character in a string?
 ### print the first non-repeated character from a string?
@@ -105,5 +106,5 @@
 ### find sub array with maximum sum?
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTMzOTg1NzE2NF19
+eyJoaXN0b3J5IjpbNDA3OTgyMzM1LC0zMzk4NTcxNjRdfQ==
 -->
