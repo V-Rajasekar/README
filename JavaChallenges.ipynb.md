@@ -3,7 +3,7 @@
 [count the occurrence of a char in a string](# count the occurrence of a given character in a string?)
 [Specification](#specification) 
 
-## Specification
+### Specification
 
 ### count the occurrence of a char in a string
 	count the occurrence of a given character in a string?
@@ -107,6 +107,6 @@
 ### find sub array with maximum sum?
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTc5NDA3Njc2Myw0MDc5ODIzMzUsLTMzOT
-g1NzE2NF19
+eyJoaXN0b3J5IjpbLTEyNjI5MTE5OTIsNDA3OTgyMzM1LC0zMz
+k4NTcxNjRdfQ==
 -->
