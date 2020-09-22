@@ -1,6 +1,6 @@
 
 # Java Challenges
-[count the occurrence of a char in a string](# count the occurrence of a given character in a string?)
+[ count the occurrence of a char in a string](# count the occurrence of a given character in a string?)
 [Specification](#specification) 
 
 ### Specification
@@ -107,6 +107,6 @@
 ### find sub array with maximum sum?
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTEyNjI5MTE5OTIsNDA3OTgyMzM1LC0zMz
-k4NTcxNjRdfQ==
+eyJoaXN0b3J5IjpbMTE2OTMyMTMzNiw0MDc5ODIzMzUsLTMzOT
+g1NzE2NF19
 -->
