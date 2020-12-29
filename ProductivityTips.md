@@ -28,4 +28,5 @@ https://www.howtogeek.com/362409/what-is-zsh-and-why-should-you-use-it-instead-o
 
 - [ubuntu-linux-tips](https://www.addictivetips.com/ubuntu-linux-tips/beginners-guide-i3-window-manager/)
 
- 
+ # Useful extensions
+ - [Markdown-editor](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one)
