@@ -18,22 +18,22 @@
 ### Setting up Kafka Cluster
 #### Creating Single-Nodes-Multiple broker cluster.
  1. Download Apache Kafka from site: [http://kafka.apache.org/](http://kafka.apache.org/)
- 2. C:\kafka_2.11-0.9.0.1\config\server.properties
+ 2. C:\kafka_2.11-0.9.0.1\config\zookeeper.properties
+     > dataDir=C:/kafka_2.13-2.7.0/tmp/zookeeper
+ 3. C:\kafka_2.11-0.9.0.1\config\server.properties
  
-    
-
-> broker.id=0
->     port=9091
->     log.dirs=C:\kafka_2.11-0.9.0.1\kafka-log-1
+>     broker.id=0
+>     listeners=PLAINTEXT://:9092
+>     log.dirs=C:/kafka_2.13-2.7.0/kafka-logs
 >     zookeeper.connect=localhost:2181
 
 Similarly create second broker configuration(server2.properties) with different broker id, port and log dirs.
 
 ### Starting zookeeper 
-> bin/zookeeper-server-start.sh config/zookeeper.properties
+> bin/zookeeper-server-start.sh ../../config/zookeeper.properties
 ### Starting brokers
-> bin/kafka-server-start.sh config/server1.properties
->  bin/kafka-server-start.sh config/server2.properties
+> bin/kafka-server-start.sh ../../config/server1.properties
+>  bin/kafka-server-start.sh ../../config/server2.properties
 <a name="Topic"></a>
 ### Creating topics
 Create topics with 2 partitions and 2 replication factors as we have two broker now.
