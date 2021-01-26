@@ -109,6 +109,19 @@ MYSQL_ROOT_PASSWORD=spme-pwd mysql:latest`
 #### Logging into the container and looking around using bash
 
 `docker exec -it my_nginx /bin/bash`
-<!--stackedit_data:
-eyJoaXN0b3J5IjpbOTAwNDI1OTgzLDExMTUxMDg2NzddfQ==
--->
+
+#### Tagging Docker images 
+`docker tag springboot-docker:1.0.0 rajasekardocker/springboot-docker:1.0.0`
+
+#### Pushing Docker images to remote(Docker hub)
+
+Login to your dockerhub repo
+
+```
+docker login
+Username:
+password
+
+docker push rajasekardocker/springboot-docker:1.0.0
+```
+
