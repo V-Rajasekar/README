@@ -65,7 +65,7 @@ To communicate the efficiency of the algorithm we use the shorthand notation cal
 
 Note: Here n = input size.
 
-![Algorithm Complexoty](file:///C:/Git/README/Coding_Skill/Algorithm%20Complexities.png)
+![Algorithm Complexoty](https://github.com/V-Rajasekar/README/blob/master/Coding_Skill/Algorithm%20Complexities.png)
 
 <details><summary>Stack</summary>
 Stack means piles of items like your email in box. <b>LIFO</b> The last item in the stack is the first one to come out
