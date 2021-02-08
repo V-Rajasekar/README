@@ -43,3 +43,37 @@ How to create a Cluster in Local ?
   - docker images 
   - docker tag <Docker image> <docker login name>/<ImageName>   
   - docker push <docker login name>/<Image name>
+
+
+Deploying a POD in Kubernetes
+Kube + Docker
+ -> DevOps -> Developer -> How this application has to be created
+ DevOps -> Kube/K8/Kubernetes Cluster
+ Dev -> Write YAML-> How to create application/how to expose it
+ YAML ->  apiversion, kind, metadata, spec
+ kubectl create deployment --name=backend-depl --image=tomcat8.1
+
+Create a Kubernetes deployment file <db-deployment.yml>
+Create a pod and deploy in kuberneteus cluster
+> kubectl apply -f db-deployment.yml
+> kubectl get pods
+> kubectl get services
+> kubectl describe pod <PodId> to troubleshoot on a pod
+> kubectl exec -it <Podid> /bin/sh # To login to the container
+> mysql -u root -p # To connect to the database
+
+#Create a Kubernetes service to access the Pod. Service is needed to 
+expose the service outside the world and within the Cluster
+- Create a file name service <db-service.yml> 
+> kubectl delete service <service name>
+> kubectl apply -f db-service.yml
+> kubectl get svc
+> kubectl log -f <PodId> to follow through 
+
+To tunnel kuberneteus cluster nodes and access it locally run
+> minikube tunnel
+- sql connectionstring jdbc:mysql:default.svc.cluster.local:3306
+minikube dashboard
+
+Sample project
+[kubernetes-with-minikube.demo](https://github.com/iamvickyav/kubernetes-with-minikube-demo)
