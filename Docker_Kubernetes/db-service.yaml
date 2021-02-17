@@ -1,0 +1,12 @@
+apiversion: apps/v1
+kind: Service
+metadata:
+    name: mysql
+spec:
+    ports:
+    - port: 3306 # No expose to potside
+      targetPort: 3306 # port no mentioned in the K7 deployment yml (container port)
+    selector:
+        app: mysql # app name mentioned in the K7 deployment yml (template->app name)
+        type: NodePort    
+        # USE [type: ClusterIP] if you want the sql access is restricted within the cluster
