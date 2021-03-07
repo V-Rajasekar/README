@@ -55,7 +55,7 @@ public int countDuplicates(int a[], int b[]) {
 
 To communicate the efficiency of the algorithm we use the shorthand notation called `Asymptotic Notation`. 
 
-|Algorithn| Big O Notation|Loops1
+|Algorithm| Big O Notation|Loops1
 |----|----|----|
 |Linear| O(N)| one loop|
 |Constant|O(1)| No loop|
@@ -64,8 +64,26 @@ To communicate the efficiency of the algorithm we use the shorthand notation cal
 |Exponential| O(N`n`)| The no of loops check will increase exponentially relative to the size of the input|
 
 Note: Here n = input size.
+![Big O notation ](./BigOnotation_Algorithm.png)
+![Algorithm Complexoty](./Algorithm%20Complexities.png)
 
-![Algorithm Complexoty](https://github.com/V-Rajasekar/README/blob/master/Coding_Skill/Algorithm%20Complexities.png)
+## Binary Search
+A binary search is is an extremely fast algorithm.
+
+It's worst case running time is big-O log. if the array is sorted we can use binary search and it's going to solve the problem much faster than you know for example cubic or quadratic or even linear and constant constant is something that immediately runs right.
+
+The number of steps are not dependent on the input size.
+
+The Time complexity for Binary Search is O(log n) which is log`2`(n) i.e the number of iterations are reduced by dividing the total number by 2 and try to find the element looking for
+
+|Input size(n)| Steps (log n)| 
+|----|----|
+| 10 | 4 |
+|100| 7|
+|1000|10|
+|10,000,000|20|
+...
+
 
 <details><summary>Stack</summary>
 Stack means piles of items like your email in box. <b>LIFO</b> The last item in the stack is the first one to come out
