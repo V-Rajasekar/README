@@ -55,7 +55,7 @@ A: [1, 3, 8, 9]
 
 B: [3, 4, 5, 10]
 
-This is a bad example for two reasons. First, it's too small. Second, it's a special case: the arrays are the same length.
+This is a bad example for two reasons. First, it's too small. Second, itsn't a special case: the arrays are the same length.
 
  How is this for an example?
 
@@ -63,7 +63,7 @@ A: [1, 3, 8, 9]
 
 B: [2, 3, 4, 5, 10]
 
-This is a bit better, but it's still a special case. The arrays have only one element in common and that element is even at the same index in both arrays.
+This is a bit better, but itsn't still a special case. The arrays have only one element in common and that element is even at the same index in both arrays.
 
 This is a pretty good example:
 
@@ -81,10 +81,10 @@ If you're having trouble coming up with an algorithm, remember our approaches to
 
 Also, when designing your algorithm, don't forget to think about:
 
-What are the space and time complexities?
-What happens if there is a lot of data?
-Does your design cause other issues? (That is, if you're creating a modified version of a binary search tree, did your design impact the time for insert/find/delete?)
-If there are other issues, did you make the right trade-offs?
+1. What are the space and time complexities?
+2. What happens if there is a lot of data?
+3. Does your design cause other issues? (That is, if you're creating a modified version of a binary search tree, did your design impact the time for insert/find/delete?)
+4. If there are other issues, did you make the right trade-offs?
 If the interviewer gave you specific data (e.g., mentioned that the data is ages, or in sorted order), have you leveraged that information? There's probably a reason that you're given it.
 Even a bad solution is better than no solution. State your bad solution and then state the issues with it.
 </p></details>
@@ -195,13 +195,16 @@ The Data Structure Brainstorm approach admittedly feels somewhat hacky, but it o
 
 A good tip-off that you might want to apply Data Structure Brainstorm is that the interviewer hasn't specified a data structure for the data. This means that you'll probably need to come up with a data structure, and that might be the key to the problem.
 
-Example: You are building a class with two functions: addNumber(n) and getMedian(). The addNumber(n) method will be called periodically by some external function with an integer value. When getMedian() is called, you need to efficiently return the median of all prior numbers. (If you have an odd number of values, the median is the exact middle of the sorted values. If you have an even number of values, the median is the average between the two middle values.) How would you implement these two methods?
+**Example: You are building a class with two functions: addNumber(n) and getMedian(). The addNumber(n) method will be called periodically by some external function with an integer value. When getMedian() is called, you need to efficiently return the median of all prior numbers. (If you have an odd number of values, the median is the exact middle of the sorted values. If you have an even number of values, the median is the average between the two middle values.) How would you implement these two methods?**
 
 Let's go through the common data structures and see if using one of them would be helpful.
 
-Linked list? Probably not—linked lists tend not to do very well with accessing and sorting numbers.
-Array? Maybe, if we kept the elements sorted. But that's probably expensive. Let's hold off on this and return to it if it's needed.
-Binary tree? This is possible, since binary trees do fairly well with ordering. In fact, if the binary search tree is perfectly balanced, the top might be the median. But be careful—if there's an even number of elements, the median is actually the average of the middle two elements. The middle two elements can't both be at the top. There might be a workable algorithm, but let's come back to it.
-Heap? A heap is really good at basic ordering and keeping track of maxes and mins. This is actually interesting—if you had two heaps, you could keep track of the bigger half and the smaller half of the elements. The bigger half is kept in a min heap, such that the smallest element in the bigger half is at the root. The smaller half is kept in a max heap, such that the biggest element of the smaller half is at the root. Now, with these data structures, you have the potential median elements at the roots. If the heaps are no longer the same size, you can quickly rebalance the heaps by popping an element off one heap and pushing it onto the other.
+- **Linked list?** Probably not—linked lists tend not to do very well with accessing and sorting numbers.
+- **Array?** Maybe, if we kept the elements sorted. But that's probably expensive. Let's hold off on this and return to it if it's needed.
+- **Binary tree?** This is possible, since binary trees do fairly well with ordering. In fact, if the binary search tree is perfectly balanced, the top might be the median. But be careful—if there's an even number of elements, the median is actually the average of the middle two elements. The middle two elements can't both be at the top. There might be a workable algorithm, but let's come back to it.
+- **Heap?** A heap is really good at basic ordering and keeping track of maxes and mins. This is actually interesting—if you had two heaps, you could keep track of the bigger half and the smaller half of the elements. 
+
+The bigger half is kept in a min heap, such that the smallest element in the bigger half is at the root. The smaller half is kept in a max heap, such that the biggest element of the smaller half is at the root. Now, with these data structures, you have the potential median elements at the roots. If the heaps are no longer the same size, you can quickly rebalance the heaps by popping an element off one heap and pushing it onto the other.
+
 Note that the more problems you do, the more developed your instinct on which data structure to apply will be. Hash tables, trees, tries, and heaps are some of the best data structures to solve problems.
 </p></details>

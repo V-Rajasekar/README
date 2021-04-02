@@ -1,3 +1,4 @@
+
 what is an algorithm ? 
 
 Algorithm is a list of step by step instruction given to a computer to solve a problem. 
