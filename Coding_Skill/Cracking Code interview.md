@@ -25,6 +25,13 @@
 * We must often make a trade-off between time and space, and sometimes we do sacrifice time efficiency to reduce memory usage.
 * A recursive algorithm often takes up dramatically more space than an iterative algorithm.
 
+**MEMORY USAGE**
+As you're reviewing data structures, remember to practice computing the memory usage of a data structure or an algorithm. Your interviewer might ask you directly how much memory something takes, or you might need to compute this yourself if your problem involves large amounts of data.
+
+**Data structures.** Don't forget to include the pointers to other data. For example, a doubly linked list that holds 1,000 integers will often use about 12KB of memory (4 bytes for the data, 4 bytes for the previous pointer, and 4 bytes for the next pointer). This means that making a singly linked list into a doubly linked list can dramatically increase memory usage.
+**Algorithms.** A recursive algorithm often takes up dramatically more space than an iterative algorithm. Consider, for example, an algorithm to compute the jth to last element of a singly linked list. An approach that uses an array to sort each element may be no better than a recursive algorithm—both use O(n) memory! (The best solution involves using two pointers, where one starts off j spaces ahead.)
+Many candidates think of their algorithms on only one dimension—time—but it's important to consider the space complexity as well. We must often make a trade-off between time and space, and sometimes we do sacrifice time efficiency to reduce memory usage.
+
 ### Coding questions
 Interviews are supposed to be difficult. The norm is that you won't know how to solve a question as soon as you hear it. You will struggle through it, get a bit of help from the interviewer (or a lot of help, depending on the difficulty of the question), and arrive at a better solution than what you started with.
 
