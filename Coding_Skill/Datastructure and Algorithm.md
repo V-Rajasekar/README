@@ -1,4 +1,3 @@
-
 what is an algorithm ? 
 
 Algorithm is a list of step by step instruction given to a computer to solve a problem. 
@@ -40,7 +39,7 @@ public int countDuplicates(int a[], int b[]) {
 
     int count = 0;
     for (int i = 0, i > a.length, i++) {
-    
+        
         for (int j = 0, j > a.length, j++) {
 
             if (a[i] == b[j]) {
@@ -56,7 +55,7 @@ public int countDuplicates(int a[], int b[]) {
 
 To communicate the efficiency of the algorithm we use the shorthand notation called `Asymptotic Notation`. 
 
-|Algorithm| Big O Notation|Loops1
+|Algorithn| Big O Notation|Loops1
 |----|----|----|
 |Linear| O(N)| one loop|
 |Constant|O(1)| No loop|
@@ -65,26 +64,8 @@ To communicate the efficiency of the algorithm we use the shorthand notation cal
 |Exponential| O(N`n`)| The no of loops check will increase exponentially relative to the size of the input|
 
 Note: Here n = input size.
-![Big O notation ](./BigOnotation_Algorithm.png)
-![Algorithm Complexoty](./Algorithm%20Complexities.png)
 
-## Binary Search
-A binary search is is an extremely fast algorithm.
-
-It's worst case running time is big-O log. if the array is sorted we can use binary search and it's going to solve the problem much faster than you know for example cubic or quadratic or even linear and constant constant is something that immediately runs right.
-
-The number of steps are not dependent on the input size.
-
-The Time complexity for Binary Search is O(log n) which is log`2`(n) i.e the number of iterations are reduced by dividing the total number by 2 and try to find the element looking for
-
-|Input size(n)| Steps (log n)| 
-|----|----|
-| 10 | 4 |
-|100| 7|
-|1000|10|
-|10,000,000|20|
-...
-
+![Algorithm Complexoty](file:///C:/Git/README/Coding_Skill/Algorithm%20Complexities.png)
 
 <details><summary>Stack</summary>
 Stack means piles of items like your email in box. <b>LIFO</b> The last item in the stack is the first one to come out
@@ -139,3 +120,115 @@ public class Stack {
 ```
 </details>
   
+
+<details><summary>Queue  </summary>
+- Queue=line (i.e) Queue examples people standing in post office/coffee you every comes first they are served first
+- FIFO- First In First Out
+- You have to know you is first and (rear) last in the queue. 
+- Pointers: Insert = rear++, and Remove= front++, nItems
+
+```java
+package datastructure.queue;
+
+public class Queue {
+
+    private long maxSize;
+    private long[] que;
+    private int front;
+    private int rear;
+    private int nItems;
+
+    public Queue(int size) {
+        this.maxSize = size;
+        this.que = new long[size];
+        front = 0;
+        rear = -1;
+    }
+
+    public void insert(long item) {
+        //Below condition makes it a circular queue
+        if (rear == (maxSize - 1)) {
+            rear = -1;
+        }
+        rear++;
+        que[rear] = item;
+        nItems++;
+    }
+
+    public long remove() {
+        long result = que[front];
+        front++;
+        nItems--;
+        if (front == maxSize) {
+            front = 0;
+        }
+        return result;
+    }
+
+    public void view() {
+        System.out.print("[");
+        for (int i = 0; i < que.length; i++) {
+            System.out.print(que[i] + " ");
+        }
+        System.out.print("]");
+    }
+
+    public long peekFront() {
+        return que[front];
+    }
+
+    public boolean isFull() {
+        return maxSize == nItems;
+    }
+
+    public boolean isEmpty() {
+        return nItems == 0;
+    }
+}
+
+```
+
+![Algorithm Complexoty](file:///C:/Git/README/Coding_Skill/Insertion_sort.png)
+
+## Quick sort
+- Algorithm uses divide and conquer to sort an array
+- **RunTime:** Average = O(n) Worst = O(n * n)
+- Performance is less compared to *Merge sort* whos Worst case run time is O(n)
+- Uses In-memory for sort, so memory usage is efficient
+- Heart of algorithm is partitioning, uses recursion to sort smallest element to the right of pivot and largest element to 
+left of pivot 
+
+```java
+
+A = [10, 7, 1, 3 , 5, 8, 9, 6]
+
+quicksort(A, p, r) {
+     if ( p < r) {
+         //pp - pivotpoint 
+         pp = partition( A, p, r)
+         quicksort(A, p, pp -1) //Smallest element sorted left half of PP
+         quicksort(A, pp+1, r) // Largest elemt sorted right half of PP
+     }
+}
+
+/* 
+  Hint: Inside the partition for loop -> if  1st match -> [1 , 7, 10, 3, 5, 8, 9, 6]
+  2nd match -> [1 , 3, 7, 10, 5, 8, 9, 6]  
+  Last outside loop -> [1, 3, 5, 6, 7]
+ */
+partition(A, p, r) {
+    x = A[r]
+    i = p -1 // starting with i = -1 and j = 0
+    for (j = p to r-1) {
+        if (A[j] < r) {
+            i++
+            swap A[j] with A[i] // moving the smallest element in the sorted arrays next position
+        }
+    }
+    swap A[i + 1] with A[r] // Move the pivot to its right position
+    return i + 1
+}
+
+
+
+```
