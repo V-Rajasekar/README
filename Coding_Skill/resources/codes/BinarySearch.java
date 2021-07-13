@@ -24,5 +24,13 @@ public class BinarySearch {
         }
         return -1;
     }
+    
+    //Run through x=100 
+    
+    |p=0, r(index)=6 q=3| p=4, r=6, q=5       | p=6, r=6, q=6   |
+    |45 == 100 -> false | 78 == 100 -- false  |100 == 100 --> 6 |
+    |45 > 100 -> false  | 78  > 100 --> false |                 |
+    |p= 4               | p= 6                |                 | 
+        
 
 }
