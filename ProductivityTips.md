@@ -30,3 +30,26 @@ https://www.howtogeek.com/362409/what-is-zsh-and-why-should-you-use-it-instead-o
 
  # Useful extensions
  - [Markdown-editor](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one)
+
+# Useful Plugin Visual Studio
+```
+Name: IntelliJ IDEA Keybindings
+Id: k--kato.intellij-idea-keybindings
+k--kato.intellij-idea-keybindings
+
+----
+Name: Gradle for Java
+Id: vscjava.vscode-gradle
+Description: Manage Gradle Projects, run Gradle tasks and provide better Gradle file authoring experience in VS Code
+Version: 3.12.5
+Publisher: Microsoft
+VS Marketplace Link: https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-gradle
+
+----
+Name: Spring Initializr Java Support
+Id: vscjava.vscode-spring-initializr
+Description: A lightweight extension based on Spring Initializr to generate quick start Spring Boot Java projects.
+Version: 0.11.1
+Publisher: Microsoft
+VS Marketplace Link: https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-spring-initializr
+```
