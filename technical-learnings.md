@@ -7,5 +7,15 @@
 | provide more fine-grain details on the general health of application|management.endpoint.health.show-details=always|
 |provide access to other actuator endpoints in your Spring Boot projects|management.endpoints.web.exposure.include=health,metrics,* |
 |Which interface do you implement to create custom health indicators?|By implementing the HealthIndicator class and adding the @Component annotation, Spring Boot will pick this up a runtime and add it to the standard actuator/health endpoint.|
+|Debug JPA QUERY|  
+```
+logging:
+  level:
+    org.hibernate:
+        SQL: DEBUG
+        type.descriptor.sql: trace
+        orm.jdbc.bind: trace
+```       
+|
 
 
