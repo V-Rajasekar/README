@@ -16,6 +16,8 @@ logging:
         type.descriptor.sql: trace
         orm.jdbc.bind: trace
 ```       
-|
+#Running spring boot application with profile 
+Go to the Application run configuration set the following environment variable here local is the profile names.
+`SPRING_PROFILES_ACTIVE=local`
 
 
