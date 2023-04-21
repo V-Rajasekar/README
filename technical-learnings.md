@@ -20,4 +20,22 @@ logging:
 Go to the Application run configuration set the following environment variable here local is the profile names.
 `SPRING_PROFILES_ACTIVE=local`
 
+# Java Timestamp
+
+![image](https://user-images.githubusercontent.com/75798528/233641077-f259628a-f9fe-41cf-b314-17d20c588c41.png)
+
+```java
+//Changing offsetDateTime(CET) to OffsetDateTime(UTC) 
+OffsetDateTime expectedDateTime = OffsetDateTime.parse("2021-02-08T00:25:18+01:00");
+        OffsetDateTime expectedDateTimeInUTC =
+                expectedDateTime.toZonedDateTime().toInstant().atOffset(ZoneOffset.UTC);
+//Changing SQLTimestamp to OffsetDateTime in UTC
+java.sql.TimeStamp timeStampSource =  Timestamp.valueOf(LocalDateTime.now());
+timestampSource.toInstant().atOffset(ZoneOffset.UTC);
+//XML Gregorian to OffsetDateTime in UTC
+xmlGregorianCalendar.toGregorianCalendar().toZonedDateTime().toInstant().atOffset(ZoneOffset.UTC)
+
+
+```
+
 
