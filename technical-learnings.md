@@ -35,6 +35,37 @@ timestampSource.toInstant().atOffset(ZoneOffset.UTC);
 //XML Gregorian to OffsetDateTime in UTC
 xmlGregorianCalendar.toGregorianCalendar().toZonedDateTime().toInstant().atOffset(ZoneOffset.UTC)
 
+import java.time.ZonedDateTime;
+//Gives the ZonedDateTime gives datetime with Offset+ZonedId.
+ZonedDateTime currentZoneDateTime = ZonedDateTime.now();
+currentZoneDateTime ==> 2023-04-26T13:52:20.666555+05:30[Asia/Calcutta]
+
+System.out.println("the current zone is "+currentZoneDateTime.getZone());
+the current zone is Asia/Calcutta
+
+ZoneId oslo = ZoneId.of("Europe/Oslo");
+europeZoneId ==> Europe/Oslo
+ZonedDateTime osloZone =  currentZoneDateTime.withZoneSameInstant(oslo);
+osloZone ==> 2023-04-26T10:22:20.666555+02:00[Europe/Oslo]
+
+import java.time.format.*;
+DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+format ==> Value(DayOfMonth,2)'-'Value(MonthOfYear,2)'-'Valu ... ':'Value(SecondOfMinute,2)
+osloZone.format(format);
+$11 ==> "26-04-2023 10:22:20"
+
+## Gregorian calendar
+//Creating Gregorian calendar instance  
+import javax.xml.datatype.*;
+DatatypeFactory.newInstance().newXMLGregorianCalendar(LocalDate.now().toString());
+$14 ==> 2023-04-26
+
+DatatypeFactory.newInstance().newXMLGregorianCalendar(LocalDateTime.now().toString());
+$15 ==> 2023-04-26T14:08:41.649196
+
+DatatypeFactory.newInstance().newXMLGregorianCalendar(OffsetDateTime.now().toString());
+$16 ==> 2023-04-26T14:10:02.203479200+05:30
+
 
 ```
 
