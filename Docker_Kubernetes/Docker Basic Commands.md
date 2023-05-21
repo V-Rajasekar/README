@@ -5,6 +5,13 @@
  - docker image 
  - docker run
 
+## Docker container and images
+**Images**
+- List Images `docker images`
+- Remove Images `docker rmi <Image Id>`
+- Remove all images at once `docker rmi $(docker images -q)`
+
+**Containers**
 ## Running docker container
 
 To start a container either build your own docker image or use existing image created by docker community available in
