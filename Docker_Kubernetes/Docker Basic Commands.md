@@ -8,10 +8,14 @@
 ## Docker container and images
 **Images**
 - List Images `docker images`
-- Remove Images `docker rmi <Image Id>`
+- Remove Images `docker rmi <Image Id> <ImageId>`
 - Remove all images at once `docker rmi $(docker images -q)`
-
 **Containers**
+- list Container `docker ps -a`
+- Stop running container `docker stop <Container ID>`
+- Remove Containers `docker rm <Container ID>`
+- Stop all running containers: `docker stop $(docker ps -a -q)`
+- Delete all stopped containers: `docker rm $(docker ps -a -q)`
 ## Running docker container
 
 To start a container either build your own docker image or use existing image created by docker community available in
