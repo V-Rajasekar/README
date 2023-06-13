@@ -74,3 +74,7 @@ The order of the six fields in Azure is: `{second} {minute} {hour} {day} {month}
 For an example, a CRON `0 */5 * * * *`
 Special character "*" every value, `1,3` in the day of the week field means just Mondays(day 1) and Wednesdays (dy 3), '10-12' hours range [10,11,12], "*/10" increment of every 10 mins   
 
+## Query to kill Ideal connections
+```sql
+SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid() AND state in ('idle');
+```
