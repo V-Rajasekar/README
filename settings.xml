@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<!-- place thise settings.xml in C:\Users\<userId>\.m2, c:\apache-maven\conf-->
 <!--
 Licensed to the Apache Software Foundation (ASF) under one
 or more contributor license agreements.  See the NOTICE file
@@ -263,6 +263,11 @@ under the License.
          <name>maven2</name>
          <url> https://repo.maven.apache.org/maven2</url>
        </repository>
+  	   <repository>
+          <id>mvnrepo</id>
+          <name>maven repo</name>
+          <url>https://mvnrepository.com/</url>
+        </repository>
      </repositories>
     </profile>
   </profiles>
