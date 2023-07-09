@@ -264,6 +264,6 @@ Header: `Authorization` value: `Bearer <access token copied from earlier call>`
 
 
 ## Create and implement shared access signatures
-[Shared Access signature](./Shared%20Access%20signnature.md)
+[Shared Access signature](./Shared%20Access%20signature.md)
 
 
