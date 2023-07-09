@@ -231,11 +231,15 @@ az vm identity assign \
 ```
 ## Implement solutions that interact with Microsoft Graph
 What is Microsoft Graph in Azure?
-Microsoft Graph is a RESTful web API that enables you to access Microsoft Cloud service resources. After you register your app and get authentication tokens for a user or service,
- you can make requests to the Microsoft Graph API.
+- `Microsoft Graph API`  with a single REST endpoint (`https://graph.microsoft.com`)that enables you to access Microsoft Cloud service resources.<br>  
 
 Microsoft Graph provides access to data stored across Microsoft 365 services. Custom applications can use the Microsoft Graph API to connect to data 
-and use it in custom applications to enhance organizational productivity.
+and use it in custom applications to enhance organizational productivity.<br>
+
+Which of the components of the Microsoft 365 platform is used to deliver data external to Azure into Microsoft Graph services and applications?<br>
+- `Microsoft Graph connectors` Delivering data external to the Microsoft cloud into Microsoft Graph services and applications. Microsoft Graph connectors work in the incoming direction. Connectors exist for many commonly used data sources such as Box, Google Drive, Jira, and Salesforce.
+  
+- `Microsoft Graph Data Connect` provides a set of tools to streamline secure and scalable delivery of Microsoft Graph data to popular Azure data stores.
 
 <h3>LAB: Reading All users in the Azure Active directory through `POSTMAN`</h3>
 
@@ -265,5 +269,3 @@ Header: `Authorization` value: `Bearer <access token copied from earlier call>`
 
 ## Create and implement shared access signatures
 [Shared Access signature](./Shared%20Access%20signature.md)
-
-
