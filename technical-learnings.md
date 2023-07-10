@@ -78,3 +78,20 @@ Special character "*" every value, `1,3` in the day of the week field means just
 ```sql
 SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid() AND state in ('idle');
 ```
+
+## Add alias in Git
+```
+ Path to add in Git installation = ./git/etc/bash.bashrc
+
+alias gs="git status"
+alias gco="git checkout"
+alias gcm="git commit -m"
+alias ga="git add"
+alias gps="git push origin "
+alias gpl="git pull origin "
+alias gf="git fetch"
+alias gsh="git stash save "
+alias gshl="git stash list "
+alias gshp="git stash pop "
+
+```
