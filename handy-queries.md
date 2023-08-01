@@ -15,3 +15,11 @@ and t.relkind = 'r'
 Query to kill
 SELECT pg_terminate_backend(6013);
 ```
+## Query to filter and fetch an element from a Json Array object. 
+Here payload is a text column in the Postgres database holding a JSON message which has an array of different parties. The challenge is to fetch the consigneeContactEmail from this parties array for party type='Consignee'
+Solution: using json_array_elements 
+```sql
+SELECT consignment_no, created_timestamp, parties_obj->>'type' as partyType, parties_obj->>'contactEmail' as consigneeEmail  FROM logs.ph_edi_logs pel, 
+ LATERAL json_array_elements(payload::json->'parties') AS parties_obj WHERE consignment_no = '1234'
+and parties_obj->>'type' = 'Consignee'
+```
