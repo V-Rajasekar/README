@@ -18,7 +18,7 @@ SELECT pg_terminate_backend(6013);
 ## Query to filter and fetch an element from a Json Array object. 
 
 Here payload is a text column in the Postgres database holding a JSON message which has an array of different parties. The challenge is to fetch the receiver ContactEmail from this parties array for party type='receiver'
-Solution: use the ->> operator along with the json_array_elements function to fetch elements from the parties array. The json_array_elements function will expand the JSON array into multiple rows, and then you can use the ->> operator to access specific fields within each element.
+Solution: use the ->> operator along with the `json_array_elements` **function** to fetch elements from the parties array. The `json_array_elements` function will expand the JSON array into multiple rows, and then you can use the ->> operator to access specific fields within each element.
 Note: 
 - Please ensure that the data column contains valid JSON data for this query to work correctly. If the data is not in valid JSON format, casting it to JSON will result in an error.
 - we use the -> operator to access the parties object within the JSON data and then use the ->> operator to extract the contactEmail value as text
@@ -28,7 +28,7 @@ Note:
 SELECT customer_no, created_timestamp, parties_obj->>'type' as partyType,
  parties_obj->>'contactEmail' as receiverEmail
 FROM party_contact pel, 
- LATERAL JSON_ARRAY_ELEMENTS(payload::json->'parties') AS parties_obj
+ LATERAL json_array_elements(payload::json->'parties') AS parties_obj
 WHERE customer_no = '1234'
 and parties_obj->>'type' = 'receiver'
 ```
