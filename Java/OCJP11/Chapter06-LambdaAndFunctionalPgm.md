@@ -1,4 +1,9 @@
-# Lambdas and Functional Interfaces.
+- [Chapter06 Lambdas and Functional Interfaces.](#chapter06-lambdas-and-functional-interfaces)
+  - [Valid Lambda expressions.](#valid-lamda-expressions)
+  - [Invalid Lambda expressions.](#invalid-lambda-expressions)
+  - [Functional Interfaces](#functional-interfaces)
+
+# Chapter06 Lambdas and Functional Interfaces.
 A lambda expression is a block of code that gets passed around
 - Declaring a Lambda expression
   a -> a.canHop()
@@ -7,7 +12,7 @@ A lambda expression is a block of code that gets passed around
 - s -> {} is a valid lambda. If there is no code on the right side of the expression, you don’t need the semicolon or return statement.
 - (a, b) -> a.startsWith("test")
 
-## Valid Lamda expressions. 
+## Valid Lambda expressions. 
     () -> true	0
     a -> a.startsWith("test")	1
     (String a) -> a.startsWith("test")	1
