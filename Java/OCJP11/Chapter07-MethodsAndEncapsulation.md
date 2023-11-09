@@ -1,3 +1,10 @@
+- [Chapter 7 Methods and Encapsulation.](#chapter-7-methods-and-encapsulation)
+    - [Designing Methods](#designing-methods)
+    - [Applying Access Modifiers](#applying-access-modifiers)
+    - [Applying the static Keyword](#applying-the-static-keyword)
+    - [Static Initialzation](#static-initialzation)
+    - [Passing Data among methods (Java pass by value)](#passing-data-among-methods-java-pass-by-value)
+  - [Overloading.](#overloading)
 # Chapter 07 Methods and Encapsulation.
 - Access modifiers type: private, default(Package-Private),protected,public.
 ### Designing Methods
