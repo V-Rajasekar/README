@@ -1,4 +1,22 @@
 # Spring Boot - API
+- [Spring Boot - API](#spring-boot---api)
+  - [Securing Apps.](#securing-apps)
+    - [Authentication](#authentication)
+    - [Securing Microservices](#securing-microservices)
+    - [Building a Basic Authentication](#building-a-basic-authentication)
+  - [Consuming REST Services](#consuming-rest-services)
+    - [Building REST service consumer](#building-rest-service-consumer)
+  - [Testing Spring Boot Apps](#testing-spring-boot-apps)
+    - [Data Repository - Unit Testing](#data-repository---unit-testing)
+    - [MVC Controller - Unit Testing](#mvc-controller---unit-testing)
+    - [Integration Testing](#integration-testing)
+    - [Spring Boot - Logging](#spring-boot---logging)
+      - [Spring Boot - Template Engines](#spring-boot---template-engines)
+    - [Spring Boot - Caching](#spring-boot---caching)
+    - [Messaging](#messaging)
+    - [Spring Initializr](#spring-initializr)
+    - [Spring Batch](#spring-batch)
+
 ## Securing Apps.
 Spring Security can be broadly classified as
 
