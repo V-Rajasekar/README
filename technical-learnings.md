@@ -1,4 +1,12 @@
-# Implementing the Resilence4j 
+- [Implementing the Resilence4j](#implementing-the-resilence4j)
+- [Running spring boot application with profile](#running-spring-boot-application-with-profile)
+- [Java Timestamp](#java-timestamp)
+- [CRON Expression](#cron-expression)
+- [Query to kill Ideal connections](#query-to-kill-ideal-connections)
+- [Loading resource files in spring boot test](#loading-resource-files-in-spring-boot-test)
+- [Add alias in Git](#add-alias-in-git)
+
+## Implementing the Resilence4j 
 
 |Title| Reference|
 |---|---|
@@ -16,11 +24,11 @@ logging:
         type.descriptor.sql: trace
         orm.jdbc.bind: trace
 ```       
-# Running spring boot application with profile 
+## Running spring boot application with profile 
 Go to the Application run configuration set the following environment variable here local is the profile names.
 `SPRING_PROFILES_ACTIVE=local`
 
-# Java Timestamp
+## Java Timestamp
 
 ![image](https://user-images.githubusercontent.com/75798528/233641077-f259628a-f9fe-41cf-b314-17d20c588c41.png)
 
@@ -78,6 +86,16 @@ Special character "*" every value, `1,3` in the day of the week field means just
 ```sql
 SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid() AND state in ('idle');
 ```
+## Loading resource files in spring boot test
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.ResourceLoader;
+```java
+ protected String loadInputMessageTextFile(String fileName) throws IOException {
+        ResourceLoader resourceLoader = new DefaultResourceLoader();
+        File resource = resourceLoader.getResource("classpath:data/" + fileName).getFile();
+        return new String(Files.readAllBytes(resource.toPath()), StandardCharsets.UTF_8);
+    }
+```
 
 ## Add alias in Git
 ```
@@ -95,3 +113,4 @@ alias gshl="git stash list "
 alias gshp="git stash pop "
 
 ```
+
