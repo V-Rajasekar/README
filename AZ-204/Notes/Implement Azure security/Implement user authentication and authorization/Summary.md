@@ -55,9 +55,3 @@ Prerequest App registration for both the Product API and the Postman client. Nex
 6. Go to Product API > API permissions > My APIs > Product API > Product Access > Grant Admin consents   
 6. Trigger step 5 to get the access token
 7. Call Product API with header > `Authorization Bearer <access token>`
-
-
-
-
-  
-
