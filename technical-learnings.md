@@ -5,6 +5,7 @@
 - [Query to kill Ideal connections](#query-to-kill-ideal-connections)
 - [Loading resource files in spring boot test](#loading-resource-files-in-spring-boot-test)
 - [Add alias in Git](#add-alias-in-git)
+- [Logging](#Logging)
 
 ## Implementing the Resilence4j 
 
@@ -113,4 +114,6 @@ alias gshl="git stash list "
 alias gshp="git stash pop "
 
 ```
+## Logging 
+[Logback structured logging](https://www.innoq.com/en/blog/2019/05/structured-logging/)
 
