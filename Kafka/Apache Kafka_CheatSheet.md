@@ -41,7 +41,7 @@ Create topics with 2 partitions and 2 replication factors as we have two broker 
 
 ### Checking Topic and paritions summary
 <a name="View"></a>
-> bin/kafka-topics.sh --zookeeper \<hostname\>:2181 --describe -- topic test-topic
+> bin/kafka-topics.sh --bootstrap-server localhost:9092 --describe -- topic test-topic
 <a name="Alter kafka topic config"></a>
 ### Alter kafka topic config 
 <a name="Delete"></a>
@@ -60,7 +60,7 @@ Create topics with 2 partitions and 2 replication factors as we have two broker 
   >Key:value
 <a name="Consumer"></a>
 ### Creating a consumer and consume message
-> bin/kafka-console-consumer.sh --zookeeper \<hostname\>:2181 --topic test-topic - [Options]
+> bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test-topic - [Options]
 > Options: 
  - from-beginning - To consume from the beginning 
 <a name="Offset"></a>
