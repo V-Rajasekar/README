@@ -79,6 +79,9 @@
 8:    s.nextInt(); // DOES NOT COMPILE
 9: }
 ```
+- **Rule 5**  Exceptions thrown from the try-with-resource block (close) are suppressed, if the try block throws an exception.
+  If an exception is thrown from the try block and `one or more exceptions are thrown from the try-with-resources statement, then those exceptions thrown from the try-with-resources statement are suppressed`, and the exception thrown by the block is the one that is thrown    
+- [try-with-resources](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html)
 
 ### Uncheck Exceptions 
 

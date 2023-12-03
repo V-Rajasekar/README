@@ -213,7 +213,35 @@ public class HospitalRepositoryTest {
 }
 ```
 ### MVC Controller - Unit Testing 
+- Option-1
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+```java  
+@WebMvcTest(ToDoController.class)
+class ToDoControllerMockMvcTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+    @MockBean
+    private ToDoRepository toDoRepoMock;
+
+    @Test
+    public void addTodo() throws Exception {
+
+        ToDoItem to = new ToDoItem(1L, "Prayer", false);
+        when(toDoRepoMock.save(anyObject())).thenReturn(to);
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .post("/test/todos")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(to))
+                ).andExpect(status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").exists());
+    }
+```
+- Option-2
 ```java
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -235,8 +263,8 @@ public class HospitalControllerTest {
 	                .andExpect(MockMvcResultMatchers.jsonPath("$.city").value("Chennai"));
 	}
 ```
-
 ### Integration Testing 
+- Option-1: Using TestRestTemplate and asserting the Object values
 ```java
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment)
@@ -252,7 +280,33 @@ public class CreateClientIntegrationTest {
         assertEquals("Test hospital", hosp.getName());
     }
 }
+
 ```
+- Option-2: Using MockMVC with SpringBoot context and asserting the JSON response.
+```java
+@SpringBootTest
+@AutoConfigureMockMvc
+class ToDoControllerIT {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+
+    @Test
+    public void addTodo() throws Exception {
+
+        ToDoItem to = new ToDoItem(1L, "Prayer", false);
+
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .post("/test/todos")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(to))
+                ).andExpect(status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").exists());
+    }
+```
+
 ### Spring Boot - Logging
 By default, Spring Boot uses `Logback` to logging.Any starter added to the project comes with `spring-boot-starter-loggging` configured by default.  
 
