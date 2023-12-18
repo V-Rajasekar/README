@@ -119,6 +119,52 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 }
 ```
+### Review questions
+1. What is the bean that we need to create to define our custom security requirements inside a web application ?
+   SecurityFilterChain
+2. Which is the default SecurityFilterChain that spring implements ? 
+Securing all the endpoints in the application so that only authenticated users will be allowed to invoke the URLs with the below configuration
+
+```java
+@Bean
+ SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+	http.authorizeHttpRequests().anyRequest().authenticated();
+	HTTP.formLogin();
+	http.httpBasic();
+	return http.build();
+ }
+//Customer config to permit and authenticate
+
+@Configuration
+public class ProjectSecurityConfig {
+@Bean
+SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception
+{
+	http.authorizeHttpRequests()
+	.requestMatchers("/dashboard").authenticated()
+	.requestMatchers("/myProfile").authenticated()
+	.requestMatchers("/home").permitAll()
+	.and().formLogin().and().httpBasic();
+	return http.build();
+}
+
+//Allow all regardless of the authentication is successs or failure
+@Bean
+ SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+	http.authorizeHttpRequests().anyRequest().permitAll();
+	HTTP.formLogin();
+	http.httpBasic();
+	return http.build();
+ }
+//Denying regardless of the authentication is successs
+@Bean
+ SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+	http.authorizeHttpRequests().anyRequest().denyAll();
+	HTTP.formLogin();
+	http.httpBasic();
+	return http.build();
+ }
+```
 ## Consuming REST Services
 Spring provides REST template methods to consume REST services 
 
