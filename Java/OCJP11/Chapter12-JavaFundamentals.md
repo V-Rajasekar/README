@@ -3,6 +3,7 @@
 - [Chapter 12 Java Fundamentals (TUFF)](#chapter-12-java-fundamentals-tuff)
     - [Declaring final Local Variables](#declaring-final-local-variables)
     - [Adding final to Instance and static Variables](#adding-final-to-instance-and-static-variables)
+    - [var declarations](#var-declarations)
     - [Writing final Methods.](#writing-final-methods)
     - [Marking classes final](#marking-classes-final)
     - [Working with Enums](#working-with-enums)
@@ -55,6 +56,16 @@ public class PolarBear {
    }
 }
 ```
+
+### var declarations
+- `var i = null;` //INVALID NULL values is not allowed since its type can't be inferred.
+- `var j = 2.2; j = 1.2F;`// VALID j is inferred as double and later assigning float value to a wider type (dobule)
+- `var k, i = 0;` //INVALID var cannot be used in compund statement
+- `var a=2; var b; if (a%2==0) { b= true; } else { b= false; }` //INVALID var b is not intialized
+- `var list = new ArrayList<>(); list.add(1);` //VALID <> is inferred as <Object>
+- `var numberList = new ArrayList<Integer>();` numberList = new LinkedList<Integer>(); //INVALID a numberList is ArrayList forst then can't change its type to LinkedList
+- `var i = 100; var s = "A"+i;` //VALID 
+  
 ### Writing final Methods.
  * Methods marked final cannot be overridden by a subclass.
  * Methods cannot be assigned abstract or final modifier together.

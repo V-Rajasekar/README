@@ -169,7 +169,14 @@ We complete this section by summarizing all of the various rules for using var i
 * A var cannot be initialized with a null value without a type.
 * A var is not permitted in a multiple-variable declaration.
 * A var is a reserved type name but not a reserved word, meaning it can be used as an identifier except as a class, interface, or enum name. meaning in the reference variable name.
-
+- `var i = null;` //INVALID NULL values is not allowed since its type can't be inferred.
+- `var j = 2.2; j = 1.2F;`// VALID j is inferred as double and later assigning float value to a wider type (dobule)
+- `var k, i = 0;` //INVALID var cannot be used in compund statement
+- `var a=2; var b; if (a%2==0) { b= true; } else { b= false; }` //INVALID var b is not intialized
+- `var list = new ArrayList<>(); list.add(1);` //VALID <> is inferred as <Object>
+- `var numberList = new ArrayList<Integer>();` numberList = new LinkedList<Integer>(); //INVALID a numberList is ArrayList forst then can't change its type to LinkedList
+- `var i = 100; var s = "A"+i;` //VALID 
+  
 #### Reviewing Scope
 - _Local_ variables: In scope from declaration to end of block
 - _Instance_ variables: In scope from declaration until object eligible for garbage collection
