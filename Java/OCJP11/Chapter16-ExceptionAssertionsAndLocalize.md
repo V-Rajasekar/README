@@ -3,6 +3,8 @@
   - [try with resources](#try-with-resources)
     - [Uncheck Exceptions](#uncheck-exceptions)
     - [Checked Exceptions](#checked-exceptions)
+    - [Catching Multiple Exception](#catching-multiple-exception)
+    - [Rethrowing Exceptions with More Inclusive Type Checking](#rethrowing-exceptions-with-more-inclusive-type-checking)
     - [Understanding Suppressed Exceptions](#understanding-suppressed-exceptions)
     - [Declaring Assertions](#declaring-assertions)
       - [Writing Assertions Correctly](#writing-assertions-correctly)
@@ -38,7 +40,7 @@
     }
 ```
 - **Rule 2** In a try‐with‐resources statement, you need to remember that the resource will be closed at the completion of the try block, before any declared catch or finally blocks execute.
-- **Rule 3** a try‐with‐resources statement can include multiple resources, which are closed in the reverse order in which they are declared. Resources are terminated by a semicolon (;)
+- **Rule 3** _**A try‐with‐resources statement can include multiple resources, which are closed in the reverse order**_ in which they are declared. Resources are terminated by a semicolon (;)
 ```java
   final var bookReader = new MyFileReader("1"); //From Java 9
   var tvReader = new MyFileReader("3");// Effective final
@@ -80,9 +82,8 @@
 9: }
 ```
 - **Rule 5**  Exceptions thrown from the try-with-resource block (close) are suppressed, if the try block throws an exception.
-  If an exception is thrown from the try block and `one or more exceptions are thrown from the try-with-resources statement, then those exceptions thrown from the try-with-resources statement are suppressed`, and the exception thrown by the block is the one that is thrown    
+  If an exception is thrown from the try block and `one or more exceptions are thrown from the try-with-resources statement, then those exceptions thrown from the try-with-resources statement are suppressed`, and the exception thrown by the block is the one that is thrown 
 - [try-with-resources](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html)
-
 ### Uncheck Exceptions 
 
 |          |                 |
@@ -100,6 +101,30 @@
 |FileNotFoundException	    |IOException
 |NotSerializableException	|ParseException
 |SQLException|
+
+### Catching Multiple Exception
+```java
+catch (IOException|SQLException ex) {
+    logger.log(ex);
+    throw ex;
+}
+```
+### Rethrowing Exceptions with More Inclusive Type Checking
+- Following specific exception throwing is possible only from Java SE 7
+```java
+public void rethrowException(String exceptionName)
+  throws FirstException, SecondException {
+    try {
+      // ...
+    }
+    catch (Exception e) {
+      throw e;
+    }
+  }
+```
+
+- Note: If a catch block handles more than one exception type, then the catch parameter is implicitly final. In this example, the catch parameter ex is final and therefore you cannot assign any values to it within the catch block.
+
 
 ### Understanding Suppressed Exceptions
 

@@ -26,6 +26,7 @@
     - [Generic Methods](#generic-methods)
     - [Bounding Generic Types](#bounding-generic-types)
     - [Unbounded Wildcards](#unbounded-wildcards)
+    - [Erasure of Generic Methods ( to Object)](#erasure-of-generic-methods--to-object)
       - [Wildcard with an upper bound](#wildcard-with-an-upper-bound)
       - [Generics vs Wild card with an upper bound](#generics-vs-wild-card-with-an-upper-bound)
       - [Lower-Bounded WildCards](#lower-bounded-wildcards)
@@ -348,7 +349,15 @@ public class Duck implements Comparable<Duck> {
 Collections.sort(ducks); //sort by name.
 ```
 ### Comparing Data with a Comparator
-Comparator is a functional interface since there is only one abstract method(compare) to implement. 
+The Comparator interface consists of a single method.
+```java
+   public interface Comparator<T> {
+      int compare(T 01, T02);
+   }
+```
+* The compare method compares its two arguments, returning a negative integer, 0, or a positive integer depending on whether the first argument is less than, equal to, or greater than the second.
+* As Comparator is a functional interface (has only one abstract method to implement), the comparator can be defined using a lambda expression.  
+* `Comparator.comparing`  is a static interface method that creates a Comparator given a lambda expression or method reference.  
 * Using a lambda expression : `Comparator<Duck> byWeight = (d1, d2) -> d1.getWeight()-d2.getWeight();`
 * shorter version Comparator<Duck> byWeight = `Comparator.comparing(Duck::getWeight);`
 ```java
@@ -513,11 +522,19 @@ class GenericClass<T> extends Exception {}
 5. Calling instanceof: This is not allowed because at runtime List<Integer> and List<String> look the same to Java thanks to type erasure.
 
 ### Generic Methods
+- [Generic methods](https://docs.oracle.com/javase/tutorial/extra/generics/methods.html)
+- A sample Generic type declaration below, usable in real time in the above link.
 ```java
 1: public class Crate<T> {
 2:    public <T> T tricky(T t) {
 3:       return t;
 4:    }
+ 
+    
+     public static <T> T gettricky(T t) {
+        return t;
+    }
+
 5: }
 
 10: public static String createName() {
@@ -527,6 +544,7 @@ class GenericClass<T> extends Exception {}
 ```
 - On line 1, T is Robot because that is what gets referenced when constructing a Crate. On line 2, T is String
 - To make it clear you can also replace Line 12: `crate.<String>tricky("bot");`
+  
 ```java
 2: public class More {
 3:    public static <T> void sink(T t) { }
@@ -573,6 +591,25 @@ public static void main(String[] args) {
    printList(keywords);
 }
 ```
+
+### Erasure of Generic Methods (<T> to Object)
+- The java compiler applies type erasure to replace all type parameters in generic types
+  with their bounds or Object if the type parameters are unbounded meaning `T`. Here in the below code it prints `f(Object o) called` inspite of String value is passed due to the erasure.
+```java
+static void f(Object o) {
+   sout ("f(Object o) called");
+}
+
+static void f(String o) {
+   sout ("f(String o) called");
+}
+static <T> void g(T t) {
+   f(t);
+}
+Test call: g("123");
+```
+
+
 - Finally, let's look at the impact of var. Do you think these two statements are equivalent?
 <p> They are not. There are two key differences. First, x1 is of type List, while x2 is of type ArrayList. Additionally, we can only assign x2 to a List<Object>.</p>
 

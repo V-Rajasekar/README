@@ -1,3 +1,23 @@
+- [Chapter 2 Java Building Blocks](#chapter-2-java-building-blocks)
+  - [Following Order of Initialization](#following-order-of-initialization)
+  - [Understanding Data Types](#understanding-data-types)
+      - [Primitive types](#primitive-types)
+      - [Literals and the Underscore Character](#literals-and-the-underscore-character)
+      - [Identifying Identifiers](#identifying-identifiers)
+      - [Reserver word](#reserver-word)
+      - [CamelCase and SnakeCase](#camelcase-and-snakecase)
+      - [Declaring Multiple Variables](#declaring-multiple-variables)
+      - [Initializing Variables](#initializing-variables)
+      - [Passing Constructor and Method Parameters](#passing-constructor-and-method-parameters)
+      - [Data type conversions](#data-type-conversions)
+      - [Instance and class variables](#instance-and-class-variables)
+      - [Introducing var](#introducing-var)
+      - [Review of var Rules](#review-of-var-rules)
+      - [Reviewing Scope](#reviewing-scope)
+      - [Understanding Garbage Collection](#understanding-garbage-collection)
+      - [Objects vs References](#objects-vs-references)
+    - [FINALIZE()](#finalize)
+
 # Chapter 2 Java Building Blocks
 - Creating Objects
    * Creating objects can be done with `new` keyword and `static` methods like 
@@ -122,6 +142,14 @@ public void checkAnswer() {
    findAnswer(value);  // DOES NOT COMPILE
 }
 ```
+#### Data type conversions
+- A floating-point literal is of type float if it ends with the letter F or f. The type is considered double otherwise. Casting is required any time when assigning a larger numeric data type to a smaller numerical data type, or converting from a floating-point number to an integral value. Hence a double type has to be cast to a smaller type before assigning to a float variable.
+```java
+ double d = 3.35;
+ float f = (float)(d*2); //valid
+ float f = d*2F //Its still double assigned to float
+```
+
 #### Instance and class variables
 - Instance and class variables do not require you to initialize them. As soon as you declare these variables, they are given a default value  (e.g) char `'\u0000'(NUL)`
 
