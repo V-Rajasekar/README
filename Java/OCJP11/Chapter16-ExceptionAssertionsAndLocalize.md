@@ -16,6 +16,7 @@
       - [THE DATE AND java.text.SimpleDateFormat CLASSES (java 8)](#the-date-and-javatextsimpledateformat-classes-java-8)
       - [Adding Customer Text values](#adding-customer-text-values)
     - [Supporting Internalization and Localization](#supporting-internalization-and-localization)
+      - [Creating a Locale instance](#creating-a-locale-instance)
       - [Setting default `Locale`](#setting-default-locale)
     - [Localizing Numbers](#localizing-numbers)
       - [Formatting Numbers](#formatting-numbers)
@@ -23,11 +24,12 @@
     - [Localizing Dates](#localizing-dates)
     - [Loading Properties with Resource Bundles](#loading-properties-with-resource-bundles)
       - [Creating a Resource Bundle](#creating-a-resource-bundle)
-      - [Picking a Resource Bundle](#picking-a-resource-bundle)
+      - [Picking a Resource Bundle(\*)](#picking-a-resource-bundle)
     - [Selecting Resource Bundle Values](#selecting-resource-bundle-values)
     - [Formatting Messages (java.text.MessageFormat)](#formatting-messages-javatextmessageformat)
     - [Using the Properties Class](#using-the-properties-class)
     - [Review Questions](#review-questions)
+  - [References](#references)
 
 ## try with resources
 ![Alt text](image-2.png)
@@ -35,7 +37,7 @@
 - **Rule 1:** try‐with‐resources statements require resources that implement the AutoCloseable interface.
 
 ```java
-    interface AutoCloseable extends Closable {
+    interface java.lang.AutoCloseable  {
     public void close() throws Exception;
     }
 ```
@@ -363,8 +365,17 @@ System.out.println(dt.format(g1)); // October 20, Party's at 06:15
 ```
 
 ### Supporting Internalization and Localization
-- The Locale class is in the java.util package. The first useful Locale to find is the user's current locale.
-
+- The Locale class is in the `java.util.Locale` package. The first useful Locale to find is the user's current locale.
+#### Creating a Locale instance
+```java
+Locale II = new Locale("en"); //#1 Allowed
+Locale 12 = new Locale("en", "in"); //#2 Allowed
+Locale 13 = new Locale("en", "in", "");  //#3 Allowed
+Locale 14 = new Locale(13); //#4 //wrong no constr
+Locale 15 = new Locale(): //#5 //wrong no constr
+Locale 16 = new Locale(null); //#6 Allowed
+Locale 17 = new Locale(true); //#7 //wrong no constr
+```
 ```java
   Locale locale = Locale.getDefault();
   System.out.println(locale);
@@ -560,16 +571,23 @@ rb.keySet().stream()
 hello: Hello
 open: The zoo is open   
 ```
-#### Picking a Resource Bundle
+#### Picking a Resource Bundle(*)
 - `ResourceBundle.getBundle("Zoo", new Locale("fr", "FR"));`
 - Picking a resource bundle for French/France with default locale English/US. Java handles the logic of picking the best available resource bundle for a given key in the following order in the table.
-
+When defining a Locale, the first argument is the lowercase language code. The language is always required. The second argument is the uppercase country code. The country is optional. Here, the language is "fr" (for French) and the country is "FR" (for France).
+To select the appropriate ResourceBundle, Java will follow this order.
+1. ResourceBundle class for the specified Locale (match both language and country)
+2. ResourceBundle class for the specified Locale (match only language)
+3. ResourceBundle class for the default Locale (match both language and country)
+4. ResourceBundle class for the default Locale (match only language)
+5. Use the default resource bundle if no matching locale can be found.
+   
 Step|	Looks for file	   | Reason
 ----|-------------------- | -------
-1	| Zoo_fr_FR.properties	 | The requested locale
-2	| Zoo_fr.properties	     | The language we requested with no country
-3	| Zoo_en_US.properties	 | The default locale
-4	| Zoo_en.properties	     | The default locale's language with no country
+1	| Zoo_fr_FR.properties	 | The requested locale (fr_FR)
+2	| Zoo_fr.properties	     | The language we requested with no country(fr)
+3	| Zoo_en_US.properties	 | The default locale (en_US)
+4	| Zoo_en.properties	     | The default locale's language(en) with no country
 5	| Zoo.properties	       | No locale at all—the default bundle
 6	| If still not found, throw MissingResourceException.|	No locale or default bundle available  
 
@@ -717,3 +735,7 @@ props.get("open", "The zoo will be open soon");  // DOES NOT COMPILE default app
     }
 ```
 26. A assert is a keyword, so compilation error `boolean assert = false;`
+## References 
+- [Java Locale - Complete Tutorial](https://www.oracle.com/technical-resources/articles/javase/locale.html)
+- [Resource bundle concept](https://docs.oracle.com/javase/tutorial/i18n/resbundle/concept.html)
+- [DateTimeFormatter](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/format/DateTimeFormatter.html#ofPattern(java.lang.String))

@@ -70,8 +70,8 @@ public class Egg {
 |long	|64-bit integral value	        |123L|
 |float	|32-bit floating-point value	|123.45f|
 |double	|64-bit floating-point value	|123.456|
-|char	|16-bit Unicode value	        |'a'|
-
+|char	|16-bit Unicode value	        |'b'| 
+> Note: char is the only unsigned primitive type holds larger postive, but no negative value when compared with short
 #### Literals and the Underscore Character
 ```java
   double notAtStart = _1000.00;          // DOES NOT COMPILE
@@ -147,14 +147,15 @@ public void checkAnswer() {
 ```java
  double d = 3.35;
  float f = (float)(d*2); //valid
- float f = d*2F //Its still double assigned to float
+ float f = d*2F //Its still double assigned to float, Compilation error(loss of data)
+
 ```
 
 #### Instance and class variables
 - Instance and class variables do not require you to initialize them. As soon as you declare these variables, they are given a default value  (e.g) char `'\u0000'(NUL)`
 
 #### Introducing var
-- `var` is used only in local variables
+- `var` is used only in **local variables**
 - var can change after it is declared but the type never does. (e.g) below
 ```java
 var apples = (short)10;

@@ -1,4 +1,4 @@
-- [Chapter 7 Methods and Encapsulation.](#chapter-7-methods-and-encapsulation)
+- [Chapter 07 Methods and Encapsulation.](#chapter-07-methods-and-encapsulation)
     - [Designing Methods](#designing-methods)
     - [Applying Access Modifiers](#applying-access-modifiers)
     - [Applying the static Keyword](#applying-the-static-keyword)

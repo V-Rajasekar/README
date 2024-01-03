@@ -471,7 +471,7 @@ James:
     System.out.format("[%12.2f]",pi);  // [        3.14]// Total length 12, with 2 decimal character.
     System.out.format("[%.3f]",pi);    // [3.142]
 ```
-![Alt text](image-4.png)
+![Alt text](stream-api.png)
 
 ### Interacting with Users
 
@@ -734,5 +734,3 @@ var sb = new StringBuilder();
          18:       zebra = writeAndRead(zebra);
          19:    } }
          ```
- 
-
