@@ -7,29 +7,34 @@
     - [Input vs. Output Streams](#input-vs-output-streams)
     - [Low-Level vs. High-Level Streams](#low-level-vs-high-level-streams)
       - [Stream Base Classes](#stream-base-classes)
-      - [I/O Class  and its purpose](#io-class--and-its-purpose)
+      - [\* I/O Class  and its purpose](#-io-class--and-its-purpose)
     - [Reading and Writing files with I/O Stream](#reading-and-writing-files-with-io-stream)
-      - [InputStream, Reader and OutputStream and Writer](#inputstream-reader-and-outputstream-and-writer)
+      - [\*InputStream, Reader and OutputStream and Writer](#inputstream-reader-and-outputstream-and-writer)
       - [Byte Stream](#byte-stream)
       - [CharacterStream](#characterstream)
       - [Closing Wrapped Streams](#closing-wrapped-streams)
     - [Manipulating Input Streams](#manipulating-input-streams)
-    - [Flushing Output Streams](#flushing-output-streams)
+    - [Flushing Buffered Streams](#flushing-buffered-streams)
     - [Working with I/O Stream Classes](#working-with-io-stream-classes)
-      - [Reading and Writing Binary Data](#reading-and-writing-binary-data)
-      - [Buffering Binary Data](#buffering-binary-data)
-      - [Reading and Writing Character Data](#reading-and-writing-character-data)
-      - [Buffering Character Data](#buffering-character-data)
+      - [**Reading and Writing byte stream using FileInput and FileOutputStream**](#reading-and-writing-byte-stream-using-fileinput-and-fileoutputstream)
+      - [**Buffering Binary Data**](#buffering-binary-data)
+      - [**Reading and Writing using Character Streams**](#reading-and-writing-using-character-streams)
+      - [BufferedReader and BufferedWriter](#bufferedreader-and-bufferedwriter)
     - [Serializing Data](#serializing-data)
+    - [Externalizable](#externalizable)
+      - [(\*) Storing Data with _ObjectOutStream_ and _ObjectInputStream_](#-storing-data-with-objectoutstream-and-objectinputstream)
+    - [Deserialization](#deserialization)
   - [Printing Data](#printing-data)
     - [Interacting with Users](#interacting-with-users)
       - [Printing Data to the User System.out and System.err](#printing-data-to-the-user-systemout-and-systemerr)
       - [Reading Input as a Stream](#reading-input-as-a-stream)
       - [Closing System Streams](#closing-system-streams)
       - [Acquiring Input with Console](#acquiring-input-with-console)
-      - [_reader() and writer()_](#reader-and-writer)
+      - [\* Console: _reader() and writer()_](#-console-reader-and-writer)
       - [USING CONSOLE WITH A LOCALE](#using-console-with-a-locale)
       - [Complete sample pgm on Console Methods](#complete-sample-pgm-on-console-methods)
+    - [Summary](#summary)
+    - [Review Questions](#review-questions)
 
 ### Introducing the File class
 - `java.io.File` class. The File class is used to read information about existing files and directories, list the contents of a directory, and create/delete files and directories.
@@ -40,8 +45,8 @@
   - Following is the relative path to the same file, assuming current directory is /home/tiger: data/stripes.txt
 - Finding the separator character for the current environment
 ```java
-  System.out.println(System.getProperty("file.separator"));
-  System.out.println(java.io.File.separator);
+ Option-1:  System.out.println(System.getProperty("file.separator"));
+ Option-2:  System.out.println(java.io.File.separator);
 ```
 - Creating a File instance
 ```java
@@ -108,17 +113,24 @@
 | `NA` | PrintWriter 
 | `NA` | PrintStream 
 
+> Note There is not PrintReader to read the user input instead the following way is used. complete sample [Console Reader and Writer](#console-reader-and-writer)
+```java
+Console c = System.console();
+String line =  c.readLine();
+var reader = new BufferedReader(new InputStreamReader(System.in)); 
+String line = reader.readLine();
+```  
 ### Low-Level vs. High-Level Streams
 A `low‐level stream` connects directly with the source of the data, such as a file, an array, or a String.For example, a `FileInputStream` is a class that reads file data one byte at a time.
 
-Alternatively, a `high‐level stream` is built on top of another stream using wrapping.For example, take a look at the FileReader and BufferedReader objects in the following sample code:
+Alternatively, a `high‐level stream` is built on top of another stream using wrapping.For example, take a look at the FileReader and BufferedReader objects in the following sample code: Here FileReader is the low-level stream and the BufferedReader is the high level stream.
 ```java
 try (var br = new BufferedReader(new FileReader("zoo-data.txt"))) {
    System.out.println(br.readLine());
 }
 ```
 #### Stream Base Classes
-- The `java.io` library defines four abstract classes that are the parents of all stream classes defined within the API: `InputStream`, `OutputStream`, `Reader`, and `Writer`.
+- The `java.io` library defines four abstract classes that are the parents of all stream classes defined within the API: `InputStream`, `OutputStream` both are byte streams, `Reader`, and `Writer` both are character streams. 
 
 - A class with Buffered in its name reads or writes data in groups of bytes or characters and often improves performance in sequential file systems.
 
@@ -129,7 +141,7 @@ new ObjectInputStream(
    new FileOutputStream("z.txt"));                 // DOES NOT COMPILE Mixing Input and Output Stream
 new BufferedInputStream(new InputStream());        // DOES NOT COMPILE since input stream is abstract
 ```
-####  I/O Class  and its purpose
+#### * I/O Class  and its purpose
 
 Class Name|Low/High Level|Description
 --------- | ------------- | --------------
@@ -150,7 +162,7 @@ PrintWriter|High|Writes formatted representations of Java objects to a character
 - Reading and Writing Data
  * We said we are reading and writing bytes, so why do the methods use int instead of byte? Remember, the byte data type has a range of 256 characters. They needed an extra value to indicate the end of a stream
  * The authors of Java decided to use a larger data type, int, so that special values like ‐1 would indicate the end of a stream.
-####  InputStream, Reader and OutputStream and Writer
+#### *InputStream, Reader and OutputStream and Writer 
 
 ```java
 // InputStream and Reader
@@ -168,7 +180,7 @@ void copyStream(InputStream in, OutputStream out) throws IOException {
 // Same method With Reader and Writer instead of InputStream and OutputStream to read and write character.
 ```
 #### Byte Stream
-
+- The byte stream classes also include overloaded methods for reading and writing multiple bytes at a time.
 ```java
 // InputStream
 public int read(byte[] b) throws IOException
@@ -181,7 +193,7 @@ public void write(byte[] b, int offset, int length) throws IOException
 ```
 
 #### CharacterStream
-
+- Equivalent character strean classes include overloaded method for reading and writing multiple character array at a time.
 ```java
 // Reader
 public int read(char[] c) throws IOException
@@ -198,6 +210,9 @@ public void write(char[] c, int offset, int length) throws IOException
   try (var fis = new FileInputStream("zoo-data.txt")) {
    System.out.print(fis.read());
 }
+
+//explicit close method which is not recommended 
+public void close() throws IOException
 ```
 - we can rely on the ObjectOutputStream to close the BufferedOutputStream and FileOutputStream. The following will call only one close()
 - When working with a wrapped stream, you only need to use close() on the topmost objec 
@@ -231,8 +246,8 @@ public void readData(InputStream is) throws IOException {
    System.out.print((char) is.read());    // N
 }
 ```
-- skip()
-  
+- _skip()_
+ * `Reader` reading Tiger  
 ```java
   System.out.print ((char)is.read()); // T
   is.skip(2);  // Skips I and G
@@ -241,23 +256,25 @@ public void readData(InputStream is) throws IOException {
   System.out.print((char)is.read());  // S
   //outputs TRS at runtime
 ```
-### Flushing Output Streams
+### Flushing Buffered Streams
 - _flush()_ method to requests that all accumulated data be written immediately to disk.
 - The flush() method helps reduce the amount of data lost if the application terminates unexpectedly. It is not without cost, though. Each time it is used, it may cause a noticeable delay in the application, 
   especially for large files
 - Calling the flush() method when you have finished writing data is not required, since the close() method will automatically do this.
+-  When autoflush is enabled, certain key events cause the buffer to be flushed. For example, an autoflush PrintWriter object flushes the buffer on every invocation of println or format.
 ```java
 // OutputStream and Writer
 public void flush() throws IOException
 ```
 ### Working with I/O Stream Classes
 
-#### Reading and Writing Binary Data
+#### **Reading and Writing byte stream using FileInput and FileOutputStream**
 - `FileInputStream` and `FileOutputStream`. They are used to read bytes from a file or write bytes to a file.
 - The `FileOutputStream` class includes overloaded constructors that take a boolean append flag. When set to true, the output stream will append to the end of a file
 - If the source File does not exists `FileNotFoundException` is thrown
+- [Abstract class](#reading-and-writing-files-with-io-stream)
 ```java
-void copyFile(File src, File dest) throws IOException {
+void copyByte(File src, File dest) throws IOException {
    try (var in = new FileInputStream(src);
         var out = new FileOutputStream(dest)) {
       int b;
@@ -267,8 +284,8 @@ void copyFile(File src, File dest) throws IOException {
    }
 }
 ```
-#### Buffering Binary Data
-- Instead of reading the data one byte at a time, We read and write up to 1024 bytes at a time.The return value lengthRead is critical for determining whether we are at the end of the stream and knowing how many bytes we should write into our output stream.
+#### **Buffering Binary Data**
+- Instead of reading the data one byte at a time, We `read and write up to 1024 bytes at a time`.The return value lengthRead is critical for determining whether we are at the end of the stream and knowing how many bytes we should write into our output stream.
   
 ```java
 void copyFileWithBuffer(File src, File dest) throws IOException {
@@ -285,12 +302,12 @@ void copyFileWithBuffer(File src, File dest) throws IOException {
    }
 }
 ```
-#### Reading and Writing Character Data
+#### **Reading and Writing using Character Streams**
 - The FileReader and FileWriter classes, along with their associated buffer classes, are among the most convenient I/O classes because of their built‐in support for text data. 
 - we're copying one character at a time, rather than one byte, like in byte stream.
-  
+- All character stream classes are descended from Reader and Writer. As with byte streams, there are character stream classes that specialize in file I/O: FileReader and FileWriter.  
 ```java
-void copyTextFile(File src, File dest) throws IOException {
+void CopyCharacters(File src, File dest) throws IOException {
    try (var reader = new FileReader(src);
         var writer = new FileWriter(dest)) {
       int b;
@@ -300,11 +317,26 @@ void copyTextFile(File src, File dest) throws IOException {
    }
 }
 ```
+- CopyCharacters is very similar to CopyBytes. The most important difference is that CopyCharacters uses FileReader and FileWriter for input and output in place of FileInputStream and FileOutputStream. Notice that both CopyBytes and CopyCharacters use an int variable to read to and write from. However, in CopyCharacters, the int variable holds a character value in its last 16 bits; in CopyBytes, the int variable holds a byte value in its last 8 bits.
 
-#### Buffering Character Data
-- In this example, each loop iteration corresponds to reading and writing a line of a file. Assuming the length of the lines in the file are reasonably sized, this implementation will perform well.
-  
+#### BufferedReader and BufferedWriter
+
 ```java
+BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+String str = br.readLine();
+```
+An InputStream is a bridge between the byteStream and character stream. It reads bytes and decodes them into characters. System.in is a byte stream and its wrapper with input stream reader to read  it as a character stream. The BufferedReader reads text from a character-input stream, buffering characters for efficiency.
+
+- In this example, each loop iteration corresponds to reading and writing a line of a file. Assuming the length of the lines in the file are reasonably sized, this implementation will perform well.
+- They add two new methods, readLine() and newLine(), that are particularly useful when working with String values.
+```java
+  // BufferedReader
+   public String readLine() throws IOException
+// BufferedWriter
+   public void newLine() throws IOException
+```
+```java
+//Method copying one line at a time
 void copyTextFileWithBuffer(File src, File dest) throws IOException {
    try (var reader = new BufferedReader(new FileReader(src));
         var writer = new BufferedWriter(new FileWriter(dest))) {
@@ -317,17 +349,21 @@ void copyTextFileWithBuffer(File src, File dest) throws IOException {
 }
 ```
 ### Serializing Data
-- _Serialization_ is the process of converting an in‐memory object to a byte stream. Likewise, _deserialization_ is the process of converting from a byte stream into an object.
+
+- _Serialization_ is the process of converting an object to a (byte)stream. Likewise, _deserialization_ is the process of converting from a (byte) stream in to an object.
 - Serialization often involves writing an object to a stored or transmittable format, while deserialization is the reciprocal process.
 - **Applying the Serializable Interface**
 - Serializable is marker interface and class can implement it.But in general only mark data‐oriented classes serializable. 
-- private transient String favoriteFood; fields marked with transient are not serialized meaning there state are not written in the file, when you deserialize the value will be default 0 or null.
-- declare static serialVersionUID variable in every class that implements Serializable. It helps inform the JVM that the stored data may not match the new class definition. When older version of the class is encountered during deserialization, a `java.io.InvalidClassException` may be thrown.
+- private `transient` String favoriteFood; fields marked with `transient` are not serialized meaning there state are not written in the file, when you deserialize the value will be default 0 or null.
+- declare static `serialVersionUID` variable in every class that implements Serializable. It helps inform the JVM that the stored data may not match the new class definition. When older version of the class is encountered during deserialization, a `java.io.InvalidClassException` may be thrown.
 - **Ensuring a Class Is Serializable**
 * How to Make a Class Serializable
 * The class must be marked Serializable.
 * Every instance member of the class is serializable, marked transient, or has a null value at the time of serialization.
-- Storing Data with _ObjectOutStream_ and _ObjectInputStream_
+### Externalizable
+The `writeExternal` and `readExternal` methods of the `Externalizable` interface need to be implemented by a class ONLY if complete control over the format and contents of the stream is required.  
+  
+#### (*) Storing Data with _ObjectOutStream_ and _ObjectInputStream_
   
 ```java
   // ObjectInputStream
@@ -379,6 +415,19 @@ System.out.print(gorillasFromDisk);
 [[name=Grodd, age=5, friendly=false], 
  [name=Ishmael, age=8, friendly=true]]
 ```
+### Deserialization 
+Deserialization is the process by which the object previously serialized is reconstructed back into its original form i.e. object instance. The input to the deserialization process is the stream of bytes that comes from the filesystem/database.
+
+When you deserialize an object, the constructor/initializers of the class are not called when the object is created. Java will call the no-arg constructor of the first non-serializable parent class it can find in the class hierarchy
+
+In the deserialization process, it is required that all the parent classes of instance should be Serializable; and if any super-class in the hierarchy is not Serializable then it must have a default constructor.
+
+If any super class of instance to be de-serialized in non-serializable and also does not have a default constructor then the _‘NotSerializableException‘_ is thrown by JVM.
+
+Note that after this no constructor will be called for any class. After executing the superclass constructor, JVM read the byte stream and uses the instance’s metadata to set type information and other meta information of the instance.
+
+After the blank instance is created, JVM first set its static fields and then invokes the default readObject() method [if it’s not overridden, otherwise overridden method will be called] internally which is responsible for setting the values from byte stream to blank instance.
+
 ## Printing Data
 - `PrintStream` and `PrintWriter` are high‐level output print streams classes that are useful for writing text data to a stream.
 - `public PrintStream(OutputStream out)` and `public PrintWriter(Writer out)`
@@ -426,7 +475,7 @@ James:
 
 ### Interacting with Users
 
-The `java.io` API contains class to interact with the user. (e.g) Asking user to log in and prints a success message.
+The `java.io` API contains class to interact with the user. (e.g) Asking user to log in and prints a success message. Java includes two PrintStream instances for providing information to the user: System.out and System.err.  
 #### Printing Data to the User System.out and System.err
 - `System.err` is the same as `System.out` but is used to report errors to the user in a separate stream from the regular output information.
 #### Reading Input as a Stream
@@ -440,17 +489,17 @@ System.out.println("You entered: " + userInput);
 - `System.out, System.err, and System.in` these are I/O Streams used without try-with-resources block on! because these are static objects, the System streams are shared by the entire application.
 - Using in try-with-resource is not recommended as this will close the stream and it will not be available to any thread in the application
 ```java
-  try (var out = System.out) {}
+try (var out = System.out) {}
 System.out.println("Hello"); 
 try (var err = System.err) {}
 System.err.println("Hello");  
 ```
 - Above doesn't print nothing as the  stream is closed, note PrintStream do not throw any checked exceptions and rely on the checkError() to report errors. so they fail silently.
-- Prints exception at runtime.
+- Following code prints an exception at runtime. Unlike the PrintStream class, most InputStream implementations will throw an exception if you try to operate on a closed stream.
 ```java
  var reader = new BufferedReader(new InputStreamReader(System.in));
 try (reader) {}
-String data = reader.readLine();  // IOException
+String data = reader.readLine();  // IOException, since InputStream is already closed.
 ```
 #### Acquiring Input with Console
 - `java.io.Console` is specifically designed to handle user interactions. Its a singleton class instance is create from a factory method and only one instance is available all time.
@@ -464,7 +513,7 @@ if (console != null) {
    System.err.println("Console not available");
 }
 ```
-#### _reader() and writer()_
+#### * Console: _reader() and writer()_
 - The Console class includes access to two streams for reading and writing data.
 ```java
 public Reader reader()
@@ -510,3 +559,180 @@ if (console == null) {
    console.printf("User: %s Register successful!", name);   
 }
 ```
+### Summary 
+- Code comparision of byte and character streams
+```java
+InputStream      Reader         Buffered byte and Character Stream
+  ^                ^
+  |                |
+FileInputStream  FileReader      BufferedInputStream in = new BufferedInputStream(new FileInputStream(new File(fileName))
+                                  var buffer = new byte[1024];
+                                  int lengthRead;
+ while ((b = in.read()) != -1)    while ((lengthRead = in.read(buffer))> 0) 
+                                    out.write(buffer, 0, lengthRead);
+
+OutputStream     Writer         BufferedReader reader =new BufferedReader(new FileWriter("characterinput.txt"));    
+  ^                ^              new BufferedWriter(new FileWriter("characteroutput.txt")); 
+  |                |                while ((s = reader.readLine()) != null) {
+FileOutputStream FileWriter              writer.write(s); writer.newLine(); 
+
+        out.write(b)          
+```
+### Review Questions
+1. F - ObjectInputStream is best to use a read a binary file into a Java object. Note ObjectReader is not an I/O stream class rather its a IO class.
+2. C, ~~F~~, G, E Methods in java.io.File class mkdirs(), mkdir(), renameTo(). No method like mv, copy()
+3. ~~E~~ What is the value of name after the instance of Eagle created in the main() method is serialized and then deserialized?
+    During deserialization, **Java calls the constructor of the first nonserializable parent. In this case, the Bird constructor is called, with name being set to Matt. Note that none of the constructors or instance initializers in Eagle is executed as part of deserialization**.   
+
+   ```java
+    import java.io.Serializable;
+         class Bird {
+            protected transient String name;
+            public void setName(String name) { this.name = name; }
+            public String getName() { return name; }
+            public Bird() {
+               this.name = "Matt";
+            }
+         }
+         public class Eagle extends Bird implements Serializable {
+            { this.name = "Olivia"; }
+            public Eagle() {
+               this.name = "Bridget";
+            }
+            public static void main(String[] args) {
+               var e = new Eagle();
+               e.name = "Adeline";
+            }
+         }
+   ```
+4. D  Which classes will allow the following to compile? `BufferedInputStream there's no rule that it can't be wrapped multiple times by a high level stream, ObjectInputStream`
+ ```java
+    var is = new BufferedInputStream(new FileInputStream("z.txt"));
+         InputStream wrapper = new __________(is);
+         try (wrapper) {}
+ ```
+5. B
+   - System.console() will return null if a Console is not available. It won't throw any exception. `Console` includes a `format()` method to write data to the console's output.
+6. C, E
+7. D (XYZY) provided the stream supports mark() operation by calling markSupported() on the stream. As there is no check the result can't be determined    
+   Assume that in is a valid stream whose next bytes are XYZABC. What is the result of calling the following method on the stream, using a count value of 3?  
+  ```java
+   public static String pullBytes(InputStream in, int count)
+               throws IOException {
+            in.mark(count);
+            var sb = new StringBuilder();
+            for(int i=0; i<count; i++)
+               sb.append((char)in.read());
+            in.reset();
+            in.skip(1);
+            sb.append((char)in.read());
+            return sb.toString();
+         }
+  ```
+
+8. A, F - The `readObject`() method of `ObjectInputStream` may throw a `ClassNotFoundException` even if the return object is not cast to a specific type. 
+9. A, /home/parrot is an absolute path,  /home/parrot path could be a file or directory.new File("/home") will not throw an exception if /home does not exist. Its possible to create a `File` reference to files and directories that do not exists. new File("/home").delete() return false if the file or directory can't be deleted.
+10.  E, F Requirement for a class to be serializable ? Class must implement Serializable. All instance members of the class must be serializable or marked transient.
+11.  C. It will delete all files within the directory tree
+      ```java
+      public static void deleteTree(File file) {
+            if(!file.isFile())                    // f1
+               for(File entry: file.listFiles())  // f2
+                  deleteTree(entry);
+            else file.delete();
+         }
+      ```
+12. B What are possible results of executing the following code? (Choose all that apply.)
+- The code does not compile, as the Writer methods append() and flush() both throw an IOException.  If the method dcl IOException, c.writer() could return null if no console available, if console available then prints what ever the name you have entered.
+ ```java
+   public static void main(String[] args) {
+      String line;
+      var c = System.console();
+      Writer w = c.writer();
+      try (w) {
+         if ((line = c.readLine("Enter your name: ")) != null)
+            w.append(line);
+         w.flush();
+      }
+   }
+ ```
+13.    B, ~~ D~~, E new File("weather", "/winter/snow.dat") this is wrong since weather is not starting with /
+14.    A, C, E
+15.    E (No PrintReader, Instead Console c = System.console(); c.readLine() or var reader = new BufferedReader(new InputStreamReader(System.in)); reader.readLine() used)
+16.   What happens to the code when its run ? D
+ 1. When run, the method creates a new file with one line of text in it.
+ 2. The method compiles but will produce an exception at runtime.
+```java
+private void echo() throws IOException {
+         var o = new FileWriter("new-zoo.txt");
+         try (var f = new FileReader("zoo-data.txt");
+            var b = new BufferedReader(f); o) {
+            o.write(b.readLine());
+         }
+         o.write("");
+      }
+```
+17. Assume reader is a valid stream that supports mark() and whose next characters are PEACOCKS. What is the expected output of the following code snippet? C
+- prints `PEOE`
+```java
+var sb = new StringBuilder();
+      sb.append((char)reader.read());
+      reader.mark(10);
+      for(int i=0; i<2; i++) {
+         sb.append((char)reader.read());
+         reader.skip(2);
+      }
+      reader.reset();
+      reader.skip(0);
+      sb.append((char)reader.read());
+      System.out.println(sb.toString());
+```
+18. Suppose that you need to write data that consists of int, double, boolean, and String values to a file that maintains the data types of the original data. You also want the data to be performant on large files. Which three java.io stream classes can be chained together to best achieve this result? (Choose three.)
+ * FileOutputStream, BufferedOutputStream, ObjectOutputStream
+19.  D, G which statement are correct ? 
+    * If we check file2 on line n1 within the file system after five iterations of the while loop, it may be empty.
+    * The code compiles and correctly copies the data between some files. since read/write byte[] missing instead char[] is used. so It will only correctly copy files whose character count is a multiple of 10
+    * This method contains a resource leak.
+ ```java
+ public void copyFile(File file1, File file2) throws Exception {
+            var reader = new InputStreamReader(
+               new FileInputStream(file1));
+            try (var writer = new FileWriter(file2)) {
+               char[] buffer = new char[10];
+               while(reader.read(buffer) != -1) {
+                  writer.write(buffer);
+                  // n1
+               }
+            }
+         }
+ ```
+20.   C console.format("You fav color is %s", color), writer().printl, writer().println
+21.   Reason to use a character stream such as Reader/Writer over a byte stream, such as InputStream/OutputStream. 
+    - More convenient code syntax when working with String data
+    - Automatic character encoding
+22.  A, C (Java Object implements Serializable) would be correct 
+    - To be serializable, a class must implement the Serializable interface, which Zebra does. It must also contain instance members that either are marked transient or are serializable. The instance member stripes is of type Object, which is not serializable Therefore, the Zebra class is not serializable, with the program throwing an exception at runtime if serialized
+    - Removing Stripes line makes Zebra serializable with name and age default to NULL.
+         ```java
+         1:  import java.io.Serializable;
+         2:  import java.util.List;
+         3:  public class Zebra implements Serializable {
+         4:     private transient String name = "George";
+         5:     private static String birthPlace = "Africa";
+         6:     private transient Integer age;
+         7:     List<Zebra> friends = new java.util.ArrayList<>();
+         8:     private Object stripes = new Object();
+         9:     { age = 10;}
+         10:    public Zebra() {
+         11:       this.name = "Sophia";
+         12:    }
+         13:    static Zebra writeAndRead(Zebra z) {
+         14:       // Implementation omitted
+         15:    }
+         16:    public static void main(String[] args) {
+         17:       var zebra = new Zebra();
+         18:       zebra = writeAndRead(zebra);
+         19:    } }
+         ```
+ 
+

@@ -4,6 +4,7 @@
     - [Introducing the Interfaces of JDBC](#introducing-the-interfaces-of-jdbc)
     - [Connecting to a Database](#connecting-to-a-database)
     - [Getting a Database Connection](#getting-a-database-connection)
+    - [Prepared Statement](#prepared-statement)
     - [Working with a _PreparedStatement_](#working-with-a-preparedstatement)
       - [Creating a _PreparedStatement_](#creating-a-preparedstatement)
       - [Executing a _PreparedStatement_ executeUpdate() for CUD](#executing-a-preparedstatement-executeupdate-for-cud)
@@ -14,7 +15,7 @@
       - [Reading data from ResultSet](#reading-data-from-resultset)
       - [Getting Data for a Column](#getting-data-for-a-column)
       - [Using Bind Variables](#using-bind-variables)
-  - [Calling a CallableStatement](#calling-a-callablestatement)
+      - [Calling a CallableStatement](#calling-a-callablestatement)
       - [Calling a Procedure:](#calling-a-procedure)
       - [Closing Database Resources](#closing-database-resources)
     - [Review Questions](#review-questions)
@@ -59,11 +60,10 @@ WHERE name = 'Asian Elephant';
    
                Protocol Subprotocol 
 
-   *              jdbc:postgres://localhost:5432/zoo
+   *              jdbc:postgres://localhost:5432/zoo 3
 * Other examples              
 
     ```sql
-    jdbc:mysql:testdb
      jdbc:postgresql://localhost/zoo
      jdbc:oracle:thin:@123.123.123.123:1521:zoo
      jdbc:mysql://localhost:3306
@@ -72,7 +72,7 @@ WHERE name = 'Asian Elephant';
 
 ### Getting a Database Connection
 - Two ways to get database connection: `DriverManager` or `DataSource`
-- Donot use driverManager incode rather use DataSource has it has more features like *pool connections* or *store the database connection information outside the application*.
+- Donot use driverManager incode rather use DataSource has it has more features like pool connections or store the database connection information outside the application.
 - DriverManager is a class in JDK, use factory pattern(static method) to get the connection.  `Connection conn = DriverManager.getConnection("jdbc:derby:zoo");`
 - Exception in thread "main" java.sql.SQLException: No suitable driver found for jdbc:derby:zoo is thrown when the driver jar is not on the classpath.
 - Another implementation with credentials passed to the connection call.
@@ -82,6 +82,11 @@ Connection con = DriverManager.getConnection(
          "username",
          "Password20182");
 ```
+### Prepared Statement
+- `java.sql.PreparedStatement` is a precompiled SQL statement. It is used to execute all SQL operations. It can executed multiple times by passing different parameter to the substitute questions marks in the statement.
+- The prepared statement is automatically closed if declared within the try-with-resource-statment.
+- Executing parameterized queries with prepared statement prevents the SQL injection attacks.  
+  
 ### Working with a _PreparedStatement_
 - Class hierarchy of Statement
  * PreparedStatement and CallableStatement are the sub interface of Statement.
@@ -109,6 +114,7 @@ try (var ps = conn.prepareStatement()) { // DOES NOT COMPILE since SQL is not su
 }
 ```
 - There are overloaded signatures that allow you to specify a ResultSet type and concurrency mode
+
 #### Executing a _PreparedStatement_ executeUpdate() for CUD
 `executeUpdate()` typically used to execute the prepared statement of insert, update, and delete. These methods returns the number of rows that were inserted, deleted, or changed.
 ```java
@@ -128,7 +134,7 @@ try (var ps = conn.prepareStatement(insertSql/updateSql/deleteSql)) {
 35: }
 ```
 ### Processing reading or update using _execute()_
-- `execute():boolean` works both on the **select and DML(IUD)operation**  true means resultset is present so operate on the resultSet 
+- execute():boolean works both on the select and DML(IUD)operation  true means resultset is present so operate on the resultSet 
 ```java
 boolean isResultSet = ps.execute();
 if (isResultSet) {
@@ -237,9 +243,8 @@ try (var ps = conn.prepareStatement(sql)) {
       rs.getInt(0); // SQLException, since column index begins with 1 
     }
   ```
-> Note  
-- **Always use an if statement or while loop when calling rs.next()**.
-- **Column indexes begin with 1**.
+- Always use an if statement or while loop when calling rs.next().
+- Column indexes begin with 1.
 
 #### Getting Data for a Column
 - all primitive type(boolean, int, long, double, float, byte), Object and String have corresponding getter methods to get the data from the resultSet.
@@ -248,6 +253,9 @@ try (var ps = conn.prepareStatement(sql)) {
 #### Using Bind Variables  
 - Use nested try with resources to bind variable. 
 - we create the PreparedStatement on line 32. Then we set the bind variable on line 33. It is only after these are both done that we have a nested try‐with‐resources on line 35 to create the ResultSet. 
+- While updating/fetching data using prepared statement, we can set NULL values to a column using the setNull() method
+  * `ps.setNull(int index, int sqlType)` (e.g) ps.setNull(1, java.sql.Types.INTEGER);
+  *  * ps.setNull(int index, int sqlType, String sql_name) - sql_name custom types like STRUCT, REF and ARRAY type code this is optional.
   
 ```java
 30: var sql = "SELECT id FROM exhibits WHERE name = ?";
@@ -263,7 +271,7 @@ try (var ps = conn.prepareStatement(sql)) {
 40:    }
 41: }
 ```
-## Calling a CallableStatement
+#### Calling a CallableStatement
 - A stored procedure is code that is compiled in advance and stored in the database.
 - Stored procedures are commonly written in a database‐specific variant of SQL, which varies among database software providers.
 - Stored procedure reduces network round-trips. However, they are database-specific and introduce complexity of maintaining your app.
@@ -316,16 +324,13 @@ try (var ps = conn.prepareStatement(sql)) {
 ```
 - Working with an **_INOUT_** Parameter
   - An **INOUT** param act as both an IN parameter and OUT parameter.
-  
-```java
-50: var sql = "{call double_number(?)}";  
-51: try (var cs = conn.prepareCall(sql)) {  
-52:    cs.setInt(1, 8);  
-53:    cs.registerOutParameter(1, Types.INTEGER);  
-54:    cs.execute();  
-55:    System.out.println(cs.getInt("num"));  
-56: }  
-```
+   50: var sql = "{call double_number(?)}";  
+   51: try (var cs = conn.prepareCall(sql)) {  
+   52:    cs.**setInt**(1, 8);  
+   53:    cs.**registerOutParameter**(1, Types.INTEGER);  
+   54:    cs.**execute**();  
+   55:    System.out.println(cs.getInt("num"));  
+   56: }  
 
 - **Run queries using a** _CallableStatement_. When using a `CallableStatement`, the SQL looks like { call my_proc(?)}. If you are returning a value, `{?= call my_proc(?)}` is also permitted. You must set any parameter values before executing the query. Additionally, you must call `registerOutParameter`() for any `OUT` or `INOUT` parameters.
 
@@ -353,12 +358,6 @@ try (var ps = conn.prepareStatement(sql)) {
    }
 ```
 ### Review Questions
-what is the output of the following line of code ? 
-
-`try(var rs = ps.executeQuery(sql)) {} ` //throws SQLException, since executeQuery() method with a String argument is defined in Statement and not in PreparedStatement. 
-`ResultSet executeQuery() throws SQLException`. It compiles since as PreparedStatement extends Statement   
- 
-
 1. B, D The concrete DriverManager is part of the JDK, and not in driver jar. interfaces or classes are in a database-specific JAR file is Driver and PrepareStatement implementation.
 2. B, C, E, F The require parts in JDBC URL are string jdbc, vendor/product name(postgres) vendor-specific string. IPAddress and port are optional jdbc:derby/zoo
 3. A

@@ -1,50 +1,81 @@
 - [Chapter06 Lambdas and Functional Interfaces.](#chapter06-lambdas-and-functional-interfaces)
-  - [Valid Lambda expressions.](#valid-lamda-expressions)
-  - [Invalid Lambda expressions.](#invalid-lambda-expressions)
   - [Functional Interfaces](#functional-interfaces)
+    - [Predicate boolean:test(T t)](#predicate-booleantestt-t)
+    - [Consumer: void accept(T t)](#consumer-void-acceptt-t)
+    - [Supplier: T get()](#supplier-t-get)
+    - [Comparator:  int compare(T o1, T o2)](#comparator--int-comparet-o1-t-o2)
 
 # Chapter06 Lambdas and Functional Interfaces.
-A lambda expression is a block of code that gets passed around
-- Declaring a Lambda expression
-  a -> a.canHop()
-  (Animal a) -> { return a.canHop(); }
-- The parentheses can be omitted only if there is a single parameter and its type is not explicitly stated
-- s -> {} is a valid lambda. If there is no code on the right side of the expression, you don’t need the semicolon or return statement.
-- (a, b) -> a.startsWith("test")
+A lambda expression is a short block of code which takes in parameters and returns a value.
+Lambda expressions address the bulkiness of anonymous inner classes by converting five lines of code into a single statement
+The break and continue keywords are illegal at the top level, but are permitted within loops. If the body produces a result, every control path must return something or throw an exception.
+- Find below the lambda syntax rules.
+```java
 
-## Valid Lambda expressions. 
-    () -> true	0
-    a -> a.startsWith("test")	1
-    (String a) -> a.startsWith("test")	1
-    (a, b) -> a.startsWith("test")	2
-    (String a, String b) -> a.startsWith("test")	2
-## Invalid Lambda expressions. 
-    a, b -> a.startsWith("test")	Missing parentheses
-    a -> { a.startsWith("test"); }	Missing return
-    a -> { return a.startsWith("test") }	Missing semicolon
+  public static boolean checkMe(Predicate<Integer> p) {
+    return p.test(25);
+  }
+
+  CheckMe(i -> i == 5*5));//paranthese around the  parameter list may be omitted if its single parameter
+  CheckMe((Integer i) -> i == 5*5)); //return not required when no {} around the body
+  CheckMe((Integer i) -> {return i == 5*5);}); // Return must in enclosed body.
+  CheckMe((i) -> {return i == 5*5);});
+  //Autoboxing does not work when inferring predicates.
+  CheckMe((int i) -> {return i == 5*5);});  //Does work
+```
+- Examples.
+```java
+(int x, int y) -> x + y
+
+() -> 42
+
+(String s) -> { System.out.println(s); }
+
+```
+- Comparator replace with Lambda
+```java
+  // Sort with Inner Class
+17     Collections.sort(personList, new Comparator<Person>(){
+18       public int compare(Person p1, Person p2){
+19         return p1.getSurName().compareTo(p2.getSurName());
+20       }
+21     });
+
+ Collections.sort(personList, (p1,  p2) -> p2.getSurName().compareTo(p1.getSurName()));
+```
+
 ## Functional Interfaces
 - A functional interface has only one abstract method.
 - In some classes its mentioned @FunctionalInterface, irrespective whether this annotation is there or not, if an ibterface  has only one abstract method then its called Functional Interface.
 - There are four functional interfaces you are likely to see on the exam. The next sections take a look at Predicate, Consumer, Supplier, and Comparator.
-  - `Predicate` its a common interface that returns boolean and takes any type. 
-    public interface Predicate<T> {
-    boolean test(T t);
-    }
-  - `Consumer: void accept(T t)`
+### Predicate boolean:test(T t)
+ * Its a functional interface representing a single argument function returns boolean and takes any type. 
+    
+     ```java
+      public interface Predicate<T> {
+        boolean test(T t);
+      }
+     ```
+  *  Java lambda expression simplifies the creation of Java Predicates. 
+### Consumer: void accept(T t)
+
     Consumer<String> consumer = x -> System.out.println(x);
-  -  `Supplier: T get()`
+
+### Supplier: T get()
+
       1.  returns 42 each time the lambda is called.
-      2.  returns random number each time it is called.
-       ```java
-        Supplier<Integer> number = () ->  42;
+      2.  returns random number each time it is called.   
 
-        Supplier<Integer> random = () ->  new Random().nextInt();
+  ```java
+    Supplier<Integer> number = () ->  42;
 
-        private static int returnNumber(Supplier<Integer> supplier) {
-        return supplier.get();
-        }
-       ```
-  - `Comparator:  int compare(T o1, T o2)`
+    Supplier<Integer> random = () ->  new Random().nextInt();
+
+    private static int returnNumber(Supplier<Integer> supplier) {
+    return supplier.get();
+    }
+  ```
+### Comparator:  int compare(T o1, T o2)
   - Comparator<Integer> ints = (i1, i2) -> i1 - i2;
   - Comparing in descending order
    ```java

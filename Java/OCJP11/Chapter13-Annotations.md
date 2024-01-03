@@ -1,12 +1,21 @@
 - [Chapter 13: Annotations](#chapter-13-annotations)
   - [Annotation Overview:](#annotation-overview)
+  - [Creating Customer Annotations](#creating-customer-annotations)
+      - [Rules of Declaring Annotation](#rules-of-declaring-annotation)
+      - [Rules of Declaring elements with annotations.](#rules-of-declaring-elements-with-annotations)
     - [Creating a _value()_ Element](#creating-a-value-element)
-    - [Limiting Usage of annotation with @Target](#limiting-usage-of-annotation-with-target)
-    - [Storing Annotation with _@Retention_](#storing-annotation-with-retention)
-    - [Documentation annotations](#documentation-annotations)
-    - [Inheriting Annotations with @Inherited](#inheriting-annotations-with-inherited)
-    - [Inherited and Repeatable Annotations](#inherited-and-repeatable-annotations)
-    - [Commonly Used JDK Annotations](#commonly-used-jdk-annotations)
+    - [Predefined JDK Annotations](#predefined-jdk-annotations)
+      - [`@Override`](#override)
+      - [` @Deprecated`](#-deprecated)
+      - [`@SuppressWarnings`](#suppresswarnings)
+      - [`@SafeVarargs`](#safevarargs)
+      - [@Target limitation and usage](#target-limitation-and-usage)
+      - [Storing Annotation with _@Retention_](#storing-annotation-with-retention)
+      - [@Documented annotations](#documented-annotations)
+      - [@Deprecated \& @deprecated in javadoc](#deprecated--deprecated-in-javadoc)
+      - [@SuppressWarnings("deprecation")](#suppresswarningsdeprecation)
+      - [@Inherited Annotation](#inherited-annotation)
+    - [@Repeatable Annotations](#repeatable-annotations)
   - [Review Questions](#review-questions)
 
 # Chapter 13: Annotations
@@ -29,14 +38,14 @@
   - , the metadata includes the rules, properties, or relationships surrounding the actual data.
   - Purpose of the Annotations
      * The purpose of an annotation is to assign metadata attributes to classes, methods, variables, and other Java types. 
-     *  first rule about annotations: annotations function a lot like interfaces. In this example, annotations allow us to mark a class as a ZooAnimal without changing its inheritance structure. We couls this using interfacesm but it can be applied only to classes, annotations can be applied to any dcl incl classes, methods, expressions and even other annotations.
+     *  first rule about annotations: annotations function a lot like interfaces. In this example, annotations allow us to mark a class as a ZooAnimal without changing its inheritance structure. We could this using interfaces but it can be applied only to classes, annotations can be applied to any dcl incl classes, methods, expressions and even other annotations.
         ```java
                 @ZooAnimal public class Lion extends Mammal {}
                 
                 @ZooAnimal public class Peacock extends Bird {}
         ```
      *  second rule about annotations: annotations establish relationships that make it easier to manage data about our application.
-     *  third rule about annotations: an annotation ascribes custom information on the declaration where it is defined. This turns out to be a powerful tool, as the same annotation can often be applied to completely unrelated classes or variables.
+     *  third rule about annotations: an annotation describes custom information on the declaration where it is defined. This turns out to be a powerful tool, as the same annotation can often be applied to completely unrelated classes or variables.
      * 
         ```java
                     @ZooSchedule(hours={"9am","5pm","10pm"}) void feedLions() {
@@ -45,8 +54,46 @@
         ```
 
      *  final rule about annotations you should be familiar with: annotations are optional metadata and by themselves do not do anything. This means you can take a project filled with thousands of annotations and remove all of them, and it will still compile and run, albeit with potentially different behavior at runtime.
-- Creating Customer Annotations
+## Creating Customer Annotations
+//
+
+```java
+   @Documented
+   @interface ClassPreamble {
+      String author();
+      String date();
+      int currentRevision() default 1;
+      String lastModified() default "N/A";
+      String lastModifiedBy() default "N/A";
+      // Note use of array
+      String[] reviewers();
+   }
+
+//using the annotation at class level
+After the annotation type is defined, you can use annotations of that type, with the values filled in, like this:
+
+@ClassPreamble (
+   author = "John Doe",
+   date = "3/17/2002",
+   currentRevision = 6,
+   lastModified = "4/12/2004",
+   lastModifiedBy = "Jane Doe",
+   // Note array notation
+   reviewers = {"Alice", "Bob", "Cindy"}
+)
+public class Generation3List extends Generation2List {
+}
+```
+#### Rules of Declaring Annotation
   - We use the @interface annotation (all lowercase) to declare an annotation. Like classes and interfaces, they are commonly defined in their own file as a top‐level type, although they can be defined inside a class declaration like an inner class.
+  - The body of the previous annotation definition contains annotation type element declarations, which look a lot like methods. Note that they can define optional default values. elements without default are required when using this annotations.
+  -  Annotation names are case sensitive.some annotations, like @Food, can be applied more than once.
+  -  As with other declarations in Java, spaces and tabs between elements are ignored. 
+  -  To make the information in @ClassPreamble appear in Javadoc-generated documentation, in the Definition mention @Documented.
+  
+#### Rules of Declaring elements with in annotations.
+ - public String title() default null; - fails. The default value of an element must be a non-null constant expression.
+ - Element type can be only be one of these predefined types; a primitive  
 
     `public @interface Exercise {}`   
 
@@ -62,37 +109,22 @@
    @Limbless public class Snake {}
 
     ```
-   -  As with other declarations in Java, spaces and tabs between elements are ignored.   
-   -  Annotation names are case sensitive.some annotations, like @Food, can be applied more than once.
- - Specifying a Required Element
-   -   
-    ```java
-    public @interface Exercise {
-         int hoursPerDay();
-        }
-    // How to use 
-    @Exercise(hoursPerDay=3) public class Cheetah {}
- 
-    @Exercise hoursPerDay=0 public class Sloth {}     // DOES NOT COMPILE
-    
-    @Exercise public class ZooEmployee {}             // DOES NOT COMPILE    
-   ```
-- Providing an optional element
-  - when dcl an annotation, any element without a default value is considered 
-    required.
+  
+
+  - 
     ```java
         public @interface Exercise {
         public static final int DEFAULT_WEEKLY_LEAVES = 1;  
-        int hoursPerDay();
+        int hoursPerDay(); //Required
         int startHour() default 6;
         }
 
         //using 
           @Exercise(startHour=5, hoursPerDay=3) public class Cheetah {}
     
-    @Exercise(hoursPerDay=0) public class Sloth {}
-    
-    @Exercise(hoursPerDay=7, startHour="8")  // DOES NOT COMPILE
+         @Exercise(hoursPerDay=0) public class Sloth {}
+         
+         @Exercise(hoursPerDay=7, startHour="8")  // DOES NOT COMPILE
     public class ZooEmployee {}
    ```
   -  Annotation variables are implicitly public, static, and final
@@ -213,7 +245,125 @@ public class Reindeer {
    @Music("Blues") String favorite;  
 }
 ```
-### Limiting Usage of annotation with @Target
+### Predefined JDK Annotations
+      
+[Predefined Annotations](https://docs.oracle.com/javase/tutorial/java/annotations/predefined.html)
+
+Predefined Java Annotations | Target | Retention
+---------|----------|---------
+@Deprecated(forRemoval = true, since = "2020") | PACKAGE, MODULE, TYPE, CONS, METHOD, PARAM, FIELD, LOCAL VAR | RUNTIME
+@FunctionalInterface | TYPE | RUNTIME
+@Override | METHOD | SOURCE
+@SafeVarargs | CONS, METHOD | RUNTIME (Compiler Suppress unchecked warnings relating to varargs usage)
+@Suppress Warnings | PACKAGE, MODULE, TYPE, CONS, METHOD, PARAM, FIELD, LOCAL VAR  | SOURCE (Cetains compiler warings are suppressed like deprecated, removal, unchecked, varargs)
+||
+- _**Note**_ @FunctionaInterface is applicable only to interfaces and not to class
+```java
+@FunctionalInterface
+interface Functionable {
+    void performSomeFunction();
+}
+```
+#### `@Override`
+
+ The Override annotations is a marker annotations. It indicates that the method is overriding a method inherited from its super type. The super type could be java.lang.Object also. 
+  The overriding method has the same name, number and type of parameters, and return type as the method that it overrides. Also, it should not reduce the visibility of the overridden method. (i.e) default -> public -> protected -> private not from public to default.
+```java
+
+  class Flower1 extends Object {
+private String name;
+public boolean equals(Flower1 flower) { return this.name.equals(flower.name);
+}
+A. class Flower2 extends Flower1 { @Override boolean equals(Flowerl flower) { return false; } }
+B. class Flower3 extends Flowerl { @Override public boolean equals(Flower3 flower) { return super.equals(flower); } }
+X wrong
+C. class Flower4 extends Object { @Override public boolean equals(Flower4 flower) { return super.equals(flower); } }
+D. class Flower5 { @Override public boolean equals(Object object) { return super.equals(object); } }
+E.
+✓ right
+class Flower6 extends Flower1 { @Override public boolean equals(Flowerl flower) { return false;
+}} right
+```
+#### ` @Deprecated` 
+  - forRemoval tells caution this method is not just recemmondation, but it will be removed.
+  - since() and forRemoval() are optional values available in the @Deprecated annotation
+ ```java
+   /**
+     * Using javadoc tag @deprecated
+     *
+     * @deprecated As of release 1.2, replaced by {@link #doThat()}
+     */
+    // Using annotation @Deprecated
+    @Deprecated(
+            since = "1.3",
+            forRemoval = true
+    )
+    public void doThis() {
+        System.out.println("Doing this");
+    }
+ ```
+####  `@SuppressWarnings`
+ - To suppress some warnings (e.g)  @SuppressWarnings({"deprecated", "removal"}), following are the common @SuppressWarnings values used often:
+   * "deprecation" - Ignore warnings related to types or methods marked with the @Deprecated annotation. I, 
+   * "unchecked" - Ignore warnings related to the use of raw types, such as List instead of List<String>.
+ - Protecting Arguments with @`SafeVarargs` annotation when you can safely assert that the implemenation of the method will not throw a ClassCastException or other similar exception due to improper handling of the varargs formal parameter.
+ -  It **can be applied** _only to constructors or methods that cannot be overridden (aka methods marked private, static, or final)_.
+####  `@SafeVarargs` 
+
+when applied to a method or constructor, assert that the code does not perform potentially unsafe operation on its varargs param. 
+
+suppresses the warnings at `Line2: Possible heap pollution from parameterized vararg type`,<br> `Line 1: Unchecked generics array creation for varargs parameter`
+ 
+  ```java
+   // Create a simple generic class
+      class MyClass<T> {
+         T name;
+
+         MyClass(T name) {
+            this.name = name;
+         }
+      }
+      // Generic Array creation is not allowed
+        MyClass[] myArray = {
+                new MyClass<>("jane"),
+                new MyClass<>("joe")
+        };
+
+        // Yet you can do this...
+        doSomething(new MyClass<>("jane"), new MyClass<>("joe")); //1
+
+    @SafeVarargs
+    public static void doSomething(MyClass<String>... myStuff) { // 2
+        Arrays.stream(myStuff)
+                .forEach(System.out::println);
+    }
+  //Sample 2 
+    import java.util.*;
+    public class NeverDoThis {
+        @SafeVarargs final int thisIsUnsafe(List<Integer>… carrot) { // Line 4
+          Object[] stick = carrot;
+          stick[0] = Arrays.asList("nope!");
+          return carrot[0].get(0);  // ClassCastException at runtime 
+       }
+       public static void main(String[] a) {
+          var carrot = new ArrayList<Integer>();
+          new NeverDoThis().thisIsUnsafe(carrot); // Line 11
+       }
+    }
+   
+  ```
+  <p>
+     Having @SafeVarargs suppress this warnings.
+      [Line 4]  Type safety: Potential heap pollution via varargs
+         parameter carrot
+      [Line 11] Type safety: A generic array of List<Integer> is created
+         for a varargs parameter
+   </p>
+   * This annotation is considered more desriable than @SuppressWarnings({"unchecked", "varargs"}).
+  ![Alt text](image.png)
+  ![Alt text](Common Annotation.png)
+
+#### @Target limitation and usage
 - @Target tells where this annotations can be applied like whether the annotation is allowed to be used in METHOD, CONSTRUCTOR, TYPE_PARAM...
 - The Target types are:PACKAGE, MODULE, ANNOTATION_TYPE,CONSTRUCTOR,FIELD,LOCAL_VARIABLE,METHOD,PARAMETER,TYPE,TYPE_PARAMETER, TYPE_USE.
 - Annotations created without the @Target can be used any where in java target types like METHOD, CONSTRUCTOR, except when used in the parameter places you must mention the @Target type. 
@@ -280,19 +430,24 @@ public class NetworkRepair {
    }
 }
 ```
-### Storing Annotation with _@Retention_
+#### Storing Annotation with _@Retention_
  * Types: SOURCE, CLASS, RUNTIME
+ * RetentionPolicy.SOURCE – The marked annotation is retained only in the source level and is ignored by the compiler.
+ * RetentionPolicy.CLASS – The marked annotation is retained by the compiler at compile time, but is ignored by the Java Virtual Machine (JVM).
+ * RetentionPolicy.RUNTIME – The marked annotation is retained by the JVM so it can be used by the runtime environment.
  * Samples: 
   ```java
    @Retention(RetentionPolicy.CLASS) @interface Flier {}
    @Retention(RetentionPolicy.RUNTIME) @interface Swimmer {}
   ```
-### Documentation annotations
- `@Documentation` the marker annotation @Documented. If present, then the generated Javadoc will include annotation information defined on Java types. Because it is a marker annotation, it doesn't take any values; therefore, using it is pretty easy.  
+#### @Documented annotations
+ `@Documented` annotation indicates that whenever the specified annotation is used those elements should be documented using the Javadoc tool. (By default, annotations are not included in Javadoc.). Its a marker interface so doesn't carry any value. 
    `@Documented public @interface Hunter {}`<br>
 
+#### @Deprecated & @deprecated in javadoc
+
  ```java
-  public class ZooLightShow {
+  public interface ZooLightShow {
  
        /**
         * Performs a light show at the zoo.
@@ -301,14 +456,26 @@ public class NetworkRepair {
         * @return     the result of the light show operation.
         * @author     Grace Hopper
         * @since      1.5
-        * @deprecated Use EnhancedZooLightShow.lights() instead.
+        * @deprecated Use lightPerform() instead.
         */
-       @Deprecated(since="1.5") public static String perform(int distance) {
+       @Deprecated(since="1.5") public default String perform(int distance) {
           return "Beginning light show!";
        }
+
+       String lightPerform(int distance);
     }
  ```
-### Inheriting Annotations with @Inherited
+#### @SuppressWarnings("deprecation")
+```java
+ 
+ public class NewYorkZoo implements ZooLightShow {
+  @SuppressWarnings("deprecation")
+   public String perform() {}
+
+ }
+```
+
+#### @Inherited Annotation
 * `@Inherited` when its applied to a class, subclass will inherit the annotations information found in the parent class.
 ```java
 // Vertebrate.java
@@ -323,100 +490,32 @@ import java.lang.annotation.Inherited;
 public class Dolphin extends Mammal {}
 ```
 <p>In this example, the @Vertebrate annotation will be applied to both Mammal and Dolphin objects. Without the @Inherited annotation, @Vertebrate would apply only to Mammal instances.</p>
-### Inherited and Repeatable Annotations
-- Annotations annotated with @inherited will ONLY get inherited from some super class(and not through an interface) and only when declared at the class level and not for (methods, fields e.t.c)
-- @Repeatable annotation when you want an annotation to be repeated remember you have to create two @Repeatable interface once with the element and another the container for that element
+- This meta-annotation type has no effect if the annotated type is used to annotate anything other than a class. It has no effect on interface, methods and fields.
+### @Repeatable Annotations
+- @Repeatable annotation when you want an annotation to be repeated remember you have to create two 
+@Repeatable interface once with the element and another the container for that element
 
-
-### Commonly Used JDK Annotations
-
-Predefined Java Annotations | Target | Retention
----------|----------|---------
-@Deprecated(forRemoval = true, since = "2020") | PACKAGE, MODULE, TYPE, CONS, METHOD, PARAM, FIELD, LOCAL VAR | RUNTIME
-@FunctionalInterface | TYPE | RUNTIME
-@Override | METHOD | SOURCE
-@SafeVarargs | CONS, METHOD | RUNTIME (Compiler Suppress unchecked warnings relating to varargs usage)
-@Suppress Warnings | PACKAGE, MODULE, TYPE, CONS, METHOD, PARAM, FIELD, LOCAL VAR  | SOURCE (Cetains compiler warings are suppressed like deprecated, removal, unchecked, varargs)
-- _**Note**_ @FunctionaInterface is applicable only to interfaces and not to class
 ```java
-@FunctionalInterface
-interface Functionable {
-    void performSomeFunction();
+public class AnnotationTest {
+
+    public @interface MealContainer {
+        Meal[] value();
+    }
+
+    @java.lang.annotation.Repeatable(MealContainer.class)
+    public @interface Meal {
+        String value();
+        String mainDish();
+    }
+
+    @Meal(value="breakfast", mainDish="cereal")
+    @Meal(value="lunch", mainDish="pizza")
+    @Meal(value="dinner", mainDish="salad")
+    public void evaluateDiet() { }
 }
 ```
-- @Deprecated 
-  - forRemoval tells caution this method is not just recemmondation, but it will be removed.
-  - since() and forRemoval() are optional values available in the @Deprecated annotation
- ```java
-   /**
-     * Using javadoc tag @deprecated
-     *
-     * @deprecated As of release 1.2, replaced by {@link #doThat()}
-     */
-    // Using annotation @Deprecated
-    @Deprecated(
-            since = "1.3",
-            forRemoval = true
-    )
-    public void doThis() {
-        System.out.println("Doing this");
-    }
- ```
- - `@SuppressWarnings` to suppress some warnings (e.g)  @SuppressWarnings({"deprecated", "removal"}), following are the common @SuppressWarnings values used often:
-   * "deprecation" - Ignore warnings related to types or methods marked with the @Deprecated annotation. I, 
-   * "unchecked" - Ignore warnings related to the use of raw types, such as List instead of List<String>.
- - Protecting Arguments with @`SafeVarargs` annotation when you can safely assert that the implemenation of the method will not throw a ClassCastException or other similar exception due to improper handling of the varargs formal parameter.
- -  It **can be applied** _only to constructors or methods that cannot be overridden (aka methods marked private, static, or final)_.
- -  Having @SafeVarargs suppresses the warnings at `Line2: Possible heap pollution from parameterized vararg type`,<br> `Line 1: Unchecked generics array creation for varargs parameter`
- - 
-  ```java
-   // Create a simple generic class
-      class MyClass<T> {
-         T name;
 
-         MyClass(T name) {
-            this.name = name;
-         }
-      }
-      // Generic Array creation is not allowed
-        MyClass[] myArray = {
-                new MyClass<>("jane"),
-                new MyClass<>("joe")
-        };
 
-        // Yet you can do this...
-        doSomething(new MyClass<>("jane"), new MyClass<>("joe")); //1
-
-    @SafeVarargs
-    public static void doSomething(MyClass<String>... myStuff) { // 2
-        Arrays.stream(myStuff)
-                .forEach(System.out::println);
-    }
-  //Sample 2 
-    import java.util.*;
-    public class NeverDoThis {
-        @SafeVarargs final int thisIsUnsafe(List<Integer>… carrot) { // Line 4
-          Object[] stick = carrot;
-          stick[0] = Arrays.asList("nope!");
-          return carrot[0].get(0);  // ClassCastException at runtime 
-       }
-       public static void main(String[] a) {
-          var carrot = new ArrayList<Integer>();
-          new NeverDoThis().thisIsUnsafe(carrot); // Line 11
-       }ippooooooooooooooooooooopoiuytrwqazxC
-    }
-   
-  ```
-  <p>
-     Having @SafeVarargs suppress this warnings.
-      [Line 4]  Type safety: Potential heap pollution via varargs
-         parameter carrot
-      [Line 11] Type safety: A generic array of List<Integer> is created
-         for a varargs parameter
-   </p>
-   * This annotation is considered more desriable than @SuppressWarnings({"unchecked", "varargs"}).
-  ![Alt text](image.png)
-  ![Alt text](image-1.png)
 
 ## Review Questions
 1. E

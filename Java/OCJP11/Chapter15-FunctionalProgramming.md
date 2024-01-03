@@ -326,7 +326,7 @@ System.out.println(length); // 5
         stream.collect(Collectors.toCollection(TreeSet::new));// set --> [f, l, o, w]
     ```
 ### Common Intermediate Operations
-
+ - List of intermediate operations: `map(), flatMap(), mapToInt(), filter(), limit(), peek(), distinct(), sorted()`
    * `filter()` method returns a Stream with elements that match a given expression.
    * The `distinct()` method returns a stream with duplicate values removed. 
     `Stream.of("duck", "duck", "duck", "goose").distinct().forEach(System.out::println)`
