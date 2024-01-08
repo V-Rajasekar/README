@@ -32,7 +32,7 @@
   - [References](#references)
 
 ## try with resources
-![Alt text](image-2.png)
+![Alt text](try-with-resource-syntax.png)
 - using a try‐with‐resources statement to open all your resources, this happens automatically.
 - **Rule 1:** try‐with‐resources statements require resources that implement the AutoCloseable interface.
 

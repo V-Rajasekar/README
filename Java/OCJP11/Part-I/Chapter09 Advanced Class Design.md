@@ -37,7 +37,7 @@
    * public abstract interface <interface name> //abstract is implicit
    * public abstract Float getSpeed(int age); // public abstract implicit
    * public static final int MIN_DEPTH = 2; //public static final implicit
-   ![Alt text](image.png)
+   ![Alt text](interfacesyntax.png)
    * protected, private modifiers are not allowed in top-level class or interface only public and default are allowed.
    * The public top-level element could also be an enumeration, or enum.
    * When working with class members, omitting the access modifier indicates default access.When working with interface members, though, the lack of access modifier indicates public access.

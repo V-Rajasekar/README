@@ -2,7 +2,7 @@
   - [Annotation Overview:](#annotation-overview)
   - [Creating Customer Annotations](#creating-customer-annotations)
       - [Rules of Declaring Annotation](#rules-of-declaring-annotation)
-      - [Rules of Declaring elements with annotations.](#rules-of-declaring-elements-with-annotations)
+      - [Rules of Declaring elements with in annotations.](#rules-of-declaring-elements-with-in-annotations)
     - [Creating a _value()_ Element](#creating-a-value-element)
     - [Predefined JDK Annotations](#predefined-jdk-annotations)
       - [`@Override`](#override)
@@ -360,8 +360,8 @@ suppresses the warnings at `Line2: Possible heap pollution from parameterized va
          for a varargs parameter
    </p>
    * This annotation is considered more desriable than @SuppressWarnings({"unchecked", "varargs"}).
-  ![Alt text](image.png)
-  ![Alt text](Common Annotation.png)
+
+  ![Alt text](common-annotations.png)
 
 #### @Target limitation and usage
 - @Target tells where this annotations can be applied like whether the annotation is allowed to be used in METHOD, CONSTRUCTOR, TYPE_PARAM...

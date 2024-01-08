@@ -23,15 +23,7 @@ The break and continue keywords are illegal at the top level, but are permitted 
   //Autoboxing does not work when inferring predicates.
   CheckMe((int i) -> {return i == 5*5);});  //Does work
 ```
-- Examples.
-```java
-(int x, int y) -> x + y
 
-() -> 42
-
-(String s) -> { System.out.println(s); }
-
-```
 - Comparator replace with Lambda
 ```java
   // Sort with Inner Class
@@ -46,7 +38,7 @@ The break and continue keywords are illegal at the top level, but are permitted 
 
 ## Functional Interfaces
 - A functional interface has only one abstract method.
-- In some classes its mentioned @FunctionalInterface, irrespective whether this annotation is there or not, if an ibterface  has only one abstract method then its called Functional Interface.
+- In some classes its mentioned `@FunctionalInterface`, irrespective whether this annotation is there or not, if an ibterface  has only one abstract method then its called Functional Interface.
 - There are four functional interfaces you are likely to see on the exam. The next sections take a look at Predicate, Consumer, Supplier, and Comparator.
 ### Predicate boolean:test(T t)
  * Its a functional interface representing a single argument function returns boolean and takes any type. 
@@ -109,11 +101,11 @@ public void variables(int a) {
   - lambda can access an instance variable, method parameter, or local variable under certain conditions. Instance variables (and class variables) are always allowed.
   - Method parameters and local variables are allowed to be referenced if they are effectively final. 
   - Variable type	Rule
-    Instance variable	Allowed
-    Static variable	Allowed
-    Local variable	Allowed if effectively final
-    Method parameter	Allowed if effectively final
-    Lambda parameter	Allowed
+    * Instance variable	Allowed
+    * Static variable	Allowed
+    * Local variable	Allowed if effectively final
+    * Method parameter	Allowed if effectively final
+    * Lambda parameter	Allowed
  - Calling APIs with Lambdas
    1. List and set declare a `removeIf()` method that takes predicate. 
     ```java

@@ -5,6 +5,7 @@
     - [Static Initialzation](#static-initialzation)
     - [Passing Data among methods (Java pass by value)](#passing-data-among-methods-java-pass-by-value)
   - [Overloading.](#overloading)
+    - [The order java uses  to choose the right overloaded method.](#the-order-java-uses--to-choose-the-right-overloaded-method)
 # Chapter 07 Methods and Encapsulation.
 - Access modifiers type: private, default(Package-Private),protected,public.
 ### Designing Methods
@@ -15,17 +16,17 @@
 - int longMethod() {
    return 9L; // DOES NOT COMPILE
 }
-- Method name: an identifier may only contain letters, numbers, $, or _. Also, the first character is not allowed to be a number, and reserved words are not allowed. Finally, the single underscore character is not allowed. 
+- Method name: an identifier may only contain `letters, numbers, $, or _`. Also, the first character is not allowed to be a number, and reserved words are not allowed. Finally, the single underscore character is not allowed. 
 - Working with Varargs
   - Only one Varargs is allowed in a method, and it must be the last element in a method's parameter.
 ### Applying Access Modifiers
     
-* private: Only accessible within the same class
-* Default (package-private) access: private plus other classes in the same package
-* protected: Default access plus child classes.<br>
+* `private`: Only accessible within the same class
+* `Default` (package-private) access: private plus other classes in the same package
+* `protected`: Default access plus child classes.<br>
  i) **Subclass can access the protected members from their super class eventhough it is in a diff package.**<br>
  ii) The definition of protected allows access to subclasses and classes in the same package. 
-* Public: protected plus classes in the other packages
+* `Public`: protected plus classes in the other packages
 
 - Class Bird     
   
@@ -68,7 +69,7 @@ public class Goose extends Bird {
 }
 ```
 ### Applying the static Keyword
-- static can be define for member/class variable, method, nested class
+- `static` can be define for member/class variable, method, nested class
 - All instance of the class shares the static variable, (e.g) counter.
    
 ```java
@@ -79,7 +80,7 @@ System.out.println(k.count);          // k is still a Koala
 ```
 * Only a instance method can call another instance method on the same class without using a ref variable.
 * An instance method can access static variable and static method, but below is not possible.
-* A static method can't access a non static method without instance variable.
+* **A static method can't access a non static method without instance variable**.
 
 ### Static Initialzation
 All static initializers run when the class is first used in the order they are defined. The statements in them run and assign any static variables as needed.<br>
@@ -122,20 +123,20 @@ public class Main
 }
 
 ```
-- import static
-    `import static java.util.Arrays;       // DOES NOT COMPILE`
-    `import static java.util.Arrays.asList;`
+- import static  
+    * `import static java.util.Arrays;       // DOES NOT COMPILE`
+    * `import static java.util.Arrays.asList;` //COMPILE
 ### Passing Data among methods (Java pass by value)
       
-Java uses pass-by-value to get data into a method. Assigning a new primitive or reference to a parameter doesn’t change the caller. Calling methods on a reference to an object can affect the caller.<br>
+Java uses pass-by-value to get data into a method. Assigning a new primitive or String reference to a parameter doesn’t change the caller. Calling methods on a reference to an object can affect the caller.<br>
 
 ```java
- String name = "Webby";
-public static void speak(String name) {
-   name = "Sparky";
-}
- speak(name); 
- System.out.println(name); //Webby
+   String name = "Webby";
+   public static void speak(String name) {
+      name = "Sparky";
+   }
+   speak(name); 
+   System.out.println(name); //Webby
 ```
 
 - Copying a reference with pass-by-value. 
@@ -171,31 +172,29 @@ s2 = s2b
 s3 = a*/
 ```
 ## Overloading. 
-- Method with different parameter type or parameter length, but with same name and return type.
+- A method is called overloaded when its overloaded with **different parameter type or parameter length, but with same name and return type**.
+- Only difference in the return type is not considered overloaded
 - Invalid overloading
 ```java
   public void fly(int numMiles) {}
-  public int fly(int numMiles) {}     // DOES NOT COMPILE
-  public void fly(int[] lengths) {}
-  public void fly(int... lengths) {}     // DOES NOT COMPILE
+  public int fly(int numMiles) {}     // Duplicate method declaration 
+  
   public void woof(List<Set> strings) {}
-  public void woof(List<Integer> integers) {}  
-  public void walk(List<String> strings) {}
-  public void walk(List<Integer> integers) {}    // DOES NOT    COMPILE the methods are identical once the Generics is removed.
+  public void woof(List<Integer> integers) {}  //woof(List<Integer>) and woof(List<Set>) have the same erasure
 
-   public void baa(String c) {}
-  	public void baa(String[] c) {}
-   public void baa(String... c) {} // DOES NOT COMPILE
-	public void baa(CharSequence c) {}
+   public void baa(String c) {} //OK
+  	public void baa(String[] c) {} //OK
+   public void baa(String... c) {} // cannot declare both baa(String...) and baa(String[]) together
+	public void baa(CharSequence c) {} //OK
 
-   public void woof(char... chars) {}
-  public void woof(Character c) {}
+   public void woof(char... chars) {} //OK
+   public void woof(Character c) {}
 
   //Arrays
   public static void walk(int[] ints) {}
   public static void walk(Integer[] integers) {} // compiles not like previous
 ```
-The order java uses  to choose the right overloaded method.
+### The order java uses  to choose the right overloaded method.
 
 |Rule	                    |Example of what will be chosen for glide(1,2)|
 |---|---|
@@ -203,8 +202,8 @@ The order java uses  to choose the right overloaded method.
 |Larger primitive type	 |   String glide(long i, long j)|
 |Autoboxed type	         |   String glide(Integer i, Integer j)|
 |Varargs	             |       String glide(int... nums)|
-
-- Double conversion is not possible int -> long int -> Integer is ok but not int -> long -> Long
+,
+- Double conversion is not possible `int -> long int -> Integer is ok` but `not int -> long -> Long`
 ```java
 public class TooManyConversions {
    public static void play(Long l) {}

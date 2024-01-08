@@ -393,7 +393,7 @@ public class Cat implements Walk, Run {
    ### Abstract classes vs Interface
    - An interfaces do not implement constructors and are not part of the class ierarchy.
    - Interface method declartions by default public abstract
-  
+ ![Alt text](Abstract-vs-interface.png)
   ### Introducing Functional Programming.
   -  A functional interface is an interface that contains a single abstract method. (SAM)
   -  A functional interface cab contain more than one default, static, private and private static method

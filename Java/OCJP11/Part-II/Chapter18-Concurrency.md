@@ -150,7 +150,7 @@ public class ZooInfo {
 ## Shutting Down a Thread Executor
 A thread executor creates a non‐daemon thread on the first task that is executed, so failing to call shutdown() will result in your application never terminating.
 - Life cycle of an ExecutorService object.
-  ![Alt text](image-3.png)
+  ![Alt text](executor-lifecycle.png)
 - What if you want to cancel all running and upcoming tasks? The ExecutorService provides a method called `shutdownNow()`
 
 ## Submitting Tasks

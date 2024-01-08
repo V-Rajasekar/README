@@ -1,3 +1,17 @@
+- [Class Design](#class-design)
+  - [Declaring Constructor](#declaring-constructor)
+  - [Complex initialization flow.](#complex-initialization-flow)
+  - [Inheriting Members.](#inheriting-members)
+    - [Overriding Method.](#overriding-method)
+  - [Overloading vs Overriding](#overloading-vs-overriding)
+  - [Overloading and Overriding a Generic Method(compile error).](#overloading-and-overriding-a-generic-methodcompile-error)
+  - [Generics and WildCards in Overloaded and Overridden methods.](#generics-and-wildcards-in-overloaded-and-overridden-methods)
+  - [Hiding Parent ins method, Static Methods with non static method, ins method name (Compile error)](#hiding-parent-ins-method-static-methods-with-non-static-method-ins-method-name-compile-error)
+  - [Hiding parent variables in child class.](#hiding-parent-variables-in-child-class)
+  - [Casting Objects.](#casting-objects)
+  - [Polymorphism and Method Overriding](#polymorphism-and-method-overriding)
+  - [Overriding vs Hiding Members](#overriding-vs-hiding-members)
+
 
 # Class Design
 - Inheritance 
@@ -8,17 +22,17 @@
   * `public abstract/final class HelloWorld extends/implements <class/interface>`
   * A class can't be both abstract final
   * A top level class is a class which is available in another class file. It can only be `default`. no private or protected allowed. To make it public you have to move to a separate file.
-- Accessing the `this` Reference 
+- Accessing `this` Reference 
  ```java
-  public class Flamingo {
-   private String color;
-   public void setColor(String color) {
-      color = color;
-      color = this.color // Backwards – no good! still null;
-      this.color = color; //works
-      
+   public class Flamingo {
+      private String color;
+      public void setColor(String color) {
+         color = color;
+         color = this.color // Backwards – no good! still null;
+         this.color = color; //works
+         
+      }
    }
-}
  ```
 _Note:_ value of color = null. when compiler see color == color it thinks your assigning the method param value to itself. Fix is use this.color
   
@@ -46,7 +60,7 @@ _Note:_ value of color = null. when compiler see color == color it thinks your a
         17:       new Beetle().printData();
         18:    }
         ```
-- Declaring Constructor
+## Declaring Constructor
   * `var` as param is not allowed in constructor.
   * Default constructor is provided by default, but when you overload the default constructor with overloaded constructor with param, you need to override the default constructor.
     ```java
@@ -59,7 +73,7 @@ _Note:_ value of color = null. when compiler see color == color it thinks your a
     ```
   * Calling Overloaded Constructors with this()
     * this() must be the first statement in the constructor call.
-    * Overloaded constructor are not allowed to call itself.  
+    * Overloaded constructor are not allowed to call itself, instead this(...).  
   ```java
    public Hamster(int weight) {
       Hamster(weight, "brown");      // DOES NOT COMPILE
@@ -81,24 +95,16 @@ _Note:_ value of color = null. when compiler see color == color it thinks your a
    }
   ```
   * the first line of every constructor is a call to either `this() or super()`
-  * super() followed by this(), and viceverse are not allowed. Remember super/this can be the first statement in the constructor.
-- Constructors and final fields
+  * `super()` followed by `this()`, `and viceverse are not allowed`. Remember super/this can be the first statement in the constructor.
+- Final fields in Constructor parama
   * final field can be assigned values in the instance initializer block, constructor.
   * remember all final variables should be initalized before the constructor completes.
 - Class Initialization
-  * Initialize Class X
-    1. If there is a superclass Y of X, then initialize class Y first.
-    2. Process all static variable, and initializers declarations in the order they appear in the class.
 - Initialize Instance of X
   1. If there is a superclass Y of X, then initialize the instance of Y first.
   2. Process all instance variable, initializers declarations in the order they appear in the class.
   3. Initialize the constructor including any overloaded constructors referenced with this().
-  
-- The order of initialization as follows
-  * Line 4, 5, 6 class loading happens so all static var and initialization happens in the order they are mentioned in the class 0-10-
-  * Line 3 class instance block BestZoo-
-  * Line 9 class constructor z-
-  *  Result: 0-10-BestZoo-z-
+
 ```java
 1:  public class ZooTickets {
 2:     private String name = "BestZoo";
@@ -117,7 +123,14 @@ _Note:_ value of color = null. when compiler see color == color it thinks your a
 15: }
 // Result 0-10-BestZoo-z-
 ```
-- Complex initialization flow.
+  
+- The order of initialization as follows
+  * Line 4, 5, 6 class loading happens so all static var and initialization happens in the order they are mentioned in the class 0-10-
+  * Line 3 class instance block BestZoo-
+  * Line 9 class constructor z-
+  * Result: `0-10-BestZoo-z-`
+  
+## Complex initialization flow.
  * We first process the static variables and static initializers—lines 4 and 5, with line 5 printing 0. Now that the static initializers are out of the way, the main() method can run, which prints Ready. Lines 2, 3, and 6 are processed, with line 3 printing swimmy and line 6 printing 1. Finally, the constructor is run on lines 8–10, which print Constructor.
 ```java
 1:  public class Cuttlefish {
@@ -136,18 +149,11 @@ _Note:_ value of color = null. when compiler see color == color it thinks your a
 14:       new Cuttlefish();
 15:    }
 16: }
-//Result 0 Ready swimmy  1 Constructor
+//Result 0 Ready swimmy 1 Constructor
   
 ```
 - Difficult example. 
-   * Result: AFBECHG
-           * BECHG 
-  1. Super class, sub class class static initialization block AF
-  2. Super class instance block B
-  3. Super class constructors in reverse order parent..descendant child
-  4. Subclass instance block H
-  5. Subclass constrcutor G
-   When you create one more object instance, All class loading static instance, block are not called again.
+
 ```java
 1:  class GiraffeFamily {
 2:     static { System.out.print("A"); }
@@ -182,7 +188,16 @@ _Note:_ value of color = null. when compiler see color == color it thinks your a
 31:    }
 32: }
 ```
-- Rules to remember
+   * Result: AFBECHG
+           * BECHG 
+  1. Super class, sub class class static initialization block AF
+  2. Super class instance block B
+  3. Super class constructors in reverse order parent..descendant child
+  4. Subclass instance block H
+  5. Subclass constrcutor G
+   When you create one more object instance, All class loading static instance, block are not called again.
+
+- Constructor declaration and call in sub class.
   
    * If the parent class doesn’t have a no-argument constructor, then every constructor in the child class must start with an explicit this() or super() constructor call.
   
@@ -214,32 +229,36 @@ _Note:_ value of color = null. when compiler see color == color it thinks your a
 
   }
   ```
-  - Inheriting Members.
-    * Java classes may use any public or protected member of the parent class, including methods, primitives, or object references. If the parent class and child class are part of the same package, then the child class may also use any package-private members defined in the parent class. 
-    * super class private aren't accessable directly.
-  - Overriding Method.
-    * The method in the child class **_must have the same signature_** as the method in the parent class.
-    * The method in the child class must be at least as accessible as the method in the parent class.
-    * The method in the child class **_may not declare a checked exception that is new or broader_** than the class of any exception declared in the parent class method.
-    * If the method **_returns a value, it must be the same or a subtype of the method in the parent class_**, known as covariant return types.
-    (e.g) Parent/Child return types: CharSequence/String, List/ArrayList, Object/String <br>
+ ## Inheriting Members.
 
-- Overloading vs Overriding
+  * A child class inherits any parent class public or protected member including methods, primitives, or object references. and a child class can access parent class default members If the parent class and child class are part of the same package. 
+  * super class private aren't accessable directly.
+  ### Overriding Method.
+
+  * The method in the child class **_must have the same signature_** as the method in the parent class.
+  * The method in the child class must be at least as accessible as the method in the parent class.
+  * The method in the child class **_may not declare a checked exception that is new or broader_** than the class of any exception declared in the parent class method.
+  * If the method **_returns a value, it must be the same or a subtype of the method in the parent class_**, known as covariant return types.
+    (e.g) Parent/Child return types: CharSequence/String, List/ArrayList, Object/String <br>
+  * A method is not considered as **overridden with covariant method param** in the method eventhough the method name are same, This method rather called as overloaded method instead of overriden method.
+  
+
+## Overloading vs Overriding
   *  `If two methods have the same name but different signatures, the methods are overloaded,` not overridden. Overloaded methods are considered independent and do not share the same polymorphic properties as overridden methods.
   *  Overriding method will have same method name with the following rules
   *  Java limiting the overriding method to access modifiers that are as accessiable or more accessiable than the inherited version public, protected, default are the more accessiable modifier in the order.
   *  Overridden method signature must match exactly the inherited method no covariant with the method param in the inherited method.
   
-  ```java
-  abstract class Bird {
+```java
+abstract class Bird {
    void fly(CharSequence charSequence) { System.out.println("Bird"); 
 
    final void legs() {
       System.out.println("Two legs");
    }
-  }
+}
 
-  class Pelican extends Bird {
+class Pelican extends Bird {
    @Override
    protected void fly(String name) { System.out.   println("Pelican"); //Compile error as fly is not overridden the method param should match exactly.
    }
@@ -247,8 +266,8 @@ _Note:_ value of color = null. when compiler see color == color it thinks your a
    public void legs() {
       System.out.println("Pelican legs");
    }
-  }
-  ```
+}
+```
 
   *  overriding a method cannot declare new checked exceptions or checked exceptions broader than the inherited method. The exception can be more specific.
 
@@ -290,35 +309,37 @@ class JavanRhino extends Rhino {
    }
 }
 ```
-- Overloading and Overriding a Generic Method.
+## Overloading and Overriding a Generic Method(compile error).
   * generic methods cannot be overloaded by changing the generic parameter type only.
 ```java
-  public class LongTailAnimal {
-   protected void chew(List<Object> input) {}
-   protected void chew(List<Double> input) {}  // DOES NOT COMPILE
-}
-// Overriding
-* generic methods cannot be overridden by changing the generic parameter type only.
-public class LongTailAnimal {
-   protected void chew(List<Object> input) {}
-}
- 
-public class Anteater extends LongTailAnimal {
-   protected void chew(List<Double> input) {}  // DOES NOT COMPILE
-}
+   public class LongTailAnimal {
+      protected void chew(List<Object> input) {}
+      protected void chew(List<Double> input) {}  // DOES NOT COMPILE
+   }
+   // Overriding
+   * generic methods cannot be overridden by changing the generic parameter type only.
+   public class LongTailAnimal {
+      protected void chew(List<Object> input) {}
+   }
+   
+   public class Anteater extends LongTailAnimal {
+      protected void chew(List<Double> input) {}  // DOES NOT COMPILE
+   }
 ```
- * corner case. 
-   * Its overloaded not overriden implementation.
- ```java
-  public class LongTailAnimal {
-   protected void chew(List<Object> input) {}
-}
- 
-public class Anteater extends LongTailAnimal {
-   protected void chew(ArrayList<Double> input) {}
-}
+## Generics and WildCards in Overloaded and Overridden methods.
+
+* Its overloaded not overriden implementation.
+
+```java
+   public class LongTailAnimal {
+      protected void chew(List<Object> input) {}
+   }
+   
+   public class Anteater extends LongTailAnimal {
+      protected void chew(ArrayList<Double> input) {}
+   }
  ```
- - Generics and WildCards
+
   ```java
   void sing1(List<?> v) {}                 // unbounded wildcard
   void sing2(List<? super String> v) {}    // lower bounded wildcard
@@ -343,7 +364,7 @@ public class Goat extends Mammal {
    public String sleep() { ... }
 }
 ```
-- Hiding Static Methods
+## Hiding Parent ins method, Static Methods with non static method, ins method name (Compile error)
   * When a parent class static method is overridden with the child class static method. 
   * If one is marked `static` and the other is not, the class will not compile.
 
@@ -369,7 +390,7 @@ public class Goat extends Mammal {
 
   public final static void flyAway() {}  // DOES NOT COMPILE
 ```
-- Hiding variables.
+## Hiding parent variables in child class.
    * A hidden variable occurs when a child class defines a variable with the same name as an inherited variable defined in the parent class. This creates two distinct copies of the variable
    * The output changes depending on the reference variable used.
   ```java
@@ -383,11 +404,7 @@ public class Goat extends Mammal {
       System.out.println(c.hasFur); //false
 
   ```
- - Casting Objects.
-    1. Casting a reference from a **_subtype to a supertype doesn’t require an explicit cast_**. Line:1
-    2. Casting a reference from a **_supertype to a subtype requires an explicit cast_**. Line:3
-    3. The compiler disallows casts to an unrelated class.
-    * At runtime, an invalid cast of a reference to an unrelated type results in a ClassCastException being thrown. Line:4
+## Casting Objects.
 
 ```java
 1. Object obj = new String("Hello");
@@ -403,8 +420,16 @@ public class Capybara extends Rodent {
    }
 }
 ```
-_Note:_ The thing to keep in mind in this example is the Rodent object created does not inherit the Capybara class in any way.
-- Polymorphism and Method Overriding
+1. Casting a reference from a **_subtype to a supertype doesn’t require an explicit cast_**. Line:1
+2. Casting a reference from a **_supertype to a subtype requires an explicit cast_**. Line:3
+3. The compiler disallows casts to an unrelated class.
+* At runtime, an invalid cast of a reference to an unrelated type results in a ClassCastException being thrown. Line:4
+4. The Rodent object created does not inherit the Capybara class in any way. 
+```java
+   Rodent rodent = new Capybara();
+   Capybara capybara = (Capybara) rodent;
+```
+## Polymorphism and Method Overriding
   
  ```java
   class Animal
@@ -452,7 +477,7 @@ public class Main
 }
  ```
 
-- Overriding vs Hiding Members
+## Overriding vs Hiding Members
  * Unlike method overriding, hiding members is very sensitive to the reference type and location where the member is being used. <br>
  _Note:_ It is legal to access the static variables and method using this, but not recommended. 
 
@@ -527,13 +552,13 @@ Review Questions
      }
   }
 ```
-5. ~~6~~, 1 (**an overridden method can have a broader access modifier, and protected access is broader than package-private access. **)
-6. ~~1, 3,~~ 2,  5 (1. An overriden method must contain method param that are the same, no covariant.
-2. An overridden method must have same or more accessible than the method in the parent class.)
-7. 1, 3 (Took more time)
-8. 3
-9.  ~~1~~, 2, 6
-10. ~~3~~, 4
+1. ~~6~~, 1 (**an overridden method can have a broader access modifier, and protected access is broader than package-private access. **)
+2. ~~1, 3,~~ 2,  5 (1. An overriden method must contain method param that are the same, no covariant.
+3. An overridden method must have same or more accessible than the method in the parent class.)
+4. 1, 3 (Took more time)
+5. 3
+6.  ~~1~~, 2, 6
+7.  ~~3~~, 4
  - Line 2 var not allowed in constructor
  - Line 8 Subclass must implement default constructor calling explicitly super as there is no default constructor in parent.
  - Line 9: Number is not Covariant of Integer, inherited method in parent is static, and overridden method is non static 

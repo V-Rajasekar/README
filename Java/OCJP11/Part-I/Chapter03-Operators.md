@@ -34,7 +34,7 @@ System.out.print("Zoo animal receives: "+reward+" reward points");
 Java operators follow order of operation, listed in the below table by descreasing order of operator precence(High to low).
 - If two operators have the same level of precedence, then Java guarantees left-to-right evaluation.
 - For the example remember only the bold one operators
-![Alt text](image.png)
+![Alt text](operatorPrecedency.png)
 1. post and pre-unary operators: ++,--
 2. Other unary operator: -,!(type)
 3. Multiplication/division/modulus	*, /, %

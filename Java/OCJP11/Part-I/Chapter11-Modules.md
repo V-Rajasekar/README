@@ -146,7 +146,7 @@ jar -cvf mods/zoo.animal.feeding.jar -C feeding/ .
 
 - Transitive dependency version of modules.
   Here with the help of _requires transitive_ you can get ride of the dashed lines, by declaring transtive dependencies in care, talks
-![Alt text](image-10.png)
+![Alt text](transtive-dependency-module.png)
 
 ```java
 module zoo.animal.care {
