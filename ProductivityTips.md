@@ -1,4 +1,12 @@
-# Productivity 
+- [1. Productivity](#1-productivity)
+  - [1.1. Automation in command line:](#11-automation-in-command-line)
+  - [1.2. Add alias in Git](#12-add-alias-in-git)
+  - [1.3. Productivity videos](#13-productivity-videos)
+- [2. Useful extensions](#2-useful-extensions)
+- [3. Useful Plugin Visual Studio](#3-useful-plugin-visual-studio)
+
+
+# 1. Productivity 
 - Knowing IDE shortcuts (IntellJ)
  -  Install plugin Key Promoter X
  -  checkout Productivity Guide (Double shift -> type  productivity)
@@ -8,7 +16,7 @@
 - cmd+shift+p in vscode is very helpful to remember shortcuts and recently used commands
 -  https://www.tabnine.com/ is a great autocompletion tool for vscode
 
-### Automation in command line: 
+## 1.1. Automation in command line: 
 - Composing commands, piping, subshells
 All the steps like package, shipping(docker) and installing to container register can be automated by create a Shell scripting.
 - Installing Zsh and its usage
@@ -16,8 +24,26 @@ https://www.howtogeek.com/362409/what-is-zsh-and-why-should-you-use-it-instead-o
 - Create Shell aliases & suffix aliases
 - cat ~/.zsh_histry | grep - C # To see most uses commands and create alias
 - what is suffix alias ? use command line to opening a file (e.g) openning .png file in photo viewer
-  
-## Productivity videos  
+
+## 1.2. Add alias in Git
+```
+ Path to add in Git installation = ./git/etc/bash.bashrc
+
+alias gs="git status"
+alias gco="git checkout"
+alias gcm="git commit -m"
+alias ga="git add"
+alias gps="git push origin "
+alias gpl="git pull origin "
+alias gf="git fetch"
+alias gfp="git fetch -p"
+alias gsh="git stash save "
+alias glst="git stash list "
+alias gpop="git stash pop "
+alias glog="git log --oneline --graph"
+
+```  
+## 1.3. Productivity videos  
 - [unix-command-line-productivity](https://blog.sebastian-daschner.com/entries/unix-command-line-productivity)
 
 - [zsh-aliases](https://blog.sebastian-daschner.com/entries/zsh-aliases)
@@ -28,10 +54,10 @@ https://www.howtogeek.com/362409/what-is-zsh-and-why-should-you-use-it-instead-o
 
 - [ubuntu-linux-tips](https://www.addictivetips.com/ubuntu-linux-tips/beginners-guide-i3-window-manager/)
 
- # Useful extensions
+ # 2. Useful extensions
  - [Markdown-editor](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one)
 
-# Useful Plugin Visual Studio
+# 3. Useful Plugin Visual Studio
 ```
 Name: IntelliJ IDEA Keybindings
 Id: k--kato.intellij-idea-keybindings
