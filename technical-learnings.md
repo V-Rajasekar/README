@@ -97,23 +97,6 @@ import org.springframework.core.io.ResourceLoader;
         return new String(Files.readAllBytes(resource.toPath()), StandardCharsets.UTF_8);
     }
 ```
-
-## Add alias in Git
-```
- Path to add in Git installation = ./git/etc/bash.bashrc
-
-alias gs="git status"
-alias gco="git checkout"
-alias gcm="git commit -m"
-alias ga="git add"
-alias gps="git push origin "
-alias gpl="git pull origin "
-alias gf="git fetch"
-alias gsh="git stash save "
-alias gshl="git stash list "
-alias gshp="git stash pop "
-
-```
 ## Logging 
 [Logback structured logging](https://www.innoq.com/en/blog/2019/05/structured-logging/)
 
