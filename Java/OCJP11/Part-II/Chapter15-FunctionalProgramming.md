@@ -264,6 +264,17 @@ System.out.println(list.stream().allMatch(pred));  // false
 System.out.println(list.stream().noneMatch(pred)); // false
 System.out.println(infinite.anyMatch(pred));       // true
 ```
+- `findAny()` is free to select any element from the serial streams, or any element from the first thread that retrieves a record. 
+
+```java
+import java.util.stream.*;
+List<String> alphas=List.of("C","A","B","D");
+synchronized(alphas) {
+    String s = alphas.parallelStream()
+    .sorted().findAny()
+    .get();
+    System.out.println("s is: "+ s); // Result can't be determined a head.
+```    
 - for loop on a stream.
 ```java
 Stream<String> s = Stream.of("Monkey", "Gorilla", "Bonobo");
@@ -274,6 +285,8 @@ for (Integer i  : s) {} // DOES NOT COMPILE for-each not applicable to expressio
 solution: for (Integer i  : s.toList()) {}
 |   
 ```
+
+
 
 - `reduce()`
 <p>The reduce() method combines a stream into a single object.  Performs a reduction on the elements of this stream, using an associative accumulation function, and returns an Optional describing the reduced value if any.<br>

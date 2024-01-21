@@ -152,6 +152,9 @@ A thread executor creates a non‐daemon thread on the first task that is execut
 - Life cycle of an ExecutorService object.
   ![Alt text](executor-lifecycle.png)
 - What if you want to cancel all running and upcoming tasks? The ExecutorService provides a method called `shutdownNow()`
+- If a new task is submitted to an ExecutorService while it is shutting down, an exception is thrown.
+- The `isShutdown()` method returns true once the shutdown() method is called.
+- 
 
 ## Submitting Tasks
 Method name	| Description

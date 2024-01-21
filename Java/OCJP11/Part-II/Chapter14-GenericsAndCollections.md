@@ -24,11 +24,10 @@
     - [Generic Interfaces](#generic-interfaces)
     - [Restrictions on Generic Classes](#restrictions-on-generic-classes)
     - [Generic Methods](#generic-methods)
-    - [Bounding Generic Types](#bounding-generic-types)
-    - [Unbounded Wildcards](#unbounded-wildcards)
+    - [Generic class bounded and Type Erasure](#generic-class-bounded-and-type-erasure)
     - [Erasure of Generic Methods ( to Object)](#erasure-of-generic-methods--to-object)
-      - [Wildcard with an upper bound](#wildcard-with-an-upper-bound)
-      - [Generics vs Wild card with an upper bound](#generics-vs-wild-card-with-an-upper-bound)
+    - [Generic Wild Cards](#generic-wild-cards)
+    - [Unbounded Wildcards](#unbounded-wildcards)
       - [Lower-Bounded WildCards](#lower-bounded-wildcards)
       - [Combining Generic Declarations](#combining-generic-declarations)
       - [Generics with upperbounds (T extends  \& )](#generics-with-upperbounds-t-extends---)
@@ -526,12 +525,12 @@ class GenericClass<T> extends Exception {}
 - A sample Generic type declaration below, usable in real time in the above link.
 ```java
 1: public class Crate<T> {
-2:    public <T> T tricky(T t) {
+//This is Generic method the T here has no bound to the Type param in the class Crate.
+2:    public <T> T tricky(T t) { 
 3:       return t;
 4:    }
- 
-    
-     public static <T> T gettricky(T t) {
+  
+     public static <T> T gettricky(T t) {//This is Satic Generic method.
         return t;
     }
 
@@ -549,50 +548,67 @@ class GenericClass<T> extends Exception {}
 2: public class More {
 3:    public static <T> void sink(T t) { }
 4:    public static <T> T identity(T t) { return t; }
-5:    public static T noGood(T t) { return t; } // DOES NOT COMPILE
+5:    public static T noGood(T t) { return t; } // DOES NOT COMPILE bcos Generic is not allowed in class Type Param
 6: }
 ```
-### Bounding Generic Types
-- Bounded wildcards solve this by restricting what types can be used in a wildcard. A bounded parameter type is a generic type that specifies a bound for the generic.
-- A wildcard generic type is an unknown generic type represented with a question mark (?). You can use generic wildcards in three ways
+- A complete example of Generic used in class and in instance method, static method
   
-Type of bound |Syntax | Example
----------|----------|---------
- Unbounded wildcard | ? | List<?> a = new ArrayList<String>();
- Wildcard with an upper bound | ? extends type | List<? extends Exception> a = new ArrayList<RuntimeException>();
- Wildcard with a lower bound | ? super type | List<? super Exception> a = new ArrayList<Object>();
+   ```java
+      //A Generic Class
+      class GenericClassType<T> {
 
-### Unbounded Wildcards
-- An unbounded wildcard represents any data type. You use ? when you want to specify that any type is okay with you
-- 
+            public T instanceMethod(T t) {
+               return t;
+            }
+
+            //Generic method type:instance
+            public <U>U instanceGenericMethod(U u) {
+               return u;
+            }
+
+            public <U> void instanceGenericVoidMethod(U u) {
+               
+            }
+
+            //Generic method type:static
+            public static <T> T  something(T t) {
+            return t;
+            }
+
+            //Uncommenting show error: Cannot make a static reference to a non-static Type T
+            /*public static  T  somethingError(T t) {
+            return t;
+            }*/
+         }
+   ```
+### Generic class bounded and Type Erasure
+
 ```java
-public static void printList(List<Object> list) {
-for (Object x: list) 
-   System.out.println(x);
-}
-public static void main(String[] args) {
-   List<String> keywords = new ArrayList<>();
-   keywords.add("java");
-   printList(keywords); // DOES NOT COMPILE
-}
-//Solution
 
-/**
- * Going back to printing a list, we cannot assign a List<String> to a List<Object>. That's fine; we don't really need a List<Object>. What we really need is a List of “whatever.” That's what List<?> is. The following code does what we expect:
- */
- 
-public static void printList(List<?> list) {
-for (Object x: list)
-   System.out.println(x);
+// Generic class: upper bound of Comparable Interface
+class GenericInterfaceBound<T extends Comparable> {
+
+    public void doSomething(T t1, T t2) {
+
+        // Comparable's methods are available to any object of type T
+        int comparison = t1.compareTo(t2);
+        if (comparison > 0) {
+            System.out.println(t2 + " is behind " + t1);
+        } else {
+            System.out.println(t2 + " is ahead of " + t1);
+        }
+    }
 }
-public static void main(String[] args) {
-   List<String> keywords = new ArrayList<>();
-   keywords.add("java");
-   printList(keywords);
-}
+  // Instances of generic class bounded by Comparable
+        GenericInterfaceBound<LocalDate> i1 =
+                new GenericInterfaceBound<>();
+        i1.doSomething(LocalDate.now(),
+                LocalDate.of(2019, Month.SEPTEMBER, 29));
+
+        GenericInterfaceBound<Float> i2 = new GenericInterfaceBound<>();
+        i2.doSomething(12.34f, 12.345f);
 ```
-
-### Erasure of Generic Methods (<T> to Object)
+### Erasure of Generic Methods (<T> to Object) 
 - The java compiler applies type erasure to replace all type parameters in generic types
   with their bounds or Object if the type parameters are unbounded meaning `T`. Here in the below code it prints `f(Object o) called` inspite of String value is passed due to the erasure.
 ```java
@@ -608,35 +624,35 @@ static <T> void g(T t) {
 }
 Test call: g("123");
 ```
+### Generic Wild Cards
 
+- Bounded wildcards solve this by restricting what types can be used in a wildcard. A bounded parameter type is a generic type that specifies a bound for the generic.
+- A wildcard generic type is an unknown generic type represented with a question mark (?). You can use generic wildcards in three ways
+  
+Type of bound |Syntax | Example
+---------|----------|---------
+ Unbounded wildcard | `?` | List<?> a = new ArrayList<String>();
+ Wildcard with an upper bound | `? extends type `| List<? extends Exception> a = new ArrayList<RuntimeException>();
+ Wildcard with a lower bound | `? super type` | List<? super Exception> a = new ArrayList<Object>();
 
-- Finally, let's look at the impact of var. Do you think these two statements are equivalent?
-<p> They are not. There are two key differences. First, x1 is of type List, while x2 is of type ArrayList. Additionally, we can only assign x2 to a List<Object>.</p>
-
-```java
-List<?> x1 = new ArrayList<>();
-var x2 = new ArrayList<>();
-```
-
-####  Wildcard with an upper bound
-
-```java
-interface Flyer { void fly(); }
-class Goose implements Flyer { public void fly() {} }
-
-List<Goose> flyers = new ArrayList<>();
-        Goose goose =  new Goose();
-        flyers.add(goose);
-        GenericUpperBound gpb = new GenericUpperBound();
-        gpb.anyFlyer(flyers); // Doesn't compiles 'anyFlyer(java.util.List<Flyer>)' in 'GenericUpperBound' cannot be applied to '(java.util.List<Goose>)'
-        gpb.groupOfFlyers(flyers);
-```
-#### Generics vs Wild card with an upper bound
-
+- Unbounded wildcard List<?> is not same as List<Object>. you can't assign a List of Integer to List<Object>, but for List<?> allowed.
+- Upper bounded Wildcard List<? extends Number> can be interpereted as Number is allowed and any type that extends Number". It allows the code to used the methods in the bounded type.
+- Lower bounded  <? Super Exception> means Exception and its superclass throwable and Object are allowed.
+  
+### Unbounded Wildcards
+- An unbounded wildcard represents any data type. You use ? when you want to specify that any type is okay with you
 ```java
 ArrayList<Number> list = new ArrayList<Integer>(); // DOES NOT COMPILE
 List<? extends Number> list = new ArrayList<Integer>();// This works
 ```
+- Finally, let's look at the impact of var. Do you think these two statements are equivalent?
+<p> They are not. There are two key differences. First, x1 is of type List, while x2 is of type ArrayList. Additionally, we can only assign x2 to a List<Object>.</p>
+
+```java
+List<?> x1 = new ArrayList<>(); //List of any
+var x2 = new ArrayList<>(); // List<Object>
+```
+
 
 #### Lower-Bounded WildCards
 - The problem is that we want to pass a List<String> and a List<Object> to the same method.

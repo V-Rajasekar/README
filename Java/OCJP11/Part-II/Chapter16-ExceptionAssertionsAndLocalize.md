@@ -576,10 +576,10 @@ open: The zoo is open
 - Picking a resource bundle for French/France with default locale English/US. Java handles the logic of picking the best available resource bundle for a given key in the following order in the table.
 When defining a Locale, the first argument is the lowercase language code. The language is always required. The second argument is the uppercase country code. The country is optional. Here, the language is "fr" (for French) and the country is "FR" (for France).
 To select the appropriate ResourceBundle, Java will follow this order.
-1. ResourceBundle class for the specified Locale (match both language and country)
-2. ResourceBundle class for the specified Locale (match only language)
-3. ResourceBundle class for the default Locale (match both language and country)
-4. ResourceBundle class for the default Locale (match only language)
+1. ResourceBundle class for the specified Locale (`fr_FR` match both language and country)
+2. ResourceBundle class for the specified Locale (`fr` match only language)
+3. ResourceBundle class for the default Locale (`en_US` match both language and country)
+4. ResourceBundle class for the default Locale (`en` match only language)
 5. Use the default resource bundle if no matching locale can be found.
    
 Step|	Looks for file	   | Reason
