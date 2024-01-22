@@ -20,9 +20,9 @@
 
 # Chapter 13: Annotations
 ## Annotation Overview: 
-  <p>The Java specification describes an annotation as a marker that associates information with a program constuct but has no effect at run time
+  <p>The Java specification describes an annotation as a marker that associates information with a program construct but has no effect at run time
   
-  Unlike Javadoc tags, annotations can be configured(using a Retention Policy) to be retained and visible to the JVM, allowing them to be accessible at runtime.
+  Unlike Javadoc tags, annotations can be configured(using a Retention Policy) to be retained and visible to the JVM, allowing them to be accessible at run time.
 
   Annotations are used in the frameworks like Spring or JPA as a way to apply behaviours to user-defined classes and methods which would otherwise be declared in an external source(such as an XML conf) 
   
@@ -34,26 +34,25 @@
   </p> 
 
 - Understanding Metadata
-  - Metadata is data that provides information about other data.
-  - , the metadata includes the rules, properties, or relationships surrounding the actual data.
+  - Metadata is data that provides information about other data. The metadata includes the rules, properties, or relationships surrounding the actual data.
   - Purpose of the Annotations
      * The purpose of an annotation is to assign metadata attributes to classes, methods, variables, and other Java types. 
-     *  first rule about annotations: annotations function a lot like interfaces. In this example, annotations allow us to mark a class as a ZooAnimal without changing its inheritance structure. We could this using interfaces but it can be applied only to classes, annotations can be applied to any dcl incl classes, methods, expressions and even other annotations.
+     *  `first rule` about annotations: annotations function a lot like interfaces. In this example, annotations allow us to mark a class as a ZooAnimal without changing its inheritance structure. We could this using interfaces but it can be applied only to classes, annotations can be applied to any dcl incl classes, methods, expressions and even other annotations.
         ```java
                 @ZooAnimal public class Lion extends Mammal {}
                 
                 @ZooAnimal public class Peacock extends Bird {}
         ```
-     *  second rule about annotations: annotations establish relationships that make it easier to manage data about our application.
-     *  third rule about annotations: an annotation describes custom information on the declaration where it is defined. This turns out to be a powerful tool, as the same annotation can often be applied to completely unrelated classes or variables.
-     * 
+     *  `second rule` about annotations: annotations establish relationships that makes it easier to manage data about our application.
+     *  `third rule` about annotations: an annotation describes custom information on the declaration where it is defined. This turns out to be a powerful tool, as the same annotation can often be applied to completely unrelated classes or variables.
+  
         ```java
                     @ZooSchedule(hours={"9am","5pm","10pm"}) void feedLions() {
                     System.out.print("Time to feed the lions!");
                 }
         ```
 
-     *  final rule about annotations you should be familiar with: annotations are optional metadata and by themselves do not do anything. This means you can take a project filled with thousands of annotations and remove all of them, and it will still compile and run, albeit with potentially different behavior at runtime.
+     * `final rule` about annotations you should be familiar with: annotations are optional metadata and by themselves do not do anything. This means you can take a project filled with thousands of annotations and remove all of them, and it will still compile and run, albeit with potentially different behavior at runtime.
 ## Creating Customer Annotations
 //
 
@@ -85,28 +84,65 @@ public class Generation3List extends Generation2List {
 }
 ```
 #### Rules of Declaring Annotation
-  - We use the @interface annotation (all lowercase) to declare an annotation. Like classes and interfaces, they are commonly defined in their own file as a top‐level type, although they can be defined inside a class declaration like an inner class.
-  - The body of the previous annotation definition contains annotation type element declarations, which look a lot like methods. Note that they can define optional default values. elements without default are required when using this annotations.
+  - We use the @interface annotation (all lowercase) to declare an annotation. Like classes and interfaces, they are commonly defined in their own file as a top‐level type, although `they can be defined inside a class declaration like an inner class`.
+  - The body of the previous annotation definition contains annotation type element declarations, which look a lot like methods. Note that they can define optional default values. **elements without default are required** when using this annotations.
   -  Annotation names are case sensitive.some annotations, like @Food, can be applied more than once.
   -  As with other declarations in Java, spaces and tabs between elements are ignored. 
-  -  To make the information in @ClassPreamble appear in Javadoc-generated documentation, in the Definition mention @Documented.
+  -  To make the information in @ClassPreamble appear in Javadoc-generated documentation, in the Definition mention` @Documented`.
   
 #### Rules of Declaring elements with in annotations.
- - public String title() default null; - fails. The default value of an element must be a non-null constant expression.
- - Element type can be only be one of these predefined types; a primitive  
+ - public String title() default null; - fails. **The default value of an element must be a non-null constant expression**.
+ 
+  *  It must be a `primitive type, a String, a Class, an enum, another annotation, or an array of any of these types`.
+  
+   ```java
+      @interface MyAnnotation {
+         int intValue() default 0;
+         boolean booleanValue() default true;
+      }
+
+      @interface MyAnnotation {
+         String stringValue() default "default";
+      }
+
+      @interface MyAnnotation {
+         Class<?> classValue() default Object.class;
+      }
+
+      enum Status { PENDING, APPROVED, REJECTED }
+
+      @interface MyAnnotation {
+         Status status() default Status.PENDING;
+      }
+
+      @interface AdditionalInfo {
+         String author();
+         String version() default "1.0";
+      }
+
+      @interface MyAnnotation {
+         String value();
+         AdditionalInfo additionalInfo() default @AdditionalInfo(author = "John Doe");
+      }
+
+      @interface MyAnnotation {
+         int[] intArray() default {1, 2, 3};
+         String[] stringArray() default {"a", "b", "c"};
+      }
+   ``` 
 
     `public @interface Exercise {}`   
 
   - Applying the annotation to some classes 
      ```java
-     @Exercise() public class Cheetah {} // paranthesis are optional
-        @Exercise public class Sloth {}
-        @Exercise
-        public class ZooEmployee {}
+      @Exercise() public class Cheetah {} // paranthesis are optional
+      @Exercise public class Sloth {}
+      @Exercise
+      public class ZooEmployee {}
 
-   @Scaley       @Flexible
-   @Food("insect") @Food("rodent")      @FriendlyPet
-   @Limbless public class Snake {}
+      @Scaley       @Flexible
+      @Food("insect") @Food("rodent")      @FriendlyPet
+      @Limbless public class Snake {}
 
     ```
   
@@ -140,7 +176,6 @@ public class Generation3List extends Generation2List {
 In this example, name() does not compile because it is not a constant expression, while title() does not compile because it is null. Only address() compiles. Notice that while null is not permitted as a default value, the empty String "" is.
 
 - Selecting an Element Type
-  *  It must be a primitive type, a String, a Class, an enum, another annotation, or an array of any of these types.
  
   * ```java
         public class Bear {}
@@ -310,7 +345,8 @@ class Flower6 extends Flower1 { @Override public boolean equals(Flowerl flower) 
  -  It **can be applied** _only to constructors or methods that cannot be overridden (aka methods marked private, static, or final)_.
 ####  `@SafeVarargs` 
 
-when applied to a method or constructor, assert that the code does not perform potentially unsafe operation on its varargs param. 
+when applied to a method or constructor, assert that the code does not perform potentially unsafe operation on its varargs param.   
+It is applicable (only) to constructor and methods
 
 suppresses the warnings at `Line2: Possible heap pollution from parameterized vararg type`,<br> `Line 1: Unchecked generics array creation for varargs parameter`
  

@@ -4,6 +4,7 @@
     - [Consumer: void accept(T t)](#consumer-void-acceptt-t)
     - [Supplier: T get()](#supplier-t-get)
     - [Comparator:  int compare(T o1, T o2)](#comparator--int-comparet-o1-t-o2)
+  
 
 # Chapter06 Lambdas and Functional Interfaces.
 A lambda expression is a short block of code which takes in parameters and returns a value.
@@ -20,6 +21,7 @@ The break and continue keywords are illegal at the top level, but are permitted 
   CheckMe((Integer i) -> i == 5*5)); //return not required when no {} around the body
   CheckMe((Integer i) -> {return i == 5*5);}); // Return must in enclosed body.
   CheckMe((i) -> {return i == 5*5);});
+  checkMe((i) -> i == 25));
   //Autoboxing does not work when inferring predicates.
   CheckMe((int i) -> {return i == 5*5);});  //Does work
 ```

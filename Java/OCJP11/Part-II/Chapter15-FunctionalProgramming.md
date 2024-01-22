@@ -6,6 +6,7 @@
     - [Predicate and BiPredicate](#predicate-and-bipredicate)
     - [Function and BiFunction](#function-and-bifunction)
     - [Custom Functional Interface](#custom-functional-interface)
+    - [Optional](#optional)
     - [Implementing UnaryOperator and BinaryOperator](#implementing-unaryoperator-and-binaryoperator)
     - [Convenience Methods on Functional Interfaces.](#convenience-methods-on-functional-interfaces)
       - [Predicate(and(), negate())](#predicateand-negate)
@@ -112,6 +113,21 @@ Java's built‐in interfaces are meant to facilitate the most common functional 
        R apply(T t, U u, V v);
     }
 ```
+### Optional 
+Optional is a container object which may or may not contain a non-null value. 
+|Method|Description|
+|---|---|
+|empty()|Returns an empty Optional instance|
+|isPresent| true/false if the value present|
+|isEmpty|true/false if value is not present|
+|ofNullable|Returns an Optional describing the given value, if non-null, otherwise returns an empty Optional.|
+|orElse(T other)|if a value is present, return the value, otherwise returns others|
+|orElseThrow()|if a value is present, return the value,otherwise throw no such element|
+|void	ifPresent​(Consumer<? super T> action)|If a value is present, performs the given action with the value, otherwise does nothing.|
+|void	ifPresentOrElse​(Consumer<? super T> action, Runnable emptyAction)| If a value is present, performs the given action with the value, otherwise performs the given empty-based action.|
+|	stream()|If a value is present, returns a sequential Stream containing only that value, otherwise returns an empty Stream.|
+
+
 ### Implementing UnaryOperator and BinaryOperator
 - In the Javadoc, you'll notice that these methods are actually inherited from the Function/ BiFunction superclass. The generic declarations on the subclass are what force the type to be the same.
 

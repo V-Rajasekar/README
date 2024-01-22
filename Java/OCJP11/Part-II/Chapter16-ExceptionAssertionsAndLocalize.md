@@ -367,6 +367,12 @@ System.out.println(dt.format(g1)); // October 20, Party's at 06:15
 ### Supporting Internalization and Localization
 - The Locale class is in the `java.util.Locale` package. The first useful Locale to find is the user's current locale.
 #### Creating a Locale instance
+The Locale class has several constructors:
+
+Locale(String language)
+Locale(String language, String country)
+Locale(String language, String country, String variant)
+
 ```java
 Locale II = new Locale("en"); //#1 Allowed
 Locale 12 = new Locale("en", "in"); //#2 Allowed

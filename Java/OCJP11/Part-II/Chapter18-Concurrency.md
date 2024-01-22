@@ -164,7 +164,7 @@ Future<?> submit(Runnable task)	|Executes a Runnable task at some point in the f
 <T> Future<T> submit(Callable<T> task)	| Executes a Callable task at some point in the future and returns a Future representing the pending results of the task
 <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks) throws InterruptedException	| Executes the given tasks and waits for all tasks to complete. Returns a List of Future instances, in the same order they were in the original collection
 <T> T invokeAny(Collection<? extends Callable<T>> tasks) throws InterruptedException, ExecutionException	| Executes the given tasks and waits for at least one to complete. Returns a Future instance for a complete task and cancels any unfinished tasks
-
+boolean awaitTermination​(long maxTimeout, TimeUnit unit) throws InterruptedException| The awaitTermination() method waits the specified time until all tasks have completed execution, returns earlier if the task are completed much before the maxTimeout or an interruptException is detected
 ### Waiting for Result 
   * `Future<?> future = service.submit(() -> System.out.println("Hello"));` 
   * `Future` includes useful methods for determining the state of a task.
