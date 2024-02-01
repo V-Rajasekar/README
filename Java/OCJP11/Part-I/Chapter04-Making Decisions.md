@@ -101,7 +101,16 @@ switch(size) {
 for(int i = 0; i < 5; i++) {
    System.out.print(i + " ");
 }
-//Prints 0 1 2 3 4
+//Prints 0 1 2 3 4 //here of the increment is ++i its the same output
+
+int i,j;
+for ( i = j = 0; ; ++i, j--) {
+    if (i - j > 10) {
+        break;
+    }
+}
+  System.out.println(i + " " + j);
+//Prints 6-6
 //Printing elements in reverse
   for (var counter = 4; counter >= 0; counter--) {
    System.out.print(counter + " ");

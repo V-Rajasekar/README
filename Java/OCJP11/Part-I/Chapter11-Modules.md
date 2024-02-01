@@ -1,151 +1,104 @@
 # Chapter 11 Modules
 
- - A Java Platform Module System was (JPMS) was introduced in Java 9
- - It includes the following
-    * A format for module JAR files
-    * Partitioning of the JDK into modules
-    * Additional command-line options for Java tools
- - What it solved ? 
-   - Modules solve this problem by acting as a fifth level of access control. They can expose packages within the modular JAR to specific other packages. This stronger form of encapsulation really does create internal packages. 
- - Creating and Running a Modular Program
-   1.  Simple java class
-    ```java
-    package zoo.animal.feeding;
-    
-    public class Task {
-      public static void main(String... args) {
-          System.out.println("All fed!");
-      }
-    }
-    ```
-   2. Create a module-info.java
-    ```java
-      module zoo.animal.feeding {
-      }
-    ```
-* The module-info file must be in the root directory of your module. Regular Java classes should be in packages.
-* The module-info file must use the keyword module instead of class, interface, or enum.
-* The module name follows the naming rules for package names. It often includes periods (.) in its name. Regular class and package names are not allowed to have dashes (-). Module names follow the same rule.
+- A Java Platform Module System was (JPMS) was introduced in Java 9
+- A module is a group of one or more packages plus a specific file called module-info.java
+- It includes the following
+  - A format for module JAR files
+    - Partitioning of the JDK into modules
+    - Additional command-line options for Java tools
+- What it solved ?
+  - Modules solve this problem by acting as a fifth level of access control. They can expose packages within the modular JAR to specific other packages. This stronger form of encapsulation really does create internal packages.
+- -p D:\Git\core-java\core-java\out\production\MyFirstModule -m MyFirstModule/modular.HelloWorld
 
-### Compiling Our First Module
+## Creating and Running a Modular Program
+
+1. create a new module from root folder MyFirstModule
+2. create src\module-info.java in the source folder
+  ![Alt text](FirstModule.png)
 
 ```shell
-javac --module-path mods
-   -d feeding
-   feeding/zoo/animal/feeding/*.java
-   feeding/module-info.java
 
--- other valid ways
-javac -p mods
-   -d feeding
-   feeding/zoo/animal/feeding/*.java
-   feeding/*.java
+## compiling a Module
+ javac --module-path MyFirstModule -d out\production .\MyFirstModule\src\modular\HelloWorld.java .\MyFirstModule\src\module-info.java
+
+## Executing -p is like class path containing the exploded classes
+ java --module-path .\out\production\ --module MyFirstModule/modular.HelloWorld
+ java -p .\out\production\ -m MyFirstModule/modular.HelloWorld
+
+## Creating a jar file in the root folder -C contains the exploded class file and module-info
+ jar --create --file MyFirstModule.jar --main-class modular.HelloWorld -C .\out\production\ . 
+
+## Examining a module 
+ jar -f MyFirstModule.jar --list
+
+ jar -f MyFirstModule.jar -d # describe the module
+
+## Executing from jar
+ java --module-path . --module MyFirstModule
  
-javac -p mods
-   -d feeding
-   feeding/zoo/animal/feeding/*.java
-   feeding/module-info.java
- 
-javac -p mods
-   -d feeding
-   feeding/zoo/animal/feeding/Task.java
-   feeding/module-info.java
- 
-javac -p mods
-   -d feeding
-   feeding/zoo/animal/feeding/Task.java
-   feeding/*.java
+ java -p . -m MyFirstModule #shorter version
 ```
- -d specifies the dir to place the class files in. 
- --module-path specifies indicates the location of any custom module files. can be omitted when there is no dependencies. module-path is like classpath
- --module-path is equivalent to -p.
 
-### Running Out First Module
+![java(Examining module)](Command-line-options-to-module1.png)
+![java(Executing the module & jar)](Command-line-options-to-module2.png)
+![javac(Compile Module)](Command-line-options-to-javac.png)
+![Jdeps insight to module](Command-line-options-Jdeps.png)
+![Jdeps print and check](Command-line-options-Jdeps2.png)
+
+## Working with Multi module
+![java-multi-module](java-multi-module.png)
+
+Changes:
+  
+  1. Do changes in the module-info.java of (MyFirstModule, MySecondModule)
+
+  ```json
+      module MyFirstModule {
+        requires MySecondModule;
+      }
+
+       module MySecondModule {
+        export mod2;
+      }
+  ```
+
+  2. Compile, build jar and execute 
   
   ```bash
-        location of module          ModuleName  Package name Ocp is Class name
-  java --module-path out --module com.jenkov.mymodule/com.jenkov.mymodule.Main
+    D:\Git\core-java>jar --create --file MyFirstModule.jar --main-class modular.HelloWorld -C out\production\MyFirstModule\ .
+
+    D:\Git\core-java>jar --create --file out\MySecondModule.jar -C out\production\MySecondModule\ .  
+
+    D:\Git\core-java>java --dry-run -p .;out -m MyFirstModule
+
+    D:\Git\core-java>java -p .;out -m MyFirstModule 
+
+    #Examine the dependent modules
+    jdeps --module-path .;out  MyFirstModule.jar
+     #or 
+    jdeps --module-path .;out  -m MyFirstModule 
+
   ```
-  The --module-path argument points to the root directory where all the compiled modules are located.The --module argument tells what module + main class to run. INotice how the module name and main class name are separated by a slash (/) character.
+## module-info
 
-- For the above example.
-  
-  `java --module-path feeding   --module zoo.animal.feeding/zoo.animal.feeding.Task`
-
-  --shorter version
-  `java -p feeding -m zoo.animal.feeding/zoo.animal.feeding.Task `
- 
-
-  In these examples,   `feeding` is the output directory where the compiled class file and module-info.class is present. This will change once we package the module and run that.
-
-### Packaging Our First Module
-
-`jar -cvf mods/zoo.animal.feeding.jar -C feeding/ .`
-- _Note:_ We are packaging everything under the feeding directory and storing it in a JAR file named zoo.animal.feeding.jar under the mods folder.     
-
-- After packing lets run the java from the jar
-
-`java -p mods -m zoo.animal.feeding/zoo.animal.feeding.Task`
-
-- Updating our examples for Multiple Modules
- - Exporting zoo.animal.feeding as this will be required in other modules
-  
-  ```java
-      module zoo.animal.feeding {
-      exports zoo.animal.feeding;
-    }
-  ```
-  - Recompiling and packaging 
-
-```console
-
-  javac -p mods 
-   -d feeding
-   feeding/zoo/animal/feeding/*.java
-   feeding/module-info.java
- 
-jar -cvf mods/zoo.animal.feeding.jar -C feeding/ .
-```
-
-- Creating a `Care` Module
-  The module contains two basic packages and classes in addition to the module-info.java file: </br>
-  ```java
-
-    // HippoBirthday.java
-  package zoo.animal.care.details;
-  import zoo.animal.feeding.*;
-  public class HippoBirthday {
-    private Task task;
-  }
-  
-  // Diet.java
-  package zoo.animal.care.medical;
-  public class Diet { }
-  ```
-  - Next the module-info.java files 
-    ```java
-    1: module zoo.animal.care {
-    2:    exports zoo.animal.care.medical;
-    3:    requires zoo.animal.feeding;
-    4: }
-    ```
-
-  * Compile and package the module: 
-    - _**Note**_ ORDER MATTERS! if module-info.java is specified first compiler complains no package found with the name zoo.animal.care.*
-    ```js
-    javac -p mods -d care
-   care/zoo/animal/care/details/*.java
-   care/zoo/animal/care/medical/*.java
-   care/module-info.java
-    ```
-
-    Packing: `jar -cvf mods/zoo.animal.care.jar -C care/ .`
-    
+- The`module-info` file must be in the root directory of your module. Regular Java classes should be in packages.
+- The `module-info` file must use the keyword module instead of class, interface, or enum.
+- The module name follows the naming rules for package names. It often includes periods (.) in its name. Regular class and package names are not allowed to have dashes (-). Module names follow the same rule.
 - _module-info_ file
-  * Keywords used in the module-info files are: exports, requires, provides, uses, and opens.
-
+  - Keywords used in the module-info files are: exports, requires, provides, uses, and opens.
+  - requires Examples
+    - requires org.module.a;
+    - `requires transitive` java.xml; 
+      In this case, any module that reads java.desktop also implicitly reads java.xml. For example, if a method from the java.desktop module returns a type from the java.xml module, code in modules that read java.desktop becomes dependent on java.xml. Without the `requires transitive` directive in java.desktop’s module declaration, such dependent modules will not compile unless they explicitly read java.xml.
+    - requires static org.module.e (means required on the compile time, but its optional in runtime)
+  - exports Example
+    - `export org.pkg.base` its a unqualified type meaning available to any module adds requires in their module-info.java
+    - `export org.pkg.util to module.a, module.b` its a qualified type here module a and module b are considered as friends and (only) these modules have access to the public and protected type of the exported module.
 - Transitive dependency version of modules.
   Here with the help of _requires transitive_ you can get ride of the dashed lines, by declaring transtive dependencies in care, talks
+- uses. A uses module directive specifies a service used by this module—making the module a service consumer. A service is an object of a class that implements the interface or extends the abstract class specified in the uses directive.
+- `provides…with`. A provides…with module directive specifies that a module provides a service implementation—making the module a service provider. The provides part of the directive specifies an interface or abstract class listed in a module’s uses directive and the with part of the directive specifies the name of the service provider class that implements the interface or extends the abstract class.
+- `open, opens, and opens…to`. Before Java 9, reflection could be used to learn about all types in a package and all members of a type—even its private members—whether you wanted to allow this capability or not. Thus, nothing was truly encapsulated.
 ![Alt text](transtive-dependency-module.png)
 
 ```java
@@ -172,14 +125,18 @@ module zoo.staff {
 ```
 
 - _**Duplicate requires Statements**_
-* Java doesn't allow you to repat the same module in a requires clause.
+
+- Java doesn't allow you to repeat the same module in a requires clause.
+
 ```java
 module bad.module {
    requires zoo.animal.talks;
    requires transitive zoo.animal.talks;
 }
 ```
+
 - **provides, uses, and opens**
+
  <p> The provides keyword specifies that a class provides an implementation of a service. </p>
 
   `provides zoo.staff.ZooApi with zoo.staff.ZooImpl`<br>
@@ -190,7 +147,7 @@ module bad.module {
 
 <p>The `uses` keyword specifies that a module is relying on a service. To code it, you supply the API you want to call:
 
-Java allows callers to inspect and call code at runtime with a technique called reflection. This is a powerful approach that allows calling code that might not be available at compile time. 
+Java allows callers to inspect and call code at runtime with a technique called reflection. This is a powerful approach that allows calling code that might not be available at compile time.
 
 Since reflection can be dangerous, the module system requires developers to explicitly allow reflection in the module-info if they want calling modules to be allowed to use it. Here are two examples:
 </p>
@@ -199,29 +156,32 @@ Since reflection can be dangerous, the module system requires developers to expl
 opens zoo.animal.talks.schedule; // Allows any module using this one to use reflection.
 opens zoo.animal.talks.media to zoo.staff; //Gives privilege to the zoo.staff package.
 ```
+
 - Discovering Modules
-  * **The java Command**
+  - **The java Command**
     The java command has three module-related options. 1) One describes a module, 2) another lists the available modules, and 3) the third shows the module resolution logic.<br>
 
-  * Describing a Module
+  - Describing a Module
   Each prints information about the module.<br>
 
   option-1:  `java -p mods -d zoo.animal.feeding`  <br>
 
   option-2:  `java -p mods --describe-module zoo.animal.feeding` <br>
 
-  It might print something like these 
+  It might print something like these
   
 ```java
   zoo.animal.feeding file:///absolutePath/mods/zoo.animal.feeding.jar
   exports zoo.animal.feeding
   requires java.base mandated
 ```  
+
 - _Note:_ The java.base module is special. It is automatically added as a dependency to all modules. This module has frequently used packages like java.util. That’s what the mandated is about.
 
 - More about describing modules
 
 - The contents of module-info in zoo.animal.care  
+
  ```java
   module zoo.animal.care {
    exports zoo.animal.care.medical to zoo.staff;
@@ -238,10 +198,11 @@ contains zoo.animal.care.details
 
 1. absolute path of the module file.
 2, 3: requires lines as care is dependened on feeding module as its declared transitive, any module requires care, by default they inherit the feeding
-4. The contains means that there is a package in the module that is not exported at all.
+1. The contains means that there is a package in the module that is not exported at all.
  ```
+
 - **Listing Available**
-  * `java -p mods --list-modules` list the build-in modules plus + four in our zoo system.
+  - `java -p mods --list-modules` list the build-in modules plus + four in our zoo system.
 - **Showing Module Resolution**
 
 ```java
@@ -249,6 +210,7 @@ contains zoo.animal.care.details
    -p feeding
    -m zoo.animal.feeding/zoo.animal.feeding.Task
 ```
+
 - The jar Command
   Like java command jar command can describe a module.
 
@@ -256,7 +218,9 @@ contains zoo.animal.care.details
   jar -f mods/zoo.animal.feeding.jar -d
   jar --file mods/zoo.animal.feeding.jar --describe-module
 ```
+
 ### The jdeps Command
+
   <p>The jdeps gives information about dependencies within a module. Unlike describing a module, it looks at the code in addition to the module-info file. This tells you what dependencies are actually used rather than simply declared.</p>
 
 ```java
@@ -266,9 +230,9 @@ jdeps -summary mods/zoo.animal.feeding.jar
 //Both outputs zoo.animal.feeding -> java.base
 jdeps --jdk-internals  mods/zoo.animal.feeding.jar
 ```
+
 - Note: Without -s/-summary you get the detailed dependencies
 - --jdk-internals option lists any classes your using that call an internal API along with which API.
 [Jdeps](https://docs.oracle.com/en/java/javase/11/tools/jdeps.html#GUID-A543FEBE-908A-49BF-996C-39499367ADB4)
 - **The jmod Command**
    JMOD files are recommended only when you have native libraries or something that can’t go inside a JAR file. This is unlikely to affect you in the real world.<br>
-

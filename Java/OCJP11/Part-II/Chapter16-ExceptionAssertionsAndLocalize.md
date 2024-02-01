@@ -1,4 +1,5 @@
 # Chapter-16: Exceptions, Assertions, and Localization
+
 - [Chapter-16: Exceptions, Assertions, and Localization](#chapter-16-exceptions-assertions-and-localization)
   - [try with resources](#try-with-resources)
     - [Uncheck Exceptions](#uncheck-exceptions)
@@ -8,15 +9,15 @@
     - [Understanding Suppressed Exceptions](#understanding-suppressed-exceptions)
     - [Declaring Assertions](#declaring-assertions)
       - [Writing Assertions Correctly](#writing-assertions-correctly)
-    - [Working with Dates and Times](#working-with-dates-and-times)
-      - [Creating Dates and Times](#creating-dates-and-times)
+  - [Working with Dates and Times](#working-with-dates-and-times)
+    - [Creating Dates and Times](#creating-dates-and-times)
     - [Formatting Dates and Times](#formatting-dates-and-times)
       - [Standard DateTimeFormatter](#standard-datetimeformatter)
-      - [Custom java.time.format.DateTimeFormatter (Java 11)](#custom-javatimeformatdatetimeformatter-java-11)
+    - [Custom java.time.format.DateTimeFormatter (Java 11)](#custom-javatimeformatdatetimeformatter-java-11)
       - [THE DATE AND java.text.SimpleDateFormat CLASSES (java 8)](#the-date-and-javatextsimpledateformat-classes-java-8)
-      - [Adding Customer Text values](#adding-customer-text-values)
-    - [Supporting Internalization and Localization](#supporting-internalization-and-localization)
-      - [Creating a Locale instance](#creating-a-locale-instance)
+    - [Adding Customer Text values](#adding-customer-text-values)
+  - [Supporting Internalization and Localization](#supporting-internalization-and-localization)
+    - [Creating a Locale instance](#creating-a-locale-instance)
       - [Setting default `Locale`](#setting-default-locale)
     - [Localizing Numbers](#localizing-numbers)
       - [Formatting Numbers](#formatting-numbers)
@@ -88,21 +89,21 @@
 - [try-with-resources](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html)
 ### Uncheck Exceptions 
 
-|          |                 |
-| ---------|----------       |
-|ArithmeticException	        |ArrayIndexOutOfBoundsException
-|ArrayStoreException	        |ClassCastException
-|UnsupportedOperationException	| IllegalStateException
-|MissingResourceException	|NullPointerException
-|NumberFormatException	    | IllegalArgumentException
+|                               |                                |
+| ----------------------------- | ------------------------------ |
+| ArithmeticException           | ArrayIndexOutOfBoundsException |
+| ArrayStoreException           | ClassCastException             |
+| UnsupportedOperationException | IllegalStateException          |
+| MissingResourceException      | NullPointerException           |
+| NumberFormatException         | IllegalArgumentException       |
 
 ### Checked Exceptions
 
-|        |          |
-|--------|----------|
-|FileNotFoundException	    |IOException
-|NotSerializableException	|ParseException
-|SQLException|
+|                          |                |
+| ------------------------ | -------------- |
+| FileNotFoundException    | IOException    |
+| NotSerializableException | ParseException |
+| SQLException             |
 
 ### Catching Multiple Exception
 ```java
@@ -238,8 +239,8 @@ When provided, the error message will be sent to the AssertionError constructor.
 - One of the most important rules you should remember from this section is: assertions should never alter outcomes. when assertion is turned on x will be 11, when off x will be 10.
 `int x = 10; assert ++x> 10; // Not a good design!`
 
-### Working with Dates and Times
-#### Creating Dates and Times
+## Working with Dates and Times
+### Creating Dates and Times
 - Understanding the Date and Time types
   
 ```java
@@ -296,7 +297,7 @@ System.out.println(dt.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 2020-10-20T11:12:34
 ```
 More on [DateTimeFormatter](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/format/DateTimeFormatter.html)
-#### Custom java.time.format.DateTimeFormatter (Java 11)
+### Custom java.time.format.DateTimeFormatter (Java 11)
 ```java
 var f = DateTimeFormatter.ofPattern("MMMM dd, yyyy 'at' hh:mm");
 System.out.println(dt.format(f));  // January 20, 2020 at 11:12
@@ -344,7 +345,7 @@ Exception in thread "main" java.time.DateTimeException:
   System.out.println(dateTime.format(formatter)); // 10/20/2020 06:15:30
   System.out.println(formatter.format(dateTime)); // 10/20/2020 06:15:30
 ```
-#### Adding Customer Text values
+### Adding Customer Text values
 
 ```java
 var dt = LocalDateTime.of(2020, Month.OCTOBER, 20, 6, 15, 30);
@@ -364,9 +365,9 @@ System.out.println(dt.format(g1)); // October 20, Party's at 06:15
 
 ```
 
-### Supporting Internalization and Localization
+## Supporting Internalization and Localization
 - The Locale class is in the `java.util.Locale` package. The first useful Locale to find is the user's current locale.
-#### Creating a Locale instance
+### Creating a Locale instance
 The Locale class has several constructors:
 
 Locale(String language)
@@ -401,6 +402,14 @@ Locale 17 = new Locale(true); //#7 //wrong no constr
    .setLanguage("en")
    .setRegion("US")
    .build();
+
+  //
+1.  Locale 11 = Locale.US;
+2.  Locale 12 = new Locale("en", "US");
+3.  Locale 13 = new Locale.Builder().setRegion("US").build();
+  System.out.printin(11.equals (12));
+  System.out.println(12.equals(13)); 
+//Line 1 and Line 2 create Locale with default language en, so the output is true, false.
 ```
 - Java will let you create a Locale with an invalid language or country, such as xx_XX. However, it will not match the Locale that you want to use, and your program will not behave as expected.
 
@@ -412,6 +421,7 @@ Locale 17 = new Locale(true); //#7 //wrong no constr
   Locale.setDefault(locale);               // change the default
   System.out.println(Locale.getDefault()); // fr
 ```
+
 ### Localizing Numbers
 the `java.text` package includes classes to format numbers, currency, and dates based on the default locale and specified Locale.
 - Factorymethods to get a NumberFormat
@@ -456,10 +466,10 @@ System.out.println(gr.format(attendeesPerMonth));
   ### Writing a Customer Number Formatter
   - java.text.DecimalFormat extends NumberFormat to format decimal numbers in the your requested format
 
-Symbol	| Meaning	Examples
-------- | ------------
-`#` | Omit the position if no digit exists for it.	$2.2
-`0` | Put a 0 in the position if no digit exists for it. $002.20
+| Symbol | Meaning	Examples                                           |
+| ------ | ---------------------------------------------------------- |
+| `#`    | Omit the position if no digit exists for it.	$2.2          |
+| `0`    | Put a 0 in the position if no digit exists for it. $002.20 |
 
 ```java
 12: double d = 1234567.467;
@@ -473,11 +483,11 @@ Symbol	| Meaning	Examples
 ### Localizing Dates
 - Factory methods to get a `DateTimeFormatter` 
 
-Description | Using default Locale 
----------|----------
-For formatting dates | DateTimeFormatter.ofLocalizedDate(dateStyle) 
-For formatting times | DateTimeFormatter.ofLocalizedTime(timeStyle)  
- For formatting dates and times | DateTimeFormatter.ofLocalizedDateTime(dateStyle, timeStyle)
+| Description                    | Using default Locale                                        |
+| ------------------------------ | ----------------------------------------------------------- |
+| For formatting dates           | DateTimeFormatter.ofLocalizedDate(dateStyle)                |
+| For formatting times           | DateTimeFormatter.ofLocalizedTime(timeStyle)                |
+| For formatting dates and times | DateTimeFormatter.ofLocalizedDateTime(dateStyle, timeStyle) |
 DateTimeFormatter.ofLocalizedDateTime(dateTimeStyle) 
 
 - Each method in the table takes a FormatStyle parameter, with possible values SHORT, MEDIUM, LONG, and FULL
@@ -588,14 +598,14 @@ To select the appropriate ResourceBundle, Java will follow this order.
 4. ResourceBundle class for the default Locale (`en` match only language)
 5. Use the default resource bundle if no matching locale can be found.
    
-Step|	Looks for file	   | Reason
-----|-------------------- | -------
-1	| Zoo_fr_FR.properties	 | The requested locale (fr_FR)
-2	| Zoo_fr.properties	     | The language we requested with no country(fr)
-3	| Zoo_en_US.properties	 | The default locale (en_US)
-4	| Zoo_en.properties	     | The default locale's language(en) with no country
-5	| Zoo.properties	       | No locale at all—the default bundle
-6	| If still not found, throw MissingResourceException.|	No locale or default bundle available  
+| Step | Looks for file                                      | Reason                                            |
+| ---- | --------------------------------------------------- | ------------------------------------------------- |
+| 1    | Zoo_fr_FR.properties                                | The requested locale (fr_FR)                      |
+| 2    | Zoo_fr.properties                                   | The language we requested with no country(fr)     |
+| 3    | Zoo_en_US.properties                                | The default locale (en_US)                        |
+| 4    | Zoo_en.properties                                   | The default locale's language(en) with no country |
+| 5    | Zoo.properties                                      | No locale at all—the default bundle               |
+| 6    | If still not found, throw MissingResourceException. | No locale or default bundle available             |
 
 <hr>
 

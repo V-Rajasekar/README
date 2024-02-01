@@ -2,7 +2,7 @@
  
 ### Compile Non modular code <br>
 ```java
-    javac -cp classpath -d directory //classesToCompile
+    javac -cp <classpath> -d <directory> //classesToCompile
 
     javac --class-path classpath -d directory //classesToCompile
 

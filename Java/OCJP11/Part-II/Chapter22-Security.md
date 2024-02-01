@@ -212,7 +212,14 @@ use a security policy to control what the program can access.It is good to apply
         "C:\\water\\fish.txt",
         "read";   
     };
+    grant {
+      permission java.io.FilePermission "/usr/local/school/referencebook.txt",
+      "read,write";
+    };
+
 ```
+
+
 
 #### Serializing and Deserializing Objects
 Imagine we want to store employee data in a file, and read this data back into memory, but we want to do so without writing any potentially sensitive data to disk. Suppose age field in employee record is sensitive data which you don't want to write to the file, then prevents it from being seralized using `transient`.    
