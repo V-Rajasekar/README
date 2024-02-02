@@ -1,12 +1,14 @@
 - [Chapter 13: Annotations](#chapter-13-annotations)
-  - [Annotation Overview:](#annotation-overview)
-  - [Creating Customer Annotations](#creating-customer-annotations)
+  - [Annotation Overview](#annotation-overview)
+  - [Simple Annotation declaration and types](#simple-annotation-declaration-and-types)
+    - [Annotation types](#annotation-types)
+  - [Creating Custom Annotations](#creating-custom-annotations)
       - [Rules of Declaring Annotation](#rules-of-declaring-annotation)
-      - [Rules of Declaring elements with in annotations.](#rules-of-declaring-elements-with-in-annotations)
+      - [Rules of Declaring elements with in annotations](#rules-of-declaring-elements-with-in-annotations)
     - [Creating a _value()_ Element](#creating-a-value-element)
     - [Predefined JDK Annotations](#predefined-jdk-annotations)
       - [`@Override`](#override)
-      - [` @Deprecated`](#-deprecated)
+      - [`@Deprecated`](#deprecated)
       - [`@SuppressWarnings`](#suppresswarnings)
       - [`@SafeVarargs`](#safevarargs)
       - [@Target limitation and usage](#target-limitation-and-usage)
@@ -19,32 +21,84 @@
   - [Review Questions](#review-questions)
 
 # Chapter 13: Annotations
-## Annotation Overview: 
+
+## Annotation Overview
+
   <p>The Java specification describes an annotation as a marker that associates information with a program construct but has no effect at run time
   
   Unlike Javadoc tags, annotations can be configured(using a Retention Policy) to be retained and visible to the JVM, allowing them to be accessible at run time.
 
-  Annotations are used in the frameworks like Spring or JPA as a way to apply behaviours to user-defined classes and methods which would otherwise be declared in an external source(such as an XML conf) 
+  Annotations are used in the frameworks like Spring or JPA as a way to apply behaviours to user-defined classes and methods which would otherwise be declared in an external source(such as an XML conf)
+
+  There are two types of annotations 1. Declaration annotations 2. Type annotations.
+
+  The declaration annotations allow you to annotate any of the following types in Java
+
+- Module  
+- Package
+- Annnotation_type
+- Type
+- Type_Parameter
+- Constructor
+- Method
+- Parameter
+- Field
+- Local_Variable
   
-  Simple annotation can be @MyFirstAnnotation 
-  other options: 
-  @MyFirstAnnotation // Marker type
+  Annotation Retention Policies
+
+- It specifies to the compiler, where the annotation will be specified (retained) in the generated class file,and from where JVM can pickup by reflection methods
+  - SOURCE
+  - CLASS
+  - RUNTIME (only this read by JVM reflectively)
+
+- Types of annotations
+  - Marker @MySecondAnnotation (no element values)
+  - Single Element specifies a single element value named value @MySecondAnnotation("THIS")
+  - Normal specifies 0..* element values @MyFirstAnnotation(name="THAT", value="MORE" )
+  
+  Simple annotation can be @MyFirstAnnotation
+  other options:
+  @MyFirstAnnotation or  @MyFirstAnnotation() // Marker type
   @MyFirstAnnotation("THIS") // Single element type (value is the unnamed element here for "THIS")
   @MyFirstAnnotation(name="THIS", value="MORE") // NORMAL element type 0..* many element values, default values.
-  </p> 
+
+  </p>
+
+## Simple Annotation declaration and types
+
+The simplest annotation will look a like 
+
+```java
+   public @interface MyInterface {
+      
+   }
+```
+### Annotation types
+
+Annotation | Description  
+---------|---------- 
+ Documented | 
+ Inherited | Applies to an annotation for a class 
+ Native | Field defining a constant value may be refer from native code
+ Repeatable |  
+ Retention | Indicates how long annotations with the annotated type are to be retained.
+ Target | @Target meta annotation is used to indicate the context in which an annotation type is applicable. If its not present then its applicable to all target type except the type.parameter declarations.
 
 - Understanding Metadata
   - Metadata is data that provides information about other data. The metadata includes the rules, properties, or relationships surrounding the actual data.
   - Purpose of the Annotations
-     * The purpose of an annotation is to assign metadata attributes to classes, methods, variables, and other Java types. 
-     *  `first rule` about annotations: annotations function a lot like interfaces. In this example, annotations allow us to mark a class as a ZooAnimal without changing its inheritance structure. We could this using interfaces but it can be applied only to classes, annotations can be applied to any dcl incl classes, methods, expressions and even other annotations.
+    - The purpose of an annotation is to assign metadata attributes to classes, methods, variables, and other Java types.
+    - `first rule` about annotations: annotations function a lot like interfaces. In this example, annotations allow us to mark a class as a ZooAnimal without changing its inheritance structure. We could this using interfaces but it can be applied only to classes, annotations can be applied to any dcl incl classes, methods, expressions and even other annotations.
+
         ```java
                 @ZooAnimal public class Lion extends Mammal {}
                 
                 @ZooAnimal public class Peacock extends Bird {}
         ```
-     *  `second rule` about annotations: annotations establish relationships that makes it easier to manage data about our application.
-     *  `third rule` about annotations: an annotation describes custom information on the declaration where it is defined. This turns out to be a powerful tool, as the same annotation can often be applied to completely unrelated classes or variables.
+
+    - `second rule` about annotations: annotations establish relationships that makes it easier to manage data about our application.
+    - `third rule` about annotations: an annotation describes custom information on the declaration where it is defined. This turns out to be a powerful tool, as the same annotation can often be applied to completely unrelated classes or variables.
   
         ```java
                     @ZooSchedule(hours={"9am","5pm","10pm"}) void feedLions() {
@@ -52,9 +106,11 @@
                 }
         ```
 
-     * `final rule` about annotations you should be familiar with: annotations are optional metadata and by themselves do not do anything. This means you can take a project filled with thousands of annotations and remove all of them, and it will still compile and run, albeit with potentially different behavior at runtime.
-## Creating Customer Annotations
-//
+    - `final rule` about annotations you should be familiar with: annotations are optional metadata and by themselves do not do anything. This means you can take a project filled with thousands of annotations and remove all of them, and it will still compile and run, albeit with potentially different behavior at runtime.
+
+## Creating Custom Annotations
+
+
 
 ```java
    @Documented
@@ -83,17 +139,20 @@ After the annotation type is defined, you can use annotations of that type, with
 public class Generation3List extends Generation2List {
 }
 ```
+
 #### Rules of Declaring Annotation
-  - We use the @interface annotation (all lowercase) to declare an annotation. Like classes and interfaces, they are commonly defined in their own file as a top‐level type, although `they can be defined inside a class declaration like an inner class`.
-  - The body of the previous annotation definition contains annotation type element declarations, which look a lot like methods. Note that they can define optional default values. **elements without default are required** when using this annotations.
-  -  Annotation names are case sensitive.some annotations, like @Food, can be applied more than once.
-  -  As with other declarations in Java, spaces and tabs between elements are ignored. 
-  -  To make the information in @ClassPreamble appear in Javadoc-generated documentation, in the Definition mention` @Documented`.
+
+- We use the @interface annotation (all lowercase) to declare an annotation. Like classes and interfaces, they are commonly defined in their own file as a top‐level type, although `they can be defined inside a class declaration like an inner class`.
+- The body of the previous annotation definition contains annotation type element declarations, which look a lot like methods. Note that they can define optional default values. **elements without default are required** when using this annotations.
+- Annotation names are case sensitive.some annotations, like @Food, can be applied more than once.
+- As with other declarations in Java, spaces and tabs between elements are ignored.
+- To make the information in @ClassPreamble appear in Javadoc-generated documentation, in the Definition mention`@Documented`.
   
-#### Rules of Declaring elements with in annotations.
- - public String title() default null; - fails. **The default value of an element must be a non-null constant expression**.
- 
-  *  It must be a `primitive type, a String, a Class, an enum, another annotation, or an array of any of these types`.
+#### Rules of Declaring elements with in annotations
+
+- public String title() default null; - fails. **The default value of an element must be a non-null constant expression**.
+
+- It must be a `primitive type, a String, a Class, an enum, another annotation, or an array of any of these types`.
   
    ```java
       @interface MyAnnotation {
@@ -129,11 +188,12 @@ public class Generation3List extends Generation2List {
          int[] intArray() default {1, 2, 3};
          String[] stringArray() default {"a", "b", "c"};
       }
-   ``` 
+   ```
 
     `public @interface Exercise {}`   
 
-  - Applying the annotation to some classes 
+- Applying the annotation to some classes
+
      ```java
       @Exercise() public class Cheetah {} // paranthesis are optional
       @Exercise public class Sloth {}
@@ -146,8 +206,8 @@ public class Generation3List extends Generation2List {
 
     ```
   
+-
 
-  - 
     ```java
         public @interface Exercise {
         public static final int DEFAULT_WEEKLY_LEAVES = 1;  
@@ -162,6 +222,7 @@ public class Generation3List extends Generation2List {
          
          @Exercise(hoursPerDay=7, startHour="8")  // DOES NOT COMPILE
     public class ZooEmployee {}
+
    ```
   -  Annotation variables are implicitly public, static, and final
   - Defining a default element value
@@ -173,11 +234,12 @@ public class Generation3List extends Generation2List {
        String title() default null;           // DOES NOT COMPILE
     }
 ```
+
 In this example, name() does not compile because it is not a constant expression, while title() does not compile because it is null. Only address() compiles. Notice that while null is not permitted as a default value, the empty String "" is.
 
 - Selecting an Element Type
- 
-  * ```java
+
+  - ```java
         public class Bear {}
         
         public enum Size {SMALL, MEDIUM, LARGE}
@@ -190,6 +252,7 @@ In this example, name() does not compile because it is not a constant expression
         Exercise exercise() default @Exercise(hoursPerDay=2); // Ok
         }
   ```
+
 - Applying Element Modifiers
   - annotation elements are implicitly abstract and public
 
@@ -209,15 +272,16 @@ In this example, name() does not compile because it is not a constant expression
       }
         ```
 
-
 ### Applying Annotations
+
 - Appled to any of the java dcl including the following
-    * Classes, interfaces, enums, and modules
-    * Variables ( static, instance, local)
-    * Methods and constructors
-    * Method, constructor, and lambda parameters
-    * Cast expressions
-    * Other annotations
+  - Classes, interfaces, enums, and modules
+  - Variables ( static, instance, local)
+  - Methods and constructors
+  - Method, constructor, and lambda parameters
+  - Cast expressions
+  - Other annotations
+
 ### Mixing Required and Optional Elements
 
 ```java
@@ -232,8 +296,10 @@ public @interface Swimmer {
 @Swimmer(stroke="Butterfly", name="Kip", armLength=1) class Reptile {}
 @Swimmer(favoriteStroke="Breaststroke", name="Sally") class Tadpole {} // missing stroke
 ```
+
 ### Creating a _value()_ Element
-<p> 
+
+<p>
 In your development experience, you may have seen an annotation with a value, written without the elementName. For example, the following is valid syntax under the right condition:
 
 @Injured("Broken Tail") public class Monkey {}
@@ -245,7 +311,6 @@ The annotation usage must not provide values for any other elements.
 
 Let's create an annotation that meets this requirements.
 </p>
- 
 
 ```java
 public @interface Injured {
@@ -263,7 +328,9 @@ public abstract class Elephant {
 
 @Injured("Fur",age=2) public class Bear {}  // DOES NOT COMPILE as it provides more than one value.
 ```
+
 - Passing an Array ofValues
+
 ```java
   public @interface Music {
    String[] genres();
@@ -280,29 +347,34 @@ public class Reindeer {
    @Music("Blues") String favorite;  
 }
 ```
+
 ### Predefined JDK Annotations
-      
+
 [Predefined Annotations](https://docs.oracle.com/javase/tutorial/java/annotations/predefined.html)
 
-Predefined Java Annotations | Target | Retention
----------|----------|---------
-@Deprecated(forRemoval = true, since = "2020") | PACKAGE, MODULE, TYPE, CONS, METHOD, PARAM, FIELD, LOCAL VAR | RUNTIME
-@FunctionalInterface | TYPE | RUNTIME
-@Override | METHOD | SOURCE
-@SafeVarargs | CONS, METHOD | RUNTIME (Compiler Suppress unchecked warnings relating to varargs usage)
-@Suppress Warnings | PACKAGE, MODULE, TYPE, CONS, METHOD, PARAM, FIELD, LOCAL VAR  | SOURCE (Cetains compiler warings are suppressed like deprecated, removal, unchecked, varargs)
-||
+| Predefined Java Annotations                    | Target                                                       | Retention                                                                                     |
+| ---------------------------------------------- | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| @Deprecated(forRemoval = true, since = "2020") | PACKAGE, MODULE, TYPE, CONS, METHOD, PARAM, FIELD, LOCAL VAR | RUNTIME                                                                                       |
+| @FunctionalInterface                           | TYPE                                                         | RUNTIME                                                                                       |
+| @Override                                      | METHOD                                                       | SOURCE                                                                                        |
+| @SafeVarargs                                   | CONS, METHOD                                                 | RUNTIME (Compiler Suppress unchecked warnings relating to varargs usage)                      |
+| @Suppress Warnings                             | PACKAGE, MODULE, TYPE, CONS, METHOD, PARAM, FIELD, LOCAL VAR | SOURCE (Cetains compiler warings are suppressed like deprecated, removal, unchecked, varargs) |
+|                                                |
+
 - _**Note**_ @FunctionaInterface is applicable only to interfaces and not to class
+
 ```java
 @FunctionalInterface
 interface Functionable {
     void performSomeFunction();
 }
 ```
+
 #### `@Override`
 
- The Override annotations is a marker annotations. It indicates that the method is overriding a method inherited from its super type. The super type could be java.lang.Object also. 
+ The Override annotations is a marker annotations. It indicates that the method is overriding a method inherited from its super type. The super type could be java.lang.Object also.
   The overriding method has the same name, number and type of parameters, and return type as the method that it overrides. Also, it should not reduce the visibility of the overridden method. (i.e) default -> public -> protected -> private not from public to default.
+
 ```java
 
   class Flower1 extends Object {
@@ -319,9 +391,12 @@ E.
 class Flower6 extends Flower1 { @Override public boolean equals(Flowerl flower) { return false;
 }} right
 ```
-#### ` @Deprecated` 
-  - forRemoval tells caution this method is not just recemmondation, but it will be removed.
-  - since() and forRemoval() are optional values available in the @Deprecated annotation
+
+#### `@Deprecated`
+
+- forRemoval tells caution this method is not just recemmondation, but it will be removed.
+- since() and forRemoval() are optional values available in the @Deprecated annotation
+
  ```java
    /**
      * Using javadoc tag @deprecated
@@ -337,19 +412,22 @@ class Flower6 extends Flower1 { @Override public boolean equals(Flowerl flower) 
         System.out.println("Doing this");
     }
  ```
-####  `@SuppressWarnings`
- - To suppress some warnings (e.g)  @SuppressWarnings({"deprecated", "removal"}), following are the common @SuppressWarnings values used often:
-   * "deprecation" - Ignore warnings related to types or methods marked with the @Deprecated annotation. I, 
-   * "unchecked" - Ignore warnings related to the use of raw types, such as List instead of List<String>.
- - Protecting Arguments with @`SafeVarargs` annotation when you can safely assert that the implemenation of the method will not throw a ClassCastException or other similar exception due to improper handling of the varargs formal parameter.
- -  It **can be applied** _only to constructors or methods that cannot be overridden (aka methods marked private, static, or final)_.
-####  `@SafeVarargs` 
 
-when applied to a method or constructor, assert that the code does not perform potentially unsafe operation on its varargs param.   
+#### `@SuppressWarnings`
+
+- To suppress some warnings (e.g)  @SuppressWarnings({"deprecated", "removal"}), following are the common @SuppressWarnings values used often:
+  - "deprecation" - Ignore warnings related to types or methods marked with the @Deprecated annotation. I,
+  - "unchecked" - Ignore warnings related to the use of raw types, such as List instead of List<String>.
+- Protecting Arguments with @`SafeVarargs` annotation when you can safely assert that the implemenation of the method will not throw a ClassCastException or other similar exception due to improper handling of the varargs formal parameter.
+- It **can be applied** _only to constructors or methods that cannot be overridden (aka methods marked private, static, or final)_.
+
+#### `@SafeVarargs`
+
+when applied to a method or constructor, assert that the code does not perform potentially unsafe operation on its varargs param.
 It is applicable (only) to constructor and methods
 
 suppresses the warnings at `Line2: Possible heap pollution from parameterized vararg type`,<br> `Line 1: Unchecked generics array creation for varargs parameter`
- 
+
   ```java
    // Create a simple generic class
       class MyClass<T> {
@@ -388,6 +466,7 @@ suppresses the warnings at `Line2: Possible heap pollution from parameterized va
     }
    
   ```
+
   <p>
      Having @SafeVarargs suppress this warnings.
       [Line 4]  Type safety: Potential heap pollution via varargs
@@ -400,10 +479,12 @@ suppresses the warnings at `Line2: Possible heap pollution from parameterized va
   ![Alt text](common-annotations.png)
 
 #### @Target limitation and usage
+
 - @Target tells where this annotations can be applied like whether the annotation is allowed to be used in METHOD, CONSTRUCTOR, TYPE_PARAM...
 - The Target types are:PACKAGE, MODULE, ANNOTATION_TYPE,CONSTRUCTOR,FIELD,LOCAL_VARIABLE,METHOD,PARAMETER,TYPE,TYPE_PARAMETER, TYPE_USE.
-- Annotations created without the @Target can be used any where in java target types like METHOD, CONSTRUCTOR, except when used in the parameter places you must mention the @Target type. 
+- Annotations created without the @Target can be used any where in java target types like METHOD, CONSTRUCTOR, except when used in the parameter places you must mention the @Target type.
   To detail this here the TypeParameterAnnotation,TypeUseAnnotation is used in the parameter place.Here Line 1, 2, and 3 will show compile error without the   `@Target(ElementType.TYPE_USE),   @Target(ElementType.TYPE_PARAMETER)`
+
 ```java
    //Custom Annotations created for 
 
@@ -438,6 +519,7 @@ suppresses the warnings at `Line2: Possible heap pollution from parameterized va
 
     }
 ```
+
 ```java
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
@@ -446,10 +528,12 @@ import java.lang.annotation.Target;
 public @interface ZooAttraction {}
 
 ```
-- ElementType.TYPE_USE 
+
+- ElementType.TYPE_USE
 - <p>
   The TYPE_USE parameter can be used anywhere there is a Java type. By including it in @Target, it actually includes nearly all the values in Table 13.1 including classes, interfaces, constructors, parameters, and more. There are a few exceptions; for example, it can be used only on a method that returns a value. Methods that return void would still need the METHOD value defined in the annotation.
   </p>
+
 ```java
 @Target(ElementType.TYPE_USE)
 @interface Technical {}
@@ -466,18 +550,23 @@ public class NetworkRepair {
    }
 }
 ```
+
 #### Storing Annotation with _@Retention_
- * Types: SOURCE, CLASS, RUNTIME
- * RetentionPolicy.SOURCE – The marked annotation is retained only in the source level and is ignored by the compiler.
- * RetentionPolicy.CLASS – The marked annotation is retained by the compiler at compile time, but is ignored by the Java Virtual Machine (JVM).
- * RetentionPolicy.RUNTIME – The marked annotation is retained by the JVM so it can be used by the runtime environment.
- * Samples: 
+
+- Types: SOURCE, CLASS, RUNTIME
+- RetentionPolicy.SOURCE – The marked annotation is retained only in the source level and is ignored by the compiler.
+- RetentionPolicy.CLASS – The marked annotation is retained by the compiler at compile time, but is ignored by the Java Virtual Machine (JVM).
+- RetentionPolicy.RUNTIME – The marked annotation is retained by the JVM so it can be used by the runtime environment.
+- Samples:
+
   ```java
    @Retention(RetentionPolicy.CLASS) @interface Flier {}
    @Retention(RetentionPolicy.RUNTIME) @interface Swimmer {}
   ```
+
 #### @Documented annotations
- `@Documented` annotation indicates that whenever the specified annotation is used those elements should be documented using the Javadoc tool. (By default, annotations are not included in Javadoc.). Its a marker interface so doesn't carry any value. 
+
+ `@Documented` annotation indicates that whenever the specified annotation is used those elements should be documented using the Javadoc tool. (By default, annotations are not included in Javadoc.). Its a marker interface so doesn't carry any value.
    `@Documented public @interface Hunter {}`<br>
 
 #### @Deprecated & @deprecated in javadoc
@@ -501,7 +590,9 @@ public class NetworkRepair {
        String lightPerform(int distance);
     }
  ```
+
 #### @SuppressWarnings("deprecation")
+
 ```java
  
  public class NewYorkZoo implements ZooLightShow {
@@ -512,7 +603,10 @@ public class NetworkRepair {
 ```
 
 #### @Inherited Annotation
-* `@Inherited` when its applied to a class, subclass will inherit the annotations information found in the parent class.
+
+- Annotations annotated with @Inherited will ONLY get inherited from some superclass (and not through an interface) and only when declared at the class level(not for methods, fields, parameters, etc)
+- `@Inherited` when its applied to a class, subclass will inherit the annotations information found in the parent class.
+
 ```java
 // Vertebrate.java
 import java.lang.annotation.Inherited;
@@ -525,10 +619,11 @@ import java.lang.annotation.Inherited;
 // Dolphin.java
 public class Dolphin extends Mammal {}
 ```
+
 <p>In this example, the @Vertebrate annotation will be applied to both Mammal and Dolphin objects. Without the @Inherited annotation, @Vertebrate would apply only to Mammal instances.</p>
 - This meta-annotation type has no effect if the annotated type is used to annotate anything other than a class. It has no effect on interface, methods and fields.
 ### @Repeatable Annotations
-- @Repeatable annotation when you want an annotation to be repeated remember you have to create two 
+- @Repeatable annotation when you want an annotation to be repeated remember you have to create two
 @Repeatable interface once with the element and another the container for that element
 
 ```java
@@ -551,12 +646,12 @@ public class AnnotationTest {
 }
 ```
 
-
-
 ## Review Questions
+
 1. E
 2. D, F
-which of the following show compile error ? 
+which of the following show compile error ?
+
 ```java
       1: import java.lang.annotation.Documented;
       2: enum Color {GREY, BROWN}
@@ -567,11 +662,13 @@ which of the following show compile error ?
       7:    private static final int slippery = 5; // Should be public
       8: }
 ```
+
 3. C, D, E
    Which built‐in annotations can be applied to an annotation declaration?
    @Target, @Repeatable and @Deprecated can be applied to almost any declarations. <br>
 4. ~~C~~, D
-5. B which of the following line of code doesn't compile ? 
+5. B which of the following line of code doesn't compile ?
+
 ```java
    1: import java.lang.annotation.*;
    2: class Food {} // even final will not work
@@ -583,7 +680,9 @@ which of the following show compile error ?
    8:    long startTime() default 0L;
    9: }
 ```
+
 6. ~~ D~~ Which line of code placing here compiles ?
+
 ```java
     import java.lang.annotation.*;
         @Documented @Deprecated
@@ -596,7 +695,9 @@ which of the following show compile error ?
         @Driver(directions=7)
         @Driver(directions={0,1})
 ```
+
 7. ~~B, C, D, F~~ All
+
 <p>Annotations can be applied to which of the following? (Choose all that apply.)
 A. Class declarations
 B. Constructor parameters
@@ -607,27 +708,28 @@ F. Interface declarations
 </p>
 
 8. B, ~~E~~
+
 <p>
    Fill in the blanks with the correct answers that allow the entire program to compile. (Choose all that apply.)
         @interface FerociousPack {
            _________________;           // m1
-        }             
- 
+        }
+
         @Repeatable(________________)  // m2
         public @interface Ferocious {}
  
         @Ferocious @Ferocious class Lion {}
-Answers: 
+Answers:
 Ferocious[] value() on line m1. //The containing type annotation should contain a single value() element that is an array of the repeatable annotation type.
 FerociousPack.class on line m2. //The repeatable annotation needs to specify the class name of its containing type annotation
 </p>
 
-9.  A, C, D, E
-10.  G
-11.  A, F
+9. A, C, D, E
+10. G
+11. A, F
    The @SafeVarargs annotation can be applied on the **declaration** of a `constructor or private, static, or final method` that includes a varargs parameter. Not applicable for abstract method, not on the constructor, or method parameter
  The compiler cannot actually enforce that the operations are safe. It is up to the developer writing the method to verify that
-12.  C which of the code does not compile ?
+12. C which of the code does not compile ?
         1: import java.lang.annotation.*;
         2: enum UnitOfTemp { C, F }
         3: @interface Snow { boolean value(); }
@@ -637,13 +739,14 @@ FerociousPack.class on line m2. //The repeatable annotation needs to specify the
         7:    UnitOfTemp unit default UnitOfTemp.C; // missing () after unit
         8:    Snow snow() default @Snow(true);
         9: }
-13.  A // careless ness
+13. A // careless ness
     Which statements about an optional annotation are correct? (Choose all that apply.)
      a) The annotation declaration always includes a default value.
      b) The annotation may include a value.
-14.  D
+14. D
 15. ~~ A~~ A marker annotation does not contain any elements but may contain constant variables.
 16. ~~ A~~
+
   <p>  Which options, when inserted into the blank in the code, allow the code to compile without any warnings? (Choose all that apply.)
         import java.util.*;
         import java.lang.annotation.*;
@@ -671,7 +774,7 @@ F. The @SafeVarargs annotation does not take a value and can be applied only to 
         1: @interface Strong {
         2:    int force(); }
         3: @interface Wind {
-        4:    public static final int temperature = 20; 
+        4:    public static final int temperature = 20;
         5:    Boolean storm() default true; // Boolean not allowed.
         6:    public void kiteFlying(); // void are not supported annotation element types. It must be a primitive, String, Class, enum, another annotation, or an array of these types.
         7:    protected String gusts(); // annotation elements are implict public
@@ -683,6 +786,7 @@ F. The @SafeVarargs annotation does not take a value and can be applied only to 
     @SafeVarargs can be applied to a method but will trigger a compiler error if the method does not contain a varargs parameter or is able to be overridden (not marked private, static, or final).
 
 20. F
+
 ```java
  // Floats.java
         import java.lang.annotation.*;
@@ -703,12 +807,13 @@ F. The @SafeVarargs annotation does not take a value and can be applied only to 
         9:    } }
 
 ```
-21.  A
-    The _____@Inherited____ annotation determines what annotations from a superclass or interface are applied, while the __@Target_______ annotation determines what declarations an annotation can be applied to.
 
-22.  F
-23.  A
-24.  A, E
+21. A
+    The _****@Inherited**** annotation determines what annotations from a superclass or interface are applied, while the **@Target**_____ annotation determines what declarations an annotation can be applied to.
+
+22. F
+23. A
+24. A, E
    public @interface Dance {
            long rhythm() default 66;
            int[] value();
@@ -720,5 +825,5 @@ F. The @SafeVarargs annotation does not take a value and can be applied only to 
         }
 
 @Dance(value=5, rhythm=2, track="Samba")
-@Dance(77)    
-25. C    
+@Dance(77)
+25. C
