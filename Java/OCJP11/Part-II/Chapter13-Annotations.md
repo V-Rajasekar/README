@@ -17,7 +17,7 @@
       - [@Deprecated \& @deprecated in javadoc](#deprecated--deprecated-in-javadoc)
       - [@SuppressWarnings("deprecation")](#suppresswarningsdeprecation)
       - [@Inherited Annotation](#inherited-annotation)
-    - [@Repeatable Annotations](#repeatable-annotations)
+      - [@Repeatable Annotations](#repeatable-annotations)
   - [Review Questions](#review-questions)
 
 # Chapter 13: Annotations
@@ -45,7 +45,7 @@
 - Field
 - Local_Variable
   
-  Annotation Retention Policies
+Annotation Retention Policies
 
 - It specifies to the compiler, where the annotation will be specified (retained) in the generated class file,and from where JVM can pickup by reflection methods
   - SOURCE
@@ -53,43 +53,47 @@
   - RUNTIME (only this read by JVM reflectively)
 
 - Types of annotations
-  - Marker @MySecondAnnotation (no element values)
-  - Single Element specifies a single element value named value @MySecondAnnotation("THIS")
-  - Normal specifies 0..* element values @MyFirstAnnotation(name="THAT", value="MORE" )
+  - `Marker` @MySecondAnnotation (no element values)
+  - `Single` Element specifies a single element value named value @MySecondAnnotation("THIS")
+  - `Normal` specifies 0..* element values @MyFirstAnnotation(name="THAT", value="MORE" )
   
   Simple annotation can be @MyFirstAnnotation
   other options:
+
+```java
   @MyFirstAnnotation or  @MyFirstAnnotation() // Marker type
   @MyFirstAnnotation("THIS") // Single element type (value is the unnamed element here for "THIS")
   @MyFirstAnnotation(name="THIS", value="MORE") // NORMAL element type 0..* many element values, default values.
+```
 
   </p>
 
 ## Simple Annotation declaration and types
 
-The simplest annotation will look a like 
+The simplest annotation will look a like
 
 ```java
    public @interface MyInterface {
       
    }
 ```
+
 ### Annotation types
 
-Annotation | Description  
----------|---------- 
- Documented | 
- Inherited | Applies to an annotation for a class 
- Native | Field defining a constant value may be refer from native code
- Repeatable |  
- Retention | Indicates how long annotations with the annotated type are to be retained.
- Target | @Target meta annotation is used to indicate the context in which an annotation type is applicable. If its not present then its applicable to all target type except the type.parameter declarations.
+| Annotation | Description                                                                                                                                                                                          |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Documented |
+| Inherited  | Applies to an annotation for a class                                                                                                                                                                 |
+| Native     | Field defining a constant value may be refer from native code                                                                                                                                        |
+| Repeatable |
+| Retention  | Indicates how long annotations with the annotated type are to be retained.                                                                                                                           |
+| Target     | @Target meta annotation is used to indicate the context in which an annotation type is applicable. If its not present then its applicable to all target type except the type.parameter declarations. |
 
 - Understanding Metadata
   - Metadata is data that provides information about other data. The metadata includes the rules, properties, or relationships surrounding the actual data.
   - Purpose of the Annotations
     - The purpose of an annotation is to assign metadata attributes to classes, methods, variables, and other Java types.
-    - `first rule` about annotations: annotations function a lot like interfaces. In this example, annotations allow us to mark a class as a ZooAnimal without changing its inheritance structure. We could this using interfaces but it can be applied only to classes, annotations can be applied to any dcl incl classes, methods, expressions and even other annotations.
+    - `first rule` about annotations: annotations function a lot like interfaces. In this example, annotations allow us to mark a class as a ZooAnimal without changing its inheritance structure. We could do this using interfaces but it can be applied only to classes, annotations can be applied to any dcl incl classes, methods, expressions and even other annotations.
 
         ```java
                 @ZooAnimal public class Lion extends Mammal {}
@@ -109,8 +113,6 @@ Annotation | Description
     - `final rule` about annotations you should be familiar with: annotations are optional metadata and by themselves do not do anything. This means you can take a project filled with thousands of annotations and remove all of them, and it will still compile and run, albeit with potentially different behavior at runtime.
 
 ## Creating Custom Annotations
-
-
 
 ```java
    @Documented
@@ -144,13 +146,23 @@ public class Generation3List extends Generation2List {
 
 - We use the @interface annotation (all lowercase) to declare an annotation. Like classes and interfaces, they are commonly defined in their own file as a top‐level type, although `they can be defined inside a class declaration like an inner class`.
 - The body of the previous annotation definition contains annotation type element declarations, which look a lot like methods. Note that they can define optional default values. **elements without default are required** when using this annotations.
-- Annotation names are case sensitive.some annotations, like @Food, can be applied more than once.
+- **Annotation names are case sensitive**.some annotations, like @Food, can be applied more than once.
 - As with other declarations in Java, spaces and tabs between elements are ignored.
-- To make the information in @ClassPreamble appear in Javadoc-generated documentation, in the Definition mention`@Documented`.
+- To make the information in @ClassPreamble appear in Javadoc-generated documentation of Generation3List,   mention`@Documented` in the @ClassPreamble.
   
 #### Rules of Declaring elements with in annotations
 
 - public String title() default null; - fails. **The default value of an element must be a non-null constant expression**.
+
+   ```java
+   public @interface BadAnnotation {
+         String name() default new String("");  // DOES NOT COMPILE
+         String address() default "";
+         String title() default null;           // DOES NOT COMPILE
+      }
+   ```
+
+In this example, name() does not compile because it is not a constant expression, while title() does not compile because it is null. Only address() compiles. Notice that while null is not permitted as a default value, the empty String "" is.
 
 - It must be a `primitive type, a String, a Class, an enum, another annotation, or an array of any of these types`.
   
@@ -167,13 +179,13 @@ public class Generation3List extends Generation2List {
       @interface MyAnnotation {
          Class<?> classValue() default Object.class;
       }
-
+      //---------
       enum Status { PENDING, APPROVED, REJECTED }
 
       @interface MyAnnotation {
          Status status() default Status.PENDING;
       }
-
+      //---------
       @interface AdditionalInfo {
          String author();
          String version() default "1.0";
@@ -183,30 +195,14 @@ public class Generation3List extends Generation2List {
          String value();
          AdditionalInfo additionalInfo() default @AdditionalInfo(author = "John Doe");
       }
-
+      //---------
       @interface MyAnnotation {
          int[] intArray() default {1, 2, 3};
          String[] stringArray() default {"a", "b", "c"};
       }
    ```
 
-    `public @interface Exercise {}`   
-
 - Applying the annotation to some classes
-
-     ```java
-      @Exercise() public class Cheetah {} // paranthesis are optional
-      @Exercise public class Sloth {}
-      @Exercise
-      public class ZooEmployee {}
-
-      @Scaley       @Flexible
-      @Food("insect") @Food("rodent")      @FriendlyPet
-      @Limbless public class Snake {}
-
-    ```
-  
--
 
     ```java
         public @interface Exercise {
@@ -221,25 +217,12 @@ public class Generation3List extends Generation2List {
          @Exercise(hoursPerDay=0) public class Sloth {}
          
          @Exercise(hoursPerDay=7, startHour="8")  // DOES NOT COMPILE
-    public class ZooEmployee {}
-
+         public class ZooEmployee {}
    ```
-  -  Annotation variables are implicitly public, static, and final
-  - Defining a default element value
-    * The default value of an annotation should be a _non-null constant_ expression
-```java
- public @interface BadAnnotation {
-       String name() default new String("");  // DOES NOT COMPILE
-       String address() default "";
-       String title() default null;           // DOES NOT COMPILE
-    }
-```
-
-In this example, name() does not compile because it is not a constant expression, while title() does not compile because it is null. Only address() compiles. Notice that while null is not permitted as a default value, the empty String "" is.
 
 - Selecting an Element Type
 
-  - ```java
+   ```java
         public class Bear {}
         
         public enum Size {SMALL, MEDIUM, LARGE}
@@ -251,10 +234,12 @@ In this example, name() does not compile because it is not a constant expression
         Bear friendlyBear(); // No
         Exercise exercise() default @Exercise(hoursPerDay=2); // Ok
         }
-  ```
+
+   ```  
 
 - Applying Element Modifiers
-  - annotation elements are implicitly abstract and public
+  - **annotation elements are implicitly abstract and public**
+  - **Annotation variables are implicitly public, static, and final**
 
    ```java
       public @interface Material {}
@@ -358,7 +343,7 @@ public class Reindeer {
 | @FunctionalInterface                           | TYPE                                                         | RUNTIME                                                                                       |
 | @Override                                      | METHOD                                                       | SOURCE                                                                                        |
 | @SafeVarargs                                   | CONS, METHOD                                                 | RUNTIME (Compiler Suppress unchecked warnings relating to varargs usage)                      |
-| @Suppress Warnings                             | PACKAGE, MODULE, TYPE, CONS, METHOD, PARAM, FIELD, LOCAL VAR | SOURCE (Cetains compiler warings are suppressed like deprecated, removal, unchecked, varargs) |
+| @Suppress Warnings                             | PACKAGE, MODULE, TYPE, CONS, METHOD, PARAM, FIELD, LOCAL VAR | SOURCE (Certain compiler warings are suppressed like deprecated, removal, unchecked, varargs) |
 |                                                |
 
 - _**Note**_ @FunctionaInterface is applicable only to interfaces and not to class
@@ -620,9 +605,11 @@ import java.lang.annotation.Inherited;
 public class Dolphin extends Mammal {}
 ```
 
-<p>In this example, the @Vertebrate annotation will be applied to both Mammal and Dolphin objects. Without the @Inherited annotation, @Vertebrate would apply only to Mammal instances.</p>
+<p> In this example, the @Vertebrate annotation will be applied to both Mammal and Dolphin objects. Without the @Inherited annotation, @Vertebrate would apply only to Mammal instances.</p>
 - This meta-annotation type has no effect if the annotated type is used to annotate anything other than a class. It has no effect on interface, methods and fields.
-### @Repeatable Annotations
+
+#### @Repeatable Annotations
+
 - @Repeatable annotation when you want an annotation to be repeated remember you have to create two
 @Repeatable interface once with the element and another the container for that element
 

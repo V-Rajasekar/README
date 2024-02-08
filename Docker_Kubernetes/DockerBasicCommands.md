@@ -1,21 +1,42 @@
-# Basic uses of docker 
+# Basic uses of docker
 
- ##  Most important commands:
- - docker container 
- - docker image 
- - docker run
+##  Most important commands
 
-## Docker container and images
-**Images**
-- List Images `docker images`
-- Remove Images `docker rmi <Image Id> <ImageId>`
-- Remove all images at once `docker rmi $(docker images -q)`
-**Containers**
-- list Container `docker ps -a`
-- Stop running container `docker stop <Container ID>`
-- Remove Containers `docker rm <Container ID>`
-- Stop all running containers: `docker stop $(docker ps -a -q)`
-- Delete all stopped containers: `docker rm $(docker ps -a -q)`
+- docker container
+- docker image
+- docker run
+
+Docker image |description
+---------|----------
+`docker build -t <image name>` .` | creates a docker image 
+ `docker images` (or) `docker image ls` | List all images
+ `docker rmi <imageId>` | Remove images
+ `docker run -p port:bindingPort <imageId> or <image name>` | creating and running a container
+ `docker rmi $(docker images -q)` | Remove all images
+ `docker search -f STARS=3 Redis` | Search a Redis docker image with star >= 3
+ `docker pull mongo` | pull a docker mongo image from DockerHub
+ `docker push <image>` | pushing a docker image to DockerHub 
+
+
+Docker Container | Description
+---------|----------
+ `docker ps` | List all running container 
+ `docker ps -a` | List all container irrespective their state. 
+ `docker stop <ContainerId>` |Stop a container
+ `docker start <ContainerId>` |Start a container
+ `docker rm <ContainerId>` | Remove a container
+ `docker stop $(docker ps -a -q)` | Stop a  ll container
+ `docker rm $(docker ps -a -q)` | Remove all container
+ `docker logs  <friendly name (or) container-id>` | prints the docker startup logs
+ `docker inspect <friendly name (or) container-id>` | more details IP Address, Volumn mounted and its locations and current execution status.
+>Note: you can also do `docker container ls/ps`, `docker container ps -a` and `docker image ls`
+
+
+Docker compose | description
+---------|----------
+ `docker-compose build` |  building a docker compose
+ `docker-compose up -d <serviceName>` | run
+
 ## Running docker container
 
 To start a container either build your own docker image or use existing image created by docker community available in
