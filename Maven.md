@@ -175,7 +175,7 @@ Junit 4.7.x - parallel and below in sequential.
 
 ### Parallel Test execution
 
-- Use this plugin config to run parallel method execution from version Junit 4.7 
+- Use this plugin config to run parallel method execution from version Junit 4.7
   
 ```xml
  <plugin>
@@ -188,6 +188,17 @@ Junit 4.7.x - parallel and below in sequential.
      </configuration>
   </plugin>
 ```
+
+- Plugin to generate the report
+
+```xml
+  <plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-surefire-report-plugin</artifactId>
+    <version>3.0.0-M5</version>
+  </plugin>
+```  
+  
 
 ### Skipping Test
 
