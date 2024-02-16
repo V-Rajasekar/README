@@ -1,6 +1,50 @@
 # Exam Essentials
+- [Exam Essentials](#exam-essentials)
+  - [Assignment operations](#assignment-operations)
+  - [Lamdas and Functional Interfaces](#lamdas-and-functional-interfaces)
+    - [Function(T, R)-\> R:apply(T)](#functiont-r--rapplyt)
+    - [Lambda expressions](#lambda-expressions)
+  - [Formatting Number, Currency, DecimalFormat](#formatting-number-currency-decimalformat)
+  - [Annotations](#annotations)
+  - [Path.resolve](#pathresolve)
+  - [JDBC](#jdbc)
+  - [Resource Bundle](#resource-bundle)
+
+## Assignment operations
+Given:
+int x = 1, y = 2, z = 3;
+x += y *= z -= x;
+
+what is the output x , y and Z ? //output 5 4 2
+
+The assignment operator assigns the value on its right to operand on its left. Unlike all other operators in Java, 
+assignment operator are evaluated from right to left. 
+
+z = z - x; 2 
+y = y * z; 4 
+x = x + y; 5
+
+
 
 ## Lamdas and Functional Interfaces
+
+### Function(T, R)-> R:apply(T)
+
+```java
+   public long calculate(long factor, function<Integer, Long> func) {
+   return func.apply(factor);
+   }
+
+   int factor = 2;
+   calculate(3, x -> factor * x); //compile error cannot convert Long to integer. Bcos the 3 is infered as Integer here when its multipled with 2 it produces int, so Java can autobox int -> Integer and not int -> Long
+   //solution change the input param to Long 
+   static long calculate(long factor, Function< Long, Long> func) {
+   return func.apply(factor);
+   }
+
+   int factor = 6;
+   System.out.println(calculate(3, x -> factor * x)); // outputs 8
+```
 
 ### Lambda expressions
 
@@ -175,3 +219,65 @@ printCurrency(spain, money); //$1.23, espa±ol
 //Locale.setDefault(us) after the previous code snippet will change both locale categories to en_US
 ```
 
+## Annotations
+
+class A {}
+
+class B extends A {}
+
+class C extends B {}
+
+//type of element in l1 is C or its Super B itself
+List<? super B> l1 = new ArrayList<>();
+
+// type of element in l2 is B and any of its subtype, but if add C will result compile error see the explanation. 
+List<? extends B> l2 = new ArrayList<>();
+
+l1  = l2/ no its like A = C; overlap is B, but they aren't inherited
+l2 = l1 // same as above.
+l1.add(new A()); //only B or C
+l1.add(new C());
+l2.add(new C()); //  incompatible types: C cannot be converted to capture#10 of ? extends B
+The reason for the compilation error is that you cannot add elements to a List<? extends B>. When you declare a list with List<? extends B>, it means the list can hold objects of a type that is a subclass of B, but the exact subtype is unknown at compile time.
+
+The add() method of the List interface doesn't work with a wildcard (?). It can't guarantee the type safety when adding elements because the actual type could be any subtype of B, not just C. This is to ensure type safety in Java.
+l2.add(new A()); //only B
+
+## Path.resolve
+
+Path path1 = Path.of("/cats/../panther");
+Path path2 = Path.of("food");
+Path path3 = Path.of("/food");
+//Relative path appends the new path with preceeding old path
+System.out.println(path1.resolve(path2)); // /cats/../panther/food;
+//Absolute path returns /absolute new path
+System.out.println(path1.resolve(path3)); // /food
+
+Path p1 = Path.of("/a/b");
+Path p2 = Path.of("/a/c");
+p1.resolve(p2); // Prints /a/c
+
+
+## JDBC
+
+How to call a stored procedure? 
+conn.prepareCall("{call MY_PROC}");
+
+## Resource Bundle
+
+To select the appropriate ResourceBundle. Java will follow this order.
+
+1. ResourceBundle class for the specified Locale (match both language and country)
+2. ResourceBundle class for the specified Locale (match only language)
+3. ResourceBundle class for the default Locale (match both language and country)
+4. ResourceBundle class for the default Locale (match only language)
+5. Use the default resource bundle if no matching locale can be found.
+
+Since the desired locale is fr_CA and the default one is en_US, resources are sec
+following order:
+NationalDay_fr_CA
+NationalDay_fr
+NationalDay _en_US
+NationalDay _en
+NationalDay
+Notice the class names are case-sensitive, hence NationalDay_FR isn't part of the bundle.
