@@ -28,13 +28,13 @@
     - [Parsing Numbers](#parsing-numbers)
     - [Parsing currency](#parsing-currency)
     - [Writing a Customer Number Formatter](#writing-a-customer-number-formatter)
-  - [Localizing Dates](#localizing-dates)
-  - [Specifying a Locale Category](#specifying-a-locale-category)
+  - [Localizing DateTimeFormatter.ofLocalizedDate/ofLocalizedTime/ofLocalizedDateTime](#localizing-datetimeformatteroflocalizeddateoflocalizedtimeoflocalizeddatetime)
+  - [Specifying a Locale.setDefault(Category.DISPLAY/FORMAT)](#specifying-a-localesetdefaultcategorydisplayformat)
     - [Loading Properties with Resource Bundles](#loading-properties-with-resource-bundles)
       - [Creating a Resource Bundle](#creating-a-resource-bundle)
       - [Picking a Resource Bundle(\*)](#picking-a-resource-bundle)
     - [Selecting Resource Bundle Values](#selecting-resource-bundle-values)
-    - [Formatting Messages (java.text.MessageFormat)](#formatting-messages-javatextmessageformat)
+    - [Formatting Messages (java.text.MessageFormat.format)](#formatting-messages-javatextmessageformatformat)
     - [Using the Properties Class](#using-the-properties-class)
     - [Review Questions](#review-questions)
   - [References](#references)
@@ -671,7 +671,7 @@ System.out.println(ca.format(attendeesPerMonth));
 17: System.out.println(f2.format(d));  // 001,234,567.46700
 ```
 
-## Localizing Dates
+## Localizing DateTimeFormatter.ofLocalizedDate/ofLocalizedTime/ofLocalizedDateTime
 
 - Factory methods to get a `DateTimeFormatter`
 
@@ -742,7 +742,7 @@ public static void main(String[] args) {
 }
 ```
 
-## Specifying a Locale Category
+## Specifying a Locale.setDefault(Category.DISPLAY/FORMAT)
 
 - `Locale.setDefault()` with a locale, several display and formatting options are internally selected, to customise the selection use Locale.Category enum. Its a nested element in `Locale`
 - Locale.Category values are DISPLAY, FORMAT sample above.
@@ -844,21 +844,6 @@ To select the appropriate ResourceBundle, Java will follow this order.
 1. Look for the resource bundle for the requested locale, followed by the one for the default locale.
 2. For each locale, check language/country, followed by just the language.
 3. Use the default resource bundle if no matching locale can be found.
-
-- (e.g) Sample
-
-```java
-Locale.setDefault(new Locale("hi"));
-ResourceBundle rb = ResourceBundle.getBundle("Zoo", new Locale("en"));
-```
-
-<p> The answer is three. They are listed here:
-
-1. Zoo_en.properties
-2. Zoo_hi.properties
-3. Zoo.properties
-The requested locale is en, so we start with that. Since the `en` locale does not contain a country, we move on to the default locale, `hi`. Again, there's no country, so we end with the default bundle.</p>
-
 ### Selecting Resource Bundle Values
 
 <p> What does this mean exactly? Assume the requested locale is fr_FR and the default is en_US. The JVM will provide data from an en_US only if there is no matching fr_FR or fr resource bundles. If it finds a fr_FR or fr resource bundle, then only those bundles, along with the default bundle, will be used.</p>
@@ -883,16 +868,16 @@ visitors=Canada visitors
 13: ResourceBundle rb = ResourceBundle.getBundle("Zoo", locale);
 14: System.out.print(rb.getString("hello")); //2  
 15: System.out.print(". ");
-16: System.out.print(rb.getString("name"));//Default resource bundle
+16: System.out.print(rb.getString("name")); //4
 17: System.out.print(" ");
-18: System.out.print(rb.getString("open"));
+18: System.out.print(rb.getString("open")); //2
 19: System.out.print(" ");
-20: System.out.print(rb.getString("visitors"));
+20: System.out.print(rb.getString("visitors")); //1
 Order: 1. en_CA, 2. en, 3. Default Resource bundle, 4. en_US (Default Locale) 
 //Output: Hello.Vancouver Zoo is open Canada Visitors
 ```
 
-### Formatting Messages (java.text.MessageFormat)
+### Formatting Messages (java.text.MessageFormat.format)
 
 ```java
 helloByName=Hello, {0} and {1}
@@ -917,7 +902,7 @@ System.out.println(props.getProperty("camel"));         // null
 System.out.println(props.getProperty("camel", "Bob"));  // Bob (default)
 
 props.get("open");                               // 10am
- 
+// only getProperty method allows default value. 
 props.get("open", "The zoo will be open soon");  // DOES NOT COMPILE default applicable onl y in getProperty
 ```
 

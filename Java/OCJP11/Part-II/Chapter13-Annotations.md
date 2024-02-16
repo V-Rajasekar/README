@@ -347,6 +347,7 @@ public class Reindeer {
 |                                                |
 
 - _**Note**_ @FunctionaInterface is applicable only to interfaces and not to class
+- Among all the annotations `@Override and @Suppress Warnings` are discarded by compiler as their retention policy is source.
 
 ```java
 @FunctionalInterface

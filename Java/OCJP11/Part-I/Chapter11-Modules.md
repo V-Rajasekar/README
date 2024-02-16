@@ -1,14 +1,10 @@
 # Chapter 11 Modules
-
-- A Java Platform Module System was (JPMS) was introduced in Java 9
-- A module is a group of one or more packages plus a specific file called module-info.java
-- It includes the following
-  - A format for module JAR files
-    - Partitioning of the JDK into modules
-    - Additional command-line options for Java tools
-- What it solved ?
-  - Modules solve this problem by acting as a fifth level of access control. They can expose packages within the modular JAR to specific other packages. This stronger form of encapsulation really does create internal packages.
-- -p D:\Git\core-java\core-java\out\production\MyFirstModule -m MyFirstModule/modular.HelloWorld
+- [Chapter 11 Modules](#chapter-11-modules)
+  - [Creating and Running a Modular Program](#creating-and-running-a-modular-program)
+  - [Working with Multi module](#working-with-multi-module)
+  - [module-info](#module-info)
+    - [The jdeps Command](#the-jdeps-command)
+  - [References](#references)
 
 ## Creating and Running a Modular Program
 
@@ -232,7 +228,13 @@ jdeps --jdk-internals  mods/zoo.animal.feeding.jar
 ```
 
 - Note: Without -s/-summary you get the detailed dependencies
-- --jdk-internals option lists any classes your using that call an internal API along with which API.
+- `--jdk-internals/-jdkinternals`  Finds class-level dependencies in the JDK internal APIs. By default, this option analyzes all classes specified in the --class-path or -classpathoption and input files unless you specified the -include option. You can’t use this option with the -p, -e, and -s options.
+- `-apionly or --api-only`
+Restricts the **analysis to APIs**, for example, dependencies from **the signature of public and protected members of public classes** including field type, method parameter types, returned type, and checked exception types.
 [Jdeps](https://docs.oracle.com/en/java/javase/11/tools/jdeps.html#GUID-A543FEBE-908A-49BF-996C-39499367ADB4)
 - **The jmod Command**
    JMOD files are recommended only when you have native libraries or something that can’t go inside a JAR file. This is unlikely to affect you in the real world.<br>
+
+## References
+
+[Defining Modules](https://openjdk.org/projects/jigsaw/spec/sotms/#defining-modules)

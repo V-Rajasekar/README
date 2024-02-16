@@ -393,12 +393,12 @@ public class Employee implements Serializable {
 
 - Methods for serialization and deserialization
 
-|Returntype |Method          |Parameters          |Description|
-|----|----|----|----|
-|void       |writeObject()    |ObjectInputStream |Serializes optionally using PutField|
-|void       |readObject()    |ObjectOutputStream |Deserializes optionally using GetField|
-|Object    |writeReplace() |None                |Allows replacement of object before serialization|
-|Object    |readResolve()    |None                |Allows replacement of object after deserialization|
+| Returntype | Method         | Parameters         | Description                                        |
+| ---------- | -------------- | ------------------ | -------------------------------------------------- |
+| void       | writeObject()  | ObjectInputStream  | Serializes optionally using PutField               |
+| void       | readObject()   | ObjectOutputStream | Deserializes optionally using GetField             |
+| Object     | writeReplace() | None               | Allows replacement of object before serialization  |
+| Object     | readResolve()  | None               | Allows replacement of object after deserialization |
 
 - Remember the usescases like storing and reading SSN(encrpted-decrypted) are done through the Customer Serialization process using writeObject() and readObject().
 - We want to write and read the object that is available in the pool rather than creating a new object every time when we serialze and deserlize this is using the concurrentMap and using the writeReplace() and readResolve().
@@ -573,6 +573,26 @@ public static boolean enoughRoomToAddLine(int requestedSize) {
    int newLineSize = newLine.length();
    return requestedSize + newLineSize < maxLength;
 }
+```
+#### Input validation rules
+
+- Input from untrusted sources must be validated before use.
+- Note that input validation must occur after any defensive copying of that input.
+- In the case of an upcall invoking a method of higher level code) the **returned value should be validated.** (e.g) when calling methods on ClassLoaders not many assumptions can be made. Multiple invocations of ClassLoader.loadClass() are not guaranteed to return the same Class instance or definition
+- Java code is subject to runtime checks for type, array bounds, and library usage. Native code, on the other hand, is generally not.
+- While pure Java code is effectively immune to traditional buffer overflow attacks, native methods are not.
+- To offer some of these protections during the invocation of native code, do not declare native method public. Instead, declare it private and expose the functionality through a public Java-based wrapper method.
+
+```java
+ // private native method
+    private native void nativeOperation(byte[] data, int offset,
+                                        int len);
+
+    // wrapper method performs checks
+    public void doOperation(byte[] data, int offset, int len) {
+      
+      nativeOperation(data, offset, len);
+    }
 ```
 
 #### Wasting Data Structures
