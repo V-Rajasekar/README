@@ -779,9 +779,6 @@ System.out.println(map);    // {5=Optional[b], 6=Optional[t]}
      // Accumulate names into a List
      List<String> list = people.stream().map(Person::getName).collect(Collectors.toList());
 
-    
-
-
      // Accumulate names into a TreeSet
      Set<String> set = people.stream().map(Person::getName).collect(Collectors.toCollection(TreeSet::new));
 

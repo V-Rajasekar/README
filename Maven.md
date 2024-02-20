@@ -5,15 +5,15 @@
   - [Super POM](#super-pom)
   - [Parent POM and dependencyManagement](#parent-pom-and-dependencymanagement)
   - [Maven archetype](#maven-archetype)
-  - [Maven Plugins](#maven-plugins)
   - [Maven Build Life Cycle](#maven-build-life-cycle)
   - [Maven Repositories](#maven-repositories)
   - [External dependencies in pom.xml](#external-dependencies-in-pomxml)
   - [Dependencies declaration with range](#dependencies-declaration-with-range)
   - [Maven scope](#maven-scope)
   - [Maven build profiles](#maven-build-profiles)
+    - [Application profiles](#application-profiles)
   - [Create Maven Quick start project](#create-maven-quick-start-project)
-  - [Maven plugins](#maven-plugins-1)
+  - [Maven plugins](#maven-plugins)
   - [some popularly used plugins](#some-popularly-used-plugins)
     - [Parallel Test execution](#parallel-test-execution)
     - [Skipping Test](#skipping-test)
@@ -86,16 +86,6 @@ DependencyManagment and Plugin Management helps with consistency with the depend
 
  Maven has many build-in archetype and it can be used to create the Project Folder using  `mvn archetype:generate`
  GroupId,artifactId and version combination are used to identify an artifact uniqly.
-
-## Maven Plugins
-
-A Maven Plugin comprises of 1...* goals.
-A goal is a unit of work. It is to execute a specific task and perform certain operations for the project.
-A custom actions can be included in the build process with the help of Maven Plugins.
-
-```yml
- archetype:generate <pluginId>:<goalId>
-```
 
 ## Maven Build Life Cycle
 
@@ -213,6 +203,21 @@ There are three types of profiles
 - Local profile resides in D:\apache-maven-3.9.6\conf\settings.xml
 - User defined profile resides in C:\Users\Raj\.m2\settings.xml
 
+### Application profiles
+For Application **portability** between the environments dev, test and production maven profiles are used. Based on the requested profile the maven pick up the configurations and apply before running the application
+
+```html
+src/main/profiles
+    dev
+      application.properties
+    test
+     application.properties
+    prod     
+     application.properties
+```
+
+Building the project with the profile > `mvn install -Pprod` //-P profile followed by profile name.
+
 ## Create Maven Quick start project
 
 Run below command to create a project.
@@ -227,6 +232,14 @@ creating the war file with cmd `mvn war:war` to compile and create `mvn compile 
 
 ## Maven plugins
 
+A Maven Plugin comprises of 1...* goals.
+A goal is a unit of work. It is to execute a specific task and perform certain operations for the project.
+A custom actions can be included in the build process with the help of Maven Plugins.
+
+```yml
+ archetype:generate <pluginId>:<goalId>
+```
+
 There are two types of plugins
 
 Build Plugin - Used while executing the build. They are included in `<build>` element of the POM.
@@ -240,9 +253,10 @@ Some of the frequently used Maven Plugins:
 - `jar` - To generate Java jar file.
 - `war` - To generate Java war file.
 - `surefire` - To run Junit test and generate a report.
+- `jacoco-maven-plugin` - To prepare and generate code coverage report.
 
 ## some popularly used plugins
- 
+
 - `exec-maven-plugin` mvn exec:java
 - `maven-compiler-plugin` plugin to compile source code with defined java versions
 - `maven-surefire-plugin`  used for generating unit test reports for your project. `mvn surefire-report:report`
@@ -266,6 +280,25 @@ Junit 4.7.x - parallel and below in sequential.
     <configuration>
       <mainClass>com.fresco.play.App</mainClass>
     </configuration>
+  </plugin>
+  <plugin>
+    <groupId>org.jacoco</groupId>
+      <artifactId>jacoco-maven-plugin</artifactId>
+      <version>0.8.11</version>
+      <executions>
+          <execution>
+              <goals>
+                  <goal>prepare-agent</goal>
+              </goals>
+          </execution>
+          <execution>
+              <id>generateReport</id>
+              <phase>test</phase>
+              <goals>
+                  <goal>report</goal>
+              </goals>
+          </execution>
+      </executions>
   </plugin>
 ```
 
@@ -306,8 +339,42 @@ mvn clean test -fn surefire-report:report
 
 -Dsurefire.junit4.upgradecheck
 
+## Integrating with Sonar
+
+1. Download sonar community edition from https://www.sonarsource.com/
+2. run \bin\windows-x86-64/sonar.bat soon you will sonar running in http://localhost:9000
+3. Configure the maven settings.xml
+   a) Add plugin group in pluginGroups section
+     
+      ```xml
+      <pluginGroups>
+          <pluginGroup>org.sonarsource.scanner.maven</pluginGroup>
+      </pluginGroups>
+    ```
+   
+   b) Add sonar profile
+    
+    ```xml
+      <profile>
+        <id>sonar</id>
+        <activation>
+            <activeByDefault>true</activeByDefault>
+        </activation>
+        <properties>
+                <!-- Optional URL to server. Default value is http://localhost:9000 -->
+                <sonar.host.url>
+                  http://localhost:9000
+                </sonar.host.url>
+            </properties>
+      </profile> 
+    ```
+    c) Generate Sonar token: Go to Sonar link Security->Users(select admin user)->Tokens
+4. Generating sonar report by running `mvn clean verify sonar:sonar -Dsonar.login=$SONAR_TOKEN`
+
+
 ## Integrating with jenkins
 
+ 
 Installed Jenkin using Docker
 
 Jenkins is a popular open-source automation server that can help you with continuous integration and delivery of your software projects. To install Jenkins with Docker and mount a volume for /var/jenkins_home, you can follow these steps:
@@ -319,3 +386,22 @@ Install Docker on your host machine if you haven’t already. You can find the i
 3. Run a Jenkins container using the image and volume you created by running this command: `docker run -d -p 8080:8080 -p 50000:50000 -v jenkins_home:/var/jenkins_home --name jenkins jenkins/jenkins:lts`
 4. Access your Jenkins instance by opening your browser and navigating to `http://localhost:8080`. You will be prompted to unlock Jenkins using an initial password that you can find in the logs of your container. You can view the logs by running this command: `docker logs jenkins`
 5. Follow the post-installation setup wizard to customize Jenkins with plugins and create the first administrator user.
+
+## Repository manager
+
+You can create your own repository manager in local by using Nexus. Here we follow the steps to setup one
+
+1. Download and run nexus container: `docker run -d -p 8081:8081 --name nexus sonatype/nexus3`
+2. Get the admin password by logging into the system `docker exec -it nexus /bin/bash`, then followed by the file storing the password `cat /nexus-data/admin.password`
+3. Login to http://localhost:8081
+
+There are three types of repositories
+
+- `proxy` it acts a proxy to maven central, pulls the dependencies from central repository and cache it
+- `hosted`  repository for your local artifacts
+- `group` this is a group of repositores. you can group multiple repositories in a single group.(e.g) `http://localhost:8081/repository/maven-public/` this is a single URL to maven-release, maven-snapshot, maven-central
+
+
+
+
+

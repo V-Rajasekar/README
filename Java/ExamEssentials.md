@@ -1,4 +1,5 @@
 # Exam Essentials
+
 - [Exam Essentials](#exam-essentials)
   - [Assignment operations](#assignment-operations)
   - [Lamdas and Functional Interfaces](#lamdas-and-functional-interfaces)
@@ -9,22 +10,26 @@
   - [Path.resolve](#pathresolve)
   - [JDBC](#jdbc)
   - [Resource Bundle](#resource-bundle)
+  - [Thread (Concurrency)](#thread-concurrency)
+    - [ScheduledExecutor](#scheduledexecutor)
+    - [java.util.concurrent.atomic.AtomicInteger/Boolean/Long](#javautilconcurrentatomicatomicintegerbooleanlong)
+  - [java.util.concurrent.lock.ReentrantLock](#javautilconcurrentlockreentrantlock)
+    - [java,util.concurrent.CyclicBarrier](#javautilconcurrentcyclicbarrier)
 
 ## Assignment operations
+
 Given:
 int x = 1, y = 2, z = 3;
 x += y *= z -= x;
 
 what is the output x , y and Z ? //output 5 4 2
 
-The assignment operator assigns the value on its right to operand on its left. Unlike all other operators in Java, 
-assignment operator are evaluated from right to left. 
+The assignment operator assigns the value on its right to operand on its left. Unlike all other operators in Java,
+assignment operator are evaluated from right to left.
 
-z = z - x; 2 
-y = y * z; 4 
+z = z - x; 2
+y = y * z; 4
 x = x + y; 5
-
-
 
 ## Lamdas and Functional Interfaces
 
@@ -56,11 +61,10 @@ The parameter types can be omitted. When only one parameter is specified without
 
 `a -> a.equals(b)`
 
-
  interface Secret {
      String magic(double d);
   }
-   
+
   class MySecret implements Secret {
      public String magic(double d) {
         return "Poof";
@@ -88,8 +92,6 @@ Replacing MySecret
   }
   Lambdas are not allowed to redeclare local var so char start and char c not allowed end =1 no, should be effective final. chars = null; compiles, but on runtime fails.
 
-
-
 Set<String> set = Set.of("mickey", "minnie");
 List<String> list = new ArrayList<>(set);
 set.forEach(s -> System.out.println(s)); //prints
@@ -114,7 +116,7 @@ cats.sort((c1, c2) -> -c1.compareTo(c2)); // [leo, Olivia]
 Consumer<Set<Double>>
 Consumer<Set<Float>>
 Predicate<Set<Double>> //Line 2
-Predicate<Set<Float>> //Line 2 
+Predicate<Set<Float>> //Line 2
 Supplier<Set<Double>> // Line 1
 Supplier<Set<Float>>
 
@@ -230,7 +232,7 @@ class C extends B {}
 //type of element in l1 is C or its Super B itself
 List<? super B> l1 = new ArrayList<>();
 
-// type of element in l2 is B and any of its subtype, but if add C will result compile error see the explanation. 
+// type of element in l2 is B and any of its subtype, but if add C will result compile error see the explanation.
 List<? extends B> l2 = new ArrayList<>();
 
 l1  = l2/ no its like A = C; overlap is B, but they aren't inherited
@@ -257,10 +259,9 @@ Path p1 = Path.of("/a/b");
 Path p2 = Path.of("/a/c");
 p1.resolve(p2); // Prints /a/c
 
-
 ## JDBC
 
-How to call a stored procedure? 
+How to call a stored procedure?
 conn.prepareCall("{call MY_PROC}");
 
 ## Resource Bundle
@@ -277,7 +278,67 @@ Since the desired locale is fr_CA and the default one is en_US, resources are se
 following order:
 NationalDay_fr_CA
 NationalDay_fr
-NationalDay _en_US
-NationalDay _en
+NationalDay_en_US
+NationalDay_en
 NationalDay
 Notice the class names are case-sensitive, hence NationalDay_FR isn't part of the bundle.
+
+## Thread (Concurrency)
+
+- package `java.util.concurrent`
+- creating thread by a class implementing Runnable or extend Thread and overridding the void run{} method.
+- Thread API ExecutorService and Executors
+
+```java
+ ExecutorService service = Executors.newSingleThreadExecutor(); 
+  service.execute(() -> {System.out.println("Printing zoo inventory");});
+  if (service != null) service.shutdown();
+```
+
+Api methods in ExecutorService
+
+- The `isShutdown()` method returns true once the shutdown() method is called.
+- The `isTerminated` method returns true only when the thread is shutdown.
+- `awaitTermination​(long maxTimeout, TimeUnit unit)` method waits the specified time until all tasks have completed execution, returns earlier if the task are completed much before the maxTimeout or an interruptException is detected
+- `void:execute(Runnable), Future:submit(Runnable/Callable), Future:invokeAll(Collections extends Callable)` wait for all task to complete and returns a future for each, `Future:invokeAny(task)` execute any one task and cancels all other pending tasks.
+
+### ScheduledExecutor
+
+```java
+//creating a singleThreadScheduledExecutor
+ ScheduledExecutorService service
+    = Executors.newSingleThreadScheduledExecutor();
+//Creating a Runnable and Callable tasks    
+    Runnable task1 = () -> System.out.println("Hello Zoo");
+    Callable<String> task2 = () -> "Monkey";
+//Scheduling the tasks    
+    ScheduledFuture<?> r1 = service.schedule(task1, 10, TimeUnit.SECONDS);
+    ScheduledFuture<?> r2 = service.schedule(task2, 8,  TimeUnit.MINUTES);   
+//Creating ExecutorService with Threaa pools
+ExecutorService.newCachedThreadPool();
+ExecutorService.newFixedThreadPool(int);
+ScheduledExecutorService.newScheduledThreadPool(int);
+
+```
+**Review API methods of ExecutorService**
+
+<p>The `java.util.concurrent.Callable` functional interface is similar to Runnable except that its call() method returns a value and can throw a checked exception.</p>
+
+```java
+    @FunctionalInterface public interface Callable<V> {
+     V call() throws Exception;
+    }
+```
+### java.util.concurrent.atomic.AtomicInteger/Boolean/Long
+- java.util.concurrent.atomic: AtomicInteger, AtomicBoolean, AtomicLong
+-  private AtomicInteger sheepCount = new AtomicInteger(0)
+
+##  java.util.concurrent.lock.ReentrantLock
+
+Lock lock - new ReentrantLock();
+lock.lock() - Waits
+lock.tryLock():boolean - trys to acquired the lock immediately and return the success status true/false
+lock.unlock() - to release the lock.
+ 
+### java,util.concurrent.CyclicBarrier
+A synchronization aid that allows a set of threads to all wait for each other to reach a common barrier point. CyclicBarriers are useful in programs involving a fixed sized party of threads that must occasionally wait for each other. The barrier is called cyclic because it can be re-used after the waiting threads are released.

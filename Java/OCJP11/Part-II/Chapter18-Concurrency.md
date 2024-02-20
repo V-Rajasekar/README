@@ -1,28 +1,30 @@
 # Chapter 18 Concurrency
+
 - [Chapter 18 Concurrency](#chapter-18-concurrency)
   - [Introducing Threads](#introducing-threads)
   - [Thread Types](#thread-types)
   - [Understanding Thread Concurrency.](#understanding-thread-concurrency)
   - [Defining a Task with Runnable.](#defining-a-task-with-runnable)
   - [Creating a Thread](#creating-a-thread)
+  - [Introducing Callable](#introducing-callable)
   - [Polling with Sleep](#polling-with-sleep)
   - [Creating Threads with the Concurrency API](#creating-threads-with-the-concurrency-api)
-  - [Shutting Down a Thread Executor](#shutting-down-a-thread-executor)
+    - [java.util.concurrent.ExecutorService and Executors](#javautilconcurrentexecutorservice-and-executors)
+    - [Shutting down executorService.shutdown()](#shutting-down-executorserviceshutdown)
   - [Submitting Tasks](#submitting-tasks)
-    - [Waiting for Result](#waiting-for-result)
-    - [Introducing Callable.](#introducing-callable)
-    - [Submitting Task Collections](#submitting-task-collections)
-    - [Scheduling Tasks](#scheduling-tasks)
+    - [Future methods](#future-methods)
+    - [Submitting Task Collections invokeAll()](#submitting-task-collections-invokeall)
+    - [Scheduling Tasks Executors.newSingleThreadScheduledExecutor](#scheduling-tasks-executorsnewsinglethreadscheduledexecutor)
     - [Increasing Concurrency with Pools.](#increasing-concurrency-with-pools)
   - [Writing Thread-Safe Code](#writing-thread-safe-code)
-    - [Protecting Data with Atomic Clases.](#protecting-data-with-atomic-clases)
-      - [Atomic classes](#atomic-classes)
-      - [Improving Access with Synchronized Blocks](#improving-access-with-synchronized-blocks)
-      - [Synchronized methods](#synchronized-methods)
+  - [Atomic Classes(Protecting Data).](#atomic-classesprotecting-data)
+    - [Predefined Atomic classes](#predefined-atomic-classes)
+  - [Synchronized Blocks](#synchronized-blocks)
+    - [Synchronized methods](#synchronized-methods)
     - [Understanding the Lock Framework](#understanding-the-lock-framework)
       - [Applying a ReentrantLock Interface](#applying-a-reentrantlock-interface)
       - [tryLock()](#trylock)
-    - [Orchestrating Tasks with a CyclicBarrier](#orchestrating-tasks-with-a-cyclicbarrier)
+  - [CyclicBarrier (used for orchestrating tasks)](#cyclicbarrier-used-for-orchestrating-tasks)
     - [Using Concurrent Collections](#using-concurrent-collections)
       - [Concurrent Collection Class](#concurrent-collection-class)
     - [Understanding Blocking Queues](#understanding-blocking-queues)
@@ -38,10 +40,19 @@
   - [Avoiding Stateful Operations](#avoiding-stateful-operations)
 
 ## Introducing Threads
-A thread is the smallest unit of execution that can be scheduled by the operating system.
-A process is a group of associated threads that execute in the same, shared environment.
-A multithreaded process is one that contains one or more threads.
-A task is a single unit of work performed by a thread.  A thread can complete multiple independent tasks but only one task at a time.
+
+- A thread in Java is a lightweight subprocess that can execute tasks concurrently within a program. 
+- Threads share the same memory space but have their own stack, local variables, and program counter.
+- Threads can have different states, such as new, runnable, running, blocked, suspended, and terminated.
+- Threads can be created by implementing the Runnable interface or extending the Thread class12. Threads can improve the performance and responsiveness of a program by allowing multiple tasks to run in parallel
+
+Managing threads in Java involves creating, starting, running, and terminating threads, as well as coordinating their communication and synchronization. Here are some best practices for managing threads in Java1:
+
+Use thread pools to efficiently create and reuse threads, rather than creating new threads for each task. You can use the java.util.concurrent package to create and manage thread pools.</br>
+Avoid unnecessary locks and synchronized blocks that can cause deadlocks and contention. Use the java.util.concurrent.locks package to implement more flexible locking mechanisms, such as ReentrantLock and ReadWriteLock.</br>
+Think about data sharing and how to prevent race conditions and memory inconsistency errors. Use the java.util.concurrent.atomic package to perform atomic operations on shared variables, or use the volatile keyword to ensure visibility of changes across threads.
+Use thread-safe collections and utilities from the java.util.concurrent package, such as ConcurrentHashMap, CopyOnWriteArrayList, CountDownLatch, Semaphore, and CyclicBarrier, to manage concurrent access and coordination of threads.
+Handle exceptions and interrupts properly in threads. Use the Thread.UncaughtExceptionHandler interface to handle uncaught exceptions in threads, or use the Future interface to get the result or exception of a task submitted to a thread pool. Use the Thread.interrupt() method to request a thread to stop, and check the Thread.isInterrupted() method or catch the InterruptedException to respond to the interruption.
 
 ## Thread Types
 
@@ -51,9 +62,10 @@ When a system‐defined thread encounters a problem and cannot recover, such as 
 
 
 ## Understanding Thread Concurrency.
-The property of executing multiple threads and processes at the same time is referred to as concurrency.<Need to read>
+The process of executing multiple threads and processes at the same time is referred to as concurrency.<Need to read>
 
 ## Defining a Task with Runnable.
+
 - `java.lang.Runnable` is a functional interface that takes no arguments and returns no data
 
 
@@ -72,6 +84,7 @@ Runnable capybara = () -> "";                 // DOES NOT COMPILE
 
 ## Creating a Thread
 The simplest way to execute a thread is by using the `java.lang.Thread` class. Executing a task with Thread is a two‐step process. </p>
+
 1. First, you define the Thread with the corresponding task to be done. 
 2. Then, you start the task by using the `Thread.start()` method.
 
@@ -89,11 +102,23 @@ public class ReadInventoryThread extends Thread {
  Incase the same ReadInventoryThread implements Runnable instead of extends Thread then 
  (new Thread(new ReadInventoryThread())).start(); // pass the Runnable instance to the Thread object.
 ```
+
 - Calling run() instead of start() doesn't execute the task in a separate thread.
 - Use `Thread` class only under specific circumstances, such as when you are creating your own priority‐based thread. In most situations, you should implement the Runnable interface rather than extend the Thread class.
 - Apart from extending Thread and Implementing Runnable. you can also create and manage threads indirectly using an `ExecutorService`.
 
+## Introducing Callable
+
+<p>The `java.util.concurrent.Callable` functional interface is similar to Runnable except that its call() method **returns a value and can throw a checked exception.**</p>
+
+```java
+    @FunctionalInterface public interface Callable<V> {
+     V call() throws Exception;
+    }
+```
+
 ## Polling with Sleep
+
 <p>one thread often needs to wait for the results of another thread to proceed. One solution is to use polling. Polling is the process of intermittently checking data at some fixed interval. For example, let's say you have a thread that modifies a shared static counter value and your main() thread is waiting for the thread to increase the value to greater than 100
 
  Using a while() loop to check for data without some kind of delay is considered a bad coding practice as it ties up CPU resources for no reason.
@@ -123,6 +148,8 @@ While polling does prevent the CPU from being overwhelmed with a potentially inf
 ## Creating Threads with the Concurrency API
  The Concurrency API includes the `ExecutorService` interface, which defines services that create and manage threads for you. Its an interface and an instance can be created with the a factory pattern.
 
+### java.util.concurrent.ExecutorService and Executors
+
 ```java
 import java.util.concurrent.*;
 public class ZooInfo {
@@ -145,32 +172,40 @@ public class ZooInfo {
    }
 }
 ```
+
 <p>With a single‐thread executor, results are guaranteed to be executed sequentially. Notice that the end text is output while our thread executor tasks are still running. This is because the main() method is still an independent thread from the ExecutorService.</p>
 
-## Shutting Down a Thread Executor
+### Shutting down executorService.shutdown()
 A thread executor creates a non‐daemon thread on the first task that is executed, so failing to call shutdown() will result in your application never terminating.
+
 - Life cycle of an ExecutorService object.
   ![Alt text](executor-lifecycle.png)
 - What if you want to cancel all running and upcoming tasks? The ExecutorService provides a method called `shutdownNow()`
 - If a new task is submitted to an ExecutorService while it is shutting down, an exception is thrown.
 - The `isShutdown()` method returns true once the shutdown() method is called.
-- 
+- The `isTerminated` method returns true only when the thread is shutdown.
 
 ## Submitting Tasks
-Method name	| Description
------------ | ------------
-void execute(Runnable command)	|Executes a Runnable task at some point in the future
-Future<?> submit(Runnable task)	|Executes a Runnable task at some point in the future and returns a Future representing the task
-<T> Future<T> submit(Callable<T> task)	| Executes a Callable task at some point in the future and returns a Future representing the pending results of the task
-<T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks) throws InterruptedException	| Executes the given tasks and waits for all tasks to complete. Returns a List of Future instances, in the same order they were in the original collection
-<T> T invokeAny(Collection<? extends Callable<T>> tasks) throws InterruptedException, ExecutionException	| Executes the given tasks and waits for at least one to complete. Returns a Future instance for a complete task and cancels any unfinished tasks
-boolean awaitTermination​(long maxTimeout, TimeUnit unit) throws InterruptedException| The awaitTermination() method waits the specified time until all tasks have completed execution, returns earlier if the task are completed much before the maxTimeout or an interruptException is detected
-### Waiting for Result 
-  * `Future<?> future = service.submit(() -> System.out.println("Hello"));` 
-  * `Future` includes useful methods for determining the state of a task.
-  * boolean isDone(), boolean isCancelled(), boolean cancel(boolean mayInterruptedIfRunning), V get() RRetrieves the result of a task, waiting endlessly if it is not yet available, V get(long timeout, TimeUnit unit)	Retrieves the result of a task, waiting the specified amount of time. If the result is not ready by the time the timeout is reached, a checked TimeoutException will be thrown.
-  * Other supported Enums TimeUnit.NANOSECONDS, TimeUnit.MICROSECONDS, TimeUnit.MILLISECONDS similary for minutes, hours and Days.
-  * Sample program
+
+| Method name                                                                                              | Description                                                                                                                                                                                                |
+| -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| void execute(Runnable command)                                                                           | Executes a Runnable task at some point in the future                                                                                                                                                       |
+| Future<?> submit(Runnable task)                                                                          | Executes a Runnable task at some point in the future and returns a Future representing the task                                                                                                            |
+| <T> Future<T> submit(Callable<T> task)                                                                   | Executes a Callable task at some point in the future and returns a Future representing the pending results of the task                                                                                     |
+| <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks) throws InterruptedException       | Executes the given tasks and waits for all tasks to complete. Returns a List of Future instances, in the same order they were in the original collection                                                   |
+| <T> T invokeAny(Collection<? extends Callable<T>> tasks) throws InterruptedException, ExecutionException | Executes the given tasks and waits for at least one to complete. Returns a Future instance for a complete task and cancels any unfinished tasks                                                            |
+| boolean awaitTermination​(long maxTimeout, TimeUnit unit) throws InterruptedException                    | The awaitTermination() method waits the specified time until all tasks have completed execution, returns earlier if the task are completed much before the maxTimeout or an interruptException is detected |
+
+### Future methods
+
+- `Future<?> future = service.submit(() -> System.out.println("Hello"));` 
+- `Future` includes useful methods for determining the state of a task.
+- boolean isDone(), boolean isCancelled(), boolean cancel(boolean mayInterruptedIfRunning).
+- `V get()` retrieves the result of a task, waiting endlessly if it is not yet available.
+- `V get(long timeout, TimeUnit unit)` Retrieves the result of a task, waiting the specified amount of time. If the result is not ready by the time the timeout is reached, a checked TimeoutException will be thrown.
+- Other supported Enums TimeUnit.NANOSECONDS, TimeUnit.MICROSECONDS, TimeUnit.MILLISECONDS similary for minutes, hours and Days.
+- Sample program
+  
     ```java
     import java.util.concurrent.*;
      
@@ -201,18 +236,11 @@ boolean awaitTermination​(long maxTimeout, TimeUnit unit) throws InterruptedEx
         }
     }
     ```
-### Introducing Callable.
 
-<p>The java.util.concurrent.Callable functional interface is similar to Runnable except that its call() method returns a value and can throw a checked exception.</p>
+### Submitting Task Collections invokeAll()
 
-```java
-    @FunctionalInterface public interface Callable<V> {
-    V call() throws Exception;
-    }
-```
-
-### Submitting Task Collections
 - invokeAll(List tasks)
+
 ```java
     23: List<Future<String>>  list = service.invokeAll(
     24:    List.of(task, task, task));
@@ -220,19 +248,24 @@ boolean awaitTermination​(long maxTimeout, TimeUnit unit) throws InterruptedEx
     26:    System.out.println(future.get());
     27: }
 ```
+
 - invokeAny(List tasks)
 invokeAny() method executes a collection of tasks and returns the result of one of the tasks that successfully completes execution, cancelling all unfinished tasks.
 
 - invokeAll() method will wait indefinitely until all tasks are complete, while the invokeAny() method will wait indefinitely until at least one task completes. The ExecutorService interface also includes overloaded versions of invokeAll() and invokeAny() that take a timeout value and TimeUnit parameter.
 
-### Scheduling Tasks
+### Scheduling Tasks Executors.newSingleThreadScheduledExecutor
+
 - Creating a ScheduledExecutorService 
+
 ```java
 ScheduledExecutorService service 
    = Executors.newSingleThreadScheduledExecutor();
 ```
+
 -  ScheduledExecutorService take a Callable or Runnable, respectively; perform the task after some delay; and return a ScheduledFuture
 - The ScheduledFuture interface is identical to the Future interface, except that it includes a getDelay() method that returns the remaining delay
+
 ```java
     ScheduledExecutorService service
     = Executors.newSingleThreadScheduledExecutor();
@@ -242,10 +275,13 @@ ScheduledExecutorService service
     ScheduledFuture<?> r2 = service.schedule(task2, 8,  TimeUnit.MINUTES);
 ```
 While these tasks are scheduled in the future, the actual execution may be delayed.If there aren't any threads available to perform task.
+
 - `ScheduledAtFixedRate()` method creates a new task and submit it to the executor regardless of whether the previous task finished.(e.g) Here initial 5 mins delayed and at every 1 min the new task is submitted to the executor
 `service.scheduleAtFixedRate(command, 5, 1, TimeUnit.MINUTES);`
 - `scheduleWithFixedDelay()` creates a new task only after the previous task has finished. For example, if a task runs at 12:00 and takes five minutes to finish, with a period between executions of two minutes, then the next task will start at 12:07.
+
 ### Increasing Concurrency with Pools.
+
 - `ExecutorService.newCachedThreadPool()`	Creates a thread pool that creates new threads as needed but will reuse previously constructed threads when they are available. Commonly used for pools that require executing many short-lived async tasks.
 - `ExecutorService.newFixedThreadPool(int)`	Creates a thread pool that reuses a fixed number of threads operating off a shared unbounded queue
 - `ScheduledExecutorService.newScheduledThreadPool(int)`	Creates a thread pool that can schedule commands to run after a given delay or to execute periodically
@@ -273,27 +309,34 @@ While these tasks are scheduled in the future, the actual execution may be delay
       }
 	}  
 ```
-### Protecting Data with Atomic Clases.
-One way to improve our sheep counting example is to use the java.util.concurrent.atomic package
+
+## Atomic Classes(Protecting Data).
+
+One way to improve our sheep counting example is to use the `java.util.concurrent.atomic` package
 
 As we demonstrated in the previous section, the increment operator ++ is not thread‐safe. Furthermore, the reason that it is not thread‐safe is that the operation is not atomic, carrying out two tasks, read and write, that can be interrupted by other threads.
 
 Any thread trying to access the sheepCount variable while an atomic operation is in process will have to wait until the atomic operation on the variable is complete. Conceptually, this is like setting a rule for our zoo workers that there can be only one employee in the field at a time, although they may not each report their result in order.
 
-#### Atomic classes
+### Predefined Atomic classes
+
 1. `AtomicBoolean, AtomicInteger, AtomicLong` values that may be updated atomically. 
 2. In the previous example. If you replace with the AtomicInteger then you get varying output from 1..10, but still it prints the numbers 1 through 10.
+
 ```java
   private AtomicInteger sheepCount = new AtomicInteger(0);
    private void incrementAndReport() {
       System.out.print(sheepCount.incrementAndGet()+" ");
    }
 ```
+
 For the overall methods: [Atomic Integer](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/AtomicInteger.html)
 
-#### Improving Access with Synchronized Blocks
+## Synchronized Blocks
+
 - Synchronzied Block _(with monitor and lock mechanism)_
- * synchronized blocks allow only one thread to enter
+- synchronized blocks allow only one thread to enter
+
 ```java
 SheepManager manager = new SheepManager();
 synchronized(manager) {
@@ -308,8 +351,11 @@ synchronized(manager) {
       }
   }
 ```
-- Although all threads are created and executed at the same time each thread wait for its turn to increment and report back
-#### Synchronized methods
+
+- Although all threads are created and executed at the same time each thread wait for its turn to increment the sheepCount and report back
+
+### Synchronized methods
+
 - We can add the synchronized modifier to any instance method to synchronize automatically on the object itself.
 
 ```java
@@ -321,6 +367,7 @@ public static synchronized void printDaysWork() {
    System.out.print("Finished work");
 }
 ```
+
 - Even when the data is protected, though, the performance cost for using it can be high.
 
 ### Understanding the Lock Framework
@@ -340,6 +387,7 @@ try {
 }
 ```
 #### tryLock()
+
 - The tryLock() method will attempt to acquire a lock and immediately return a boolean result indicating whether the lock was obtained.Unlike the lock() method, it does not wait if another thread already holds the lock
 
 ```java
@@ -361,7 +409,7 @@ if(lock.tryLock()) { //Incase to wait to acquire a lock lock.tryLock(10,TimeUnit
 - `tryLock(long,TimeUnit)`: , if a lock is available, then it will immediately return with it. If a lock is unavailable, though, it will wait up to the specified time limit for the lock.
 - It is critical that you release a lock the same number of times it is acquired. For calls with tryLock(), you need to call unlock() only if the method returned true.
 
-### Orchestrating Tasks with a CyclicBarrier
+## CyclicBarrier (used for orchestrating tasks)
 
 The CyclicBarrier takes in its constructors a limit value, indicating the number of threads to wait for. As each thread finishes, it calls the await() method on the cyclic barrier. Once the specified number of threads have each called await(), the barrier is released, and all threads can continue.
 
@@ -413,11 +461,14 @@ Adding lions
 Adding lions
 ```
 -` THREAD POOL SIZE AND CYCLIC BARRIER LIMIT` If you are using a thread pool, make sure that you set the number of available threads to be at least as large as your CyclicBarrier limit value
+
 - CyclicBarrier is reusable it usually releases all the threads once the task are performed, the no of threads waiting on the cyclic barrier goes back to zero. At this point we can reuse the cyclic barrier.
 
 ### Using Concurrent Collections
+
 - Code throws `ConcurrentModificationException` at runtime. It can happen with a single thread, and on non concurrent collection.In the place of HashMap if ConcurrentHashMap is used this error will not happen.
 - The concurrent classes were created to help avoid common issues in which multiple threads are adding and removing objects from the same collections. At any given instance, all threads should have the same consistent view of the structure of the collection.
+
 ```java
 var foodData = new HashMap<String, Integer>();
 //var foodData = new ConcurrentHashMap<String, Integer>();
@@ -428,21 +479,22 @@ for(String key: foodData.keySet())
 ```
 #### Concurrent Collection Class
 
-Class Name              | Java Collections Interfaces, Ordered ? Sorted? Blockin?
------------------------ | -------------------------------
-ConcurrentHashMap	      |ConcurrentMap	No	No	No
-ConcurrentLinkedQueue	|Queue	Yes	No	No
-ConcurrentSkipListMap	|ConcurrentMap SortedMap NavigableMap	Yes	Yes	No
-ConcurrentSkipListSet	|SortedSet NavigableSet	Yes	Yes	No
-CopyOnWriteArrayList	   |List	Yes	No	No
-CopyOnWriteArraySet	   |Set	No	No	No
-LinkedBlockingQueue	   |BlockingQueue Yes	No	Yes
+| Class Name            | Java Collections Interfaces, Ordered ? Sorted? Blockin? |
+| --------------------- | ------------------------------------------------------- |
+| ConcurrentHashMap     | ConcurrentMap	No	No	No                                  |
+| ConcurrentLinkedQueue | Queue	Yes	No	No                                         |
+| ConcurrentSkipListMap | ConcurrentMap SortedMap NavigableMap	Yes	Yes	No         |
+| ConcurrentSkipListSet | SortedSet NavigableSet	Yes	Yes	No                       |
+| CopyOnWriteArrayList  | List	Yes	No	No                                          |
+| CopyOnWriteArraySet   | Set	No	No	No                                            |
+| LinkedBlockingQueue   | BlockingQueue Yes	No	Yes                                |
 
 - Understanding _SkipList_ Collections
 The SkipList classes, ConcurrentSkipListSet and ConcurrentSkipListMap, are concurrent versions of their sorted counterparts, TreeSet and TreeMap, respectively. They maintain their elements or keys in the natural ordering of their elements. 
 - Understanding CopyOnWrite Collections
- * Two classes, CopyOnWriteArrayList and CopyOnWriteArraySet it  copy all of their elements to a new underlying structure anytime an element is added, modified, or removed from the collection. 
-  * The `CopyOnWrite` classes are similar to the immutable object pattern  a new underlying structure is created every time the collection is modified. Unlike a true immutable object, though, the reference to the object stays the same even while the underlying data is changed.
+- Two classes, CopyOnWriteArrayList and CopyOnWriteArraySet it  copy all of their elements to a new underlying structure anytime an element is added, modified, or removed from the collection. 
+- The `CopyOnWrite` classes are similar to the immutable object pattern  a new underlying structure is created every time the collection is modified. Unlike a true immutable object, though, the reference to the object stays the same even while the underlying data is changed.
+
  ```java
    List<Integer> favNumbers = 
       new CopyOnWriteArrayList<>(List.of(4,3,42));
@@ -456,7 +508,8 @@ The SkipList classes, ConcurrentSkipListSet and ConcurrentSkipListMap, are concu
    4 3 42
    Size: 6
  ```
- - CopyOnWrite classes can use a lot of memory as it has to create new Collection object every time the original one is modified. Another approach is to use the ArrayList class with an iterator, as shown here:
+
+- CopyOnWrite classes can use a lot of memory as it has to create new Collection object every time the original one is modified. Another approach is to use the ArrayList class with an iterator, as shown here:
 
   ```java
     var iterator = birds.iterator();
@@ -468,11 +521,13 @@ The SkipList classes, ConcurrentSkipListSet and ConcurrentSkipListMap, are concu
   ```
 
 ### Understanding Blocking Queues
+
 - `BlockingQueue` waiting methods
-Method name	| Description
------------ | ---------------
-| offer(E e, long timeout, TimeUnit unit)	| Adds an item to the queue, waiting the specified time and returning false if the time elapses before space is available
-| poll(long timeout, TimeUnit unit)	| Retrieves and removes an item from the queue, waiting the specified time and returning null if the time elapses before the item is available
+  
+| Method name                             | Description                                                                                                                                  |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| offer(E e, long timeout, TimeUnit unit) | Adds an item to the queue, waiting the specified time and returning false if the time elapses before space is available                      |
+| poll(long timeout, TimeUnit unit)       | Retrieves and removes an item from the queue, waiting the specified time and returning null if the time elapses before the item is available |
 
 ```java
 try {
@@ -488,6 +543,7 @@ try {
 ```
 ### Obtaining Synchronized Collections
 obtaining synchronized versions of existing nonconcurrent collection objects.
+
 - `synchronizedCollection(Collection<T> c)`
 - `synchronizedList(List<T> list)`
 - `synchronizedMap(Map<K,V> m)`
@@ -497,20 +553,22 @@ obtaining synchronized versions of existing nonconcurrent collection objects.
 - `synchronizedSortedMap(SortedMap<K,V> m)`
 - `synchronizedSortedSet(SortedSet<T> s)`
 
-* Following loops throws a `ConcurrentModificationException` 
+- Following loops throws a `ConcurrentModificationException` 
+
 ```java
 var foodData = new HashMap<String, Object>();
 foodData.put("penguin", 1);
 foodData.put("flamingo", 2);
 var synFoodData = Collections.synchronizedMap(foodData);
 for(String key: synFoodData.keySet())
-   synFoodData.remove(key);
+   synFoodData.remove(key); // throws ConcurrentModificationException
 ```
 
 ### Identifying Threading Problems
+
 - There are three types of liveness issues with which you should be familiar: `deadlock, starvation, and livelock`
-* Deadlock
-  *  <p>Imagine that our zoo has two foxes: Foxy and Tails. Foxy likes to eat first and then drink water, while Tails likes to drink water first and then eat. Furthermore, neither animal likes to share, and they will finish their meal only if they have exclusive access to both food and water.
+- Deadlock
+  -  <p>Imagine that our zoo has two foxes: Foxy and Tails. Foxy likes to eat first and then drink water, while Tails likes to drink water first and then eat. Furthermore, neither animal likes to share, and they will finish their meal only if they have exclusive access to both food and water.
      What happens if Foxy gets the food first and Tails gets the water first? The following application models this behavior: </p>
 
 ```java
@@ -568,21 +626,26 @@ In this example, Foxy obtains the food and then moves to the other side of the e
 
 - You cannot resolve a dead lock, only limited success in practise.
 
-* `Starvation` Starvation occurs when a single thread is perpetually denied access to a shared resource or lock. The thread is still active, but it is unable to complete its work as a result of other threads constantly taking the resource that they are trying to access.
-* `Livelock` Livelock occurs when two or more threads are conceptually blocked forever, although they are each still active and trying to complete their task. Livelock is a special case of resource starvation in which two or more threads actively try to acquire a set of locks, are unable to do so, and restart part of the process.
+- `Starvation` Starvation occurs when a single thread is perpetually denied access to a shared resource or lock. The thread is still active, but it is unable to complete its work as a result of other threads constantly taking the resource that they are trying to access.
+- `Livelock` Livelock occurs when two or more threads are conceptually blocked forever, although they are each still active and trying to complete their task. Livelock is a special case of resource starvation in which two or more threads actively try to acquire a set of locks, are unable to do so, and restart part of the process.
 
 - Managing Race Conditions
 Two users trying to signup with the same username at the same time possible outcome 1. Both are register with same username with diff password 2. Both are denied 3. One user successfully signed up, and other failed.
+
 ### Working with Parallel Streams
-  - A _parallel stream_ is a stream that is capable of processing results concurrently, using multiple threads. For example, you can use a parallel stream and the map() operation to operate concurrently on the elements in the stream, vastly improving performance over processing a single element at a time.
+
+- A _parallel stream_ is a stream that is capable of processing results concurrently, using multiple threads. For example, you can use a parallel stream and the map() operation to operate concurrently on the elements in the stream, vastly improving performance over processing a single element at a time.
 
 #### Creating Parallel Streams
+
 - Calling parallel() on an Existing Stream
+
 ```java
 Stream<Integer> s1 = List.of(1,2).stream();
 Stream<Integer> s2 = s1.parallel();
 ```
- * _Note:_ parallel() is an intermediate operation that operates on the original stream. For example, applying a terminal operation to s2 also makes s1 unavailable for further use.
+
+- _Note:_ parallel() is an intermediate operation that operates on the original stream. For example, applying a terminal operation to s2 also makes s1 unavailable for further use.
 - Calling parallelStream() on a Collection Object
   
    `Stream<Integer> s3 = List.of(1,2).parallelStream();`
@@ -618,7 +681,9 @@ Time: 5 seconds
 When a parallelStream() is used the results are not predictable, but takes less time compare to the serial stream `stream()` which process one element at a time.
 
 #### ORDERING FOREACH RESULTS
+
 -  Forcing a parallel stream to process the results in order at the cost of performance. `forEachOrdered`  operation forces our stream into a single‐threaded process.
+
 ```java
  List.of(5,2,1,4,3)
        .parallelStream()
@@ -630,18 +695,21 @@ When a parallelStream() is used the results are not predictable, but takes less 
 ```
 
 ### Processing Parallel Reductions
+
 - Reduction operations on parallel streams are referred to as parallel reductions.
 - **Performing Order‐Based Tasks**
-  * `findAny()` on parallel streams may result in unexpected behavior it can even print 1, 4
+  - `findAny()` on parallel streams may result in unexpected behavior it can even print 1, 4
+
  ```java
   System.out.print(List.of(1,2,3,4,5,6)
    .stream()
    .findAny().get());
  ```
-- All termination operations findFirst(),limit() or skip() may actually perform more slowly in a parallel environment. But one plus side is `skip(5).limit(2).findFirst()` will return the same result on ordered serial and paraller streams.
+
+- All termination operations findFirst(),limit() or skip() may actually perform more slowly in a parallel environment. But one plus side is `skip(5).limit(2).findFirst()` will return the same result on ordered serial stream and parallerStream.
 
 - Creating Unordered Streams
- * `List.of(1,2,3,4,5,6).stream().unordered().parallel();`  For serial streams, using an unordered version has no effect, but on parallel streams, the results can greatly improve performance.
+- `List.of(1,2,3,4,5,6).stream().unordered().parallel();`  For serial streams, using an unordered version has no effect, but on parallel streams, the results can greatly improve performance.
 - Combining Results with reduce()
    ```java
 
@@ -658,7 +726,8 @@ When a parallelStream() is used the results are not predictable, but takes less 
   - _ Note_ We used c for char, whereas s1, s2, and s3 are String values. in a serial stream, wolf is built one character at a time. In a parallel stream, the intermediate values wo and lf are created and then combined.
   - **With parallel streams, though, order is no longer guaranteed and produces unpredictable results**
 - Lets see some problematic accumulator.
-   * Here the combinar is removed since the types are same number, String
+  - Here the combinar is removed since the types are same number, String
+
 ```java
   System.out.println(List.of(1,2,3,4,5,6)
    .parallelStream()
@@ -666,21 +735,27 @@ When a parallelStream() is used the results are not predictable, but takes less 
 
    //Unpredicatable results -21, 3,
 ```
+
 - The same program with serial stream produces Xwolf
+
 ```java
 System.out.println(List.of("w","o","l","f")
    .parallelStream()
    .reduce("X", String::concat));  // XwXoXlXf
 ```
+
 - It is recommended to pass the third param, combiner method allows the JVM to paritition the operations in the stream more efficiently.
 
 ### Combining Results with collect()
+
 - collect same as reduce takes 3 parameters
+
 ```java
 <R> R collect(Supplier<R> supplier,
    BiConsumer<R, ? super T> accumulator,
    BiConsumer<R, R> combiner)
 ```
+
 - `collect()` can be performed as a parallel reduction, as shown in the following example:
   
 ```java
@@ -694,7 +769,9 @@ System.out.println(List.of("w","o","l","f")
 </p>
 
 ### Performing a Parallel Reduction on a Collector
+
 - The Collectors class includes two sets of static methods for retrieving collectors, toConcurrentMap() and groupingByConcurrent(), that are both UNORDERED and CONCURRENT. These methods produce Collector instances capable of performing parallel reductions efficiently. 
+
 <p>
 We use a ConcurrentMap reference, although the actual class returned is likely
 ConcurrentHashMap. The particular class is not guaranteed; it will just be a class that implements the interface ConcurrentMap.
@@ -715,10 +792,13 @@ ConcurrentMap<Integer, List<String>> map = ohMy.collect(
    Collectors.groupingByConcurrent(String::length));
 System.out.println(map); // {5=[lions, bears], 6=[tigers]}
 ```
+
 - _Note_ The key to applying parallel reductions is to encourage the JVM to take advantage of the parallel structures, such as using a groupingByConcurrent() collector on a parallel stream rather than a groupingBy() collector. 
 
 ## Avoiding Stateful Operations
+
 - A `stateful lambda expression` is one whose result depends on any state that might change during the execution of a pipeline.
+
 ```java
   public List<Integer> addValues(IntStream source) {
    var data = Collections.synchronizedList(new ArrayList<Integer>());
@@ -733,6 +813,7 @@ System.out.println(list); //[2, 4, 6, 8, 10]
 var list = addValues(IntStream.range(1, 11).parallel());
 System.out.println(list); //[6, 8, 10, 2, 4]
 ```
+
 - As you can see when a parallel stream is passed the order is not maintained, To fix this solution by rewriting our stream operation 
 
 ```java
@@ -744,6 +825,7 @@ System.out.println(list); //[6, 8, 10, 2, 4]
 ```
 
 Summary: 
+
 - how to process tasks in parallel using the Concurrency API.
 - The work that a thread performs can be expressed as lambda expressions or instances of Runnable or Callable.
 - How to concurrently execute task using ExecutorService incl. scheduled and pooled services
