@@ -17,7 +17,17 @@
   - [some popularly used plugins](#some-popularly-used-plugins)
     - [Parallel Test execution](#parallel-test-execution)
     - [Skipping Test](#skipping-test)
+  - [Integrating with Sonar](#integrating-with-sonar)
   - [Integrating with jenkins](#integrating-with-jenkins)
+  - [Repository manager (Nexus)](#repository-manager-nexus)
+    - [How to use local repository manager](#how-to-use-local-repository-manager)
+  - [Plugins](#plugins)
+    - [Creating custome plugin](#creating-custome-plugin)
+  - [Properties](#properties)
+    - [Different properties](#different-properties)
+    - [How to see all available properties](#how-to-see-all-available-properties)
+    - [project properties](#project-properties)
+    - [System and Java properties](#system-and-java-properties)
 
 ## What is maven?
 
@@ -370,8 +380,7 @@ mvn clean test -fn surefire-report:report
     ```
     c) Generate Sonar token: Go to Sonar link Security->Users(select admin user)->Tokens
 4. Generating sonar report by running `mvn clean verify sonar:sonar -Dsonar.login=$SONAR_TOKEN`
-
-
+ 
 ## Integrating with jenkins
 
  
@@ -387,7 +396,7 @@ Install Docker on your host machine if you haven’t already. You can find the i
 4. Access your Jenkins instance by opening your browser and navigating to `http://localhost:8080`. You will be prompted to unlock Jenkins using an initial password that you can find in the logs of your container. You can view the logs by running this command: `docker logs jenkins`
 5. Follow the post-installation setup wizard to customize Jenkins with plugins and create the first administrator user.
 
-## Repository manager
+## Repository manager (Nexus)
 
 You can create your own repository manager in local by using Nexus. Here we follow the steps to setup one
 
@@ -401,7 +410,257 @@ There are three types of repositories
 - `hosted`  repository for your local artifacts
 - `group` this is a group of repositores. you can group multiple repositories in a single group.(e.g) `http://localhost:8081/repository/maven-public/` this is a single URL to maven-release, maven-snapshot, maven-central
 
+### How to use local repository manager
+
+`mvn deploy`  deploy plugin is primarily used during the deploy phase, to add your artifact(s) to a remote repository for sharing with other developers and projects. This is usually done in an integration or release environment. It can also be used to deploy a particular artifact. As a repository contains more than the artifacts (POMs, the metadata, MD5 and SHA1 hash files...), deploying means not only copying the artifacts, but making sure all this information is correctly updated.
+
+The maven deploy plugins for the following configuration your project `pom.xml` and `settings.xml` ensure the repository id in the pom.xml and settings.xml are the same.
+
+```xml
+  <!-- pom.xml-->
+  <!-- download the dependencies from the central repo to local repo manager(Nexus)-->
+    <repositories>
+        <repository>
+            <id>maven-group</id>
+            <url>http://localhost:8081/repository/nexus-group/</url>
+        </repository>
+    </repositories>
+    <!-- Deploy your artifacts to the local repositories-->
+    <distributionManagement>
+        <snapshotRepository>
+            <id>nexus-snapshots</id>
+            <url>http://localhost:8081/repository/maven-snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>nexus-releases</id>
+            <url>http://localhost:8081/repository/maven-releases/</url>
+        </repository>
+    </distributionManagement>
+
+      <!-- settings.xml-->
+    <servers>
+      <server>
+        <id>nexus-snapshots</id>
+        <username>admin</username>
+        <password>admin123</password>
+      </server>
+      <server>
+        <id>nexus-releases</id>
+        <username>admin</username>
+        <password>admin123</password>
+      </server>
+    </servers>
+    <mirrors>
+      <mirror>
+        <id>central</id>
+        <name>central</name>
+        <url>http://localhost:8081/repository/nexus-group/</url>
+        <mirrorOf>central</mirrorOf>
+      </mirror>
+    </mirrors>
+```
+## Plugins
+
+Maven is lightweigh and it uses the plugins to do compile, test, verify and deploy the project. Some predefined plugins are compile, test, deploy, jar, war. [Maven Plugins](#maven-plugins)
+
+### Creating custome plugin
+
+1. `mvn archetype:generate` filter with name `maven-archetype-plugin` choose  `org.apache.maven.archetypes:maven-archetype-plugin`
+
+2. Fill project artifact details
+
+  ``` 
+    Define value for property 'groupId': com.raj
+    Define value for property 'artifactId': projectinfo-maven-plugin
+    Define value for property 'version' 1.0-SNAPSHOT: : 1.0.0-SNAPSHOT
+    Define value for property 'package' com.raj: :
+  ```
+
+3. Add following dependencies and plugin in pom.xml
+
+```xml
+<dependencies>
+	<dependency>
+		<groupId>org.apache.maven</groupId>
+		<artifactId>maven-plugin-api</artifactId>
+		<version>${maven-plugin-api.version}</version>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.maven.plugin-tools</groupId>
+		<artifactId>maven-plugin-annotations</artifactId>
+		<version>${maven-plugin-annotations.version}</version>
+		<scope>provided</scope>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.maven</groupId>
+		<artifactId>maven-project</artifactId>
+		<version>${maven-project.version}</version>
+	</dependency>
+</dependencies>
+<build>
+	<pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-plugin-plugin</artifactId>
+				<version>${maven-plugin-plugin.version}</version>
+			</plugin>
+		</plugins>
+	</pluginManagement>
+</build>
+<properties>
+	<maven-plugin-api.version>3.6.2</maven-plugin-api.version>
+	<maven-plugin-annotations.version>3.6.0</maven-plugin-annotations.version>
+	<maven-project.version>2.2.1</maven-project.version>
+	<maven-plugin-plugin.version>3.6.4</maven-plugin-plugin.version>
+	<maven.compiler.source>16</maven.compiler.source>
+	<maven.compiler.target>16</maven.compiler.target>
+	<java.version>16</java.version>
+</properties>
+```
+
+- Implement Mojo class
+- All Plugin Mojo class should extend AbstractMojo and override the execution method. 
+- the mojo name is the plugin artifact name, you can specify the defaultPhase when to call this plugin in Compile, test, deploy...
+- when unexpected exception happens throw MojoExecutionException is thrown.
+- when build error happens throw MojoFailureException.
+
+```java
+@Mojo(name = "info-renderer", defaultPhase = LifecyclePhase.COMPILE)
+public class ProjectInfoMojo extends AbstractMojo {
+
+    @Parameter(defaultValue = "${project}", required = true, readonly = true)
+    MavenProject proj;
+
+    //passing custom properties
+    @Parameter(property = "scope")
+    String scope;
+
+    @Override
+    public void execute() throws MojoExecutionException, MojoFailureException {
+        //get access to maven log and logging
+        getLog().info("Mojo are cool!");
+        getLog().info("Project Name: " + proj.getName()+ " Artifact Id: " + proj.getArtifact()) ;
+         List<Dependency> dependencies = proj.getDependencies();
+         dependencies.forEach(d -> getLog().info(d.toString()));
+
+        System.out.println("Print dependencies in scope:"+ scope);
+        dependencies.stream().filter(d -> d.getScope() != null && d.getScope().equalsIgnoreCase(scope))
+                .forEach(d ->  getLog().info(d.toString()));
+
+    }
+}
+```
+
+- Verify the plugin
+  
+  ```bash
+    mvn clean install
+    mvn com.raj:projectinfo-renderer:info-renderer
+     #shortcut cmd it works when this plugin is added in the settings.xml under pluginGroups section
+    mvn projectinfo:info-renderer  
+  ```
+
+  //outputs Mojo are cool!
+- Using the plugin in other project
+  - Use the custom plugin in other project by adding the plugin to the build, plugin segment.
+
+```xml
+<plugin>
+  <groupId>com.raj</groupId>
+  <artifactId>projectinfo-maven-plugin</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <executions>
+    <execution>
+      <goals>
+        <goal>info-renderer</goal>
+      </goals>
+    </execution>
+  </executions>
+  <configuration>
+    <scope>test</scope>
+  </configuration>
+</plugin>
+```
+## Properties
+
+Maven allows us to declare and use properties in our pom.xml, Instead of hard coding a particular value. This will help us create portable builds based on a particular environment.
+
+There are also some implicit properties that are available for every project, starting with the project details.
+
+We can access the build directories like the source directories and output directories under the target folder.
+
+We can access the Java system properties and also we can add our own custom properties and access them anywhere in our Pom.xml
+
+### Different properties
+Following are the different properties which can be accessed in pom.xml
+
+```html
+Project     properties project.*
+Build       properties project.build.*
+Java System properties os.name
+customer    properties my.prop.*
+```
+
+### How to see all available properties
+- Add the `maven-antrun-plugin`
+Run `mvn validate` prints all the available properties in build console.
+```xml
+<plugin>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-antrun-plugin</artifactId>
+  <version>1.7</version>
+  <executions>
+    <execution>
+      <phase>validate</phase>
+      <goals>
+        <goal>run</goal>
+      </goals>
+      <configuration>
+        <tasks>
+          <echoproperties />
+        </tasks>
+      </configuration>
+    </execution>
+  </executions>
+</plugin>
+```
+
+### project properties
+The project properties are available through an implicit object called Project. and they can refered like ${project.artifactId}
+various properties can be refered like Project -> project.*, Build directories -> project.build.*, Java System prop -> os.name, 
+Custome properties -> my.prop.
+
+project is  the instance of type `org.apache.maven.model.Model`
+
+### System and Java properties
+
+- [List of Java system properties](https://docs.oracle.com/javase/tutorial/essential/environment/sysprop.html)
+- some of them: os.name, file.separator, java.home, java.class.path
 
 
-
-
+Along with build management maven also provides which of the following for a project? Dependency management
+Using which of the following does maven achieve reuse ? Plugins
+Which of the following represents the type of maven project we want to create ? archetypeArtifactId
+Which maven goal can be used to create a maven project from the command line? archetype:generate
+Which of the following is not a maven coordinate element in the pom.xml? dependency, correct ones are groupId, artifactId, version, packaging.
+Which maven plugin do we use when we create a maven project? archetype
+Maven runs all the life cycle phases before the phase that is being executed? True
+Which of the following parameters should be used to skip tests from the command line? -DskipTests
+Maven can download the dependencies transitively? True
+Which of the following scope can be used to tell maven that we do not need a dependency to be packaged in to a war that will be deployed to a container which will already have that jar/dependecy? Provided
+The name of the final project artifact like jar or war is derived from which of the following in pom.xml ?  Project Coordinates(groupId, and artifactId)
+The folder structure in which maven places the jars or wars in a repository is derived from the projects artifactId? false
+What is the archtypeld to create a maven java web project ? maven-archetype-webapp
+What is the xml element inside parent pom.ml which we define all the child modules? modules
+Which of the following is not a direct child element of the profile element? resources others as direct child are id, build, properties
+In a multi module maven project the packaging in the parent project pom will be? pom
+This scope indicates that the dependency is not required for compilation, but is for execution ? runtime
+When we use which of the following scopes we provide a path to the dependency on that  machine instead of pulling it from a maven repository? System
+Which of the following is achieved through maven profiles? portability
+Which of the following option can be used with a maven command to use/activate a profile? -p
+Which of the following feature of spring boot uses pom.xml? Spring starters
+When we use the traditional spring approach everything is automatically configured for us and the version ? false. Its in spring-boot
+Which of the following staters is added as a dependency to the pom.xml when we create a simple Spring Boot Project ? spring-boot-starter
+Where does the version information for the dependencies in a spring boot projects pom.xml come from? spring-boot-starter-parent
+The @SpringBootApplication annotation encapsulates which of the following annotations ? `@ComponentScan, @SpringBootConfiguration,  @EnableAutoConfig`
