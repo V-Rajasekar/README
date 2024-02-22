@@ -39,7 +39,11 @@ arch jar.
 POM Project Object Model: Its a XML represenation of the project where all the dependencies, and configuration details are stored.
 
 Its build process composed of many build life cycle, and each cycle can contain one or more phase and each phase can contain one or more goals.
+
+A goal represents a specific task which contributes to the building and managing of a project. It may be bound to zero or more build phases. A goal not bound to any build phase could be executed outside of the build lifecycle by direct invocation.
+
 Downloads dependencies from local, central or remote repository.
+
 
 You can build plugins to add custom actions to be done during the build process  
 
@@ -237,7 +241,8 @@ src/main/profiles
      application.properties
 ```
 
-Building the project with the profile > `mvn install -Pprod` //-P profile followed by profile name.
+- Building the project with the profile > `mvn install -Pprod` //-P profile followed by profile name.
+- `mvn install` installs the package into the local repository, for use as a dependency in other projects locally.
 
 ## Create Maven Quick start project
 
@@ -429,6 +434,8 @@ There are three types of repositories
 `mvn deploy`  deploy plugin is primarily used during the deploy phase, to add your artifact(s) to a remote repository for sharing with other developers and projects. This is usually done in an integration or release environment. It can also be used to deploy a particular artifact. As a repository contains more than the artifacts (POMs, the metadata, MD5 and SHA1 hash files...), deploying means not only copying the artifacts, but making sure all this information is correctly updated.
 
 The maven deploy plugins for the following configuration your project `pom.xml` and `settings.xml` ensure the repository id in the pom.xml and settings.xml are the same.
+
+SNAPSHOT is a special version that indicates a current development copy. Unlike regular versions, Maven checks for a new SNAPSHOT version in a remote repository for every build.
 
 ```xml
   <!-- pom.xml-->
@@ -678,3 +685,6 @@ project is  the instance of type `org.apache.maven.model.Model`
 - Which of the following staters is added as a dependency to the pom.xml when we create a simple Spring Boot Project ? spring-boot-starter
 - Where does the version information for the dependencies in a spring boot projects pom.xml come from? spring-boot-starter-parent
 - The @SpringBootApplication annotation encapsulates which of the following annotations ? `@ComponentScan, @SpringBootConfiguration,  @EnableAutoConfig`
+- Which of the following phase in maven life cycle performs actions required before integration tests are executed. For example, setting up the required environment? pre-integration-test performs actions required before integration tests are executed. For example, setting up the required environment.
+-  Which of the following phases in the maven life cycle processes and deploys the package if necessary into an environment where integration tests can be run?
+  integration-test processes and deploys the package if necessary into an environment where integration tests can be run.
