@@ -3,13 +3,13 @@
   - [What is maven?](#what-is-maven)
   - [Maven works on the core concepts](#maven-works-on-the-core-concepts)
   - [Super POM](#super-pom)
-  - [Parent POM and dependencyManagement](#parent-pom-and-dependencymanagement)
+  - [Parent POM and DependencyManagement](#parent-pom-and-dependencymanagement)
   - [Maven archetype](#maven-archetype)
   - [Maven Build Life Cycle](#maven-build-life-cycle)
   - [Maven Repositories](#maven-repositories)
   - [External dependencies in pom.xml](#external-dependencies-in-pomxml)
   - [Dependencies declaration with range](#dependencies-declaration-with-range)
-  - [Maven scope](#maven-scope)
+  - [Maven Dependence Scope](#maven-dependence-scope)
   - [Maven build profiles](#maven-build-profiles)
     - [Application profiles](#application-profiles)
   - [Create Maven Quick start project](#create-maven-quick-start-project)
@@ -37,9 +37,11 @@ arch jar.
 ## Maven works on the core concepts
 
 POM Project Object Model: Its a XML represenation of the project where all the dependencies, and configuration details are stored.
-Its build process composed of many build life cycle, and each cycle can contain one more phase and each phase can contain one or more goals.
+
+Its build process composed of many build life cycle, and each cycle can contain one or more phase and each phase can contain one or more goals.
 Downloads dependencies from local, central or remote repository.
-Build plugin add custom actions to be done during the build process  
+
+You can build plugins to add custom actions to be done during the build process  
 
 ## Super POM
 
@@ -47,7 +49,7 @@ Super POM: Super POM is a view-only POM to see the entire attributes of all the 
 
 `mvn help:effective-pom` cmd to view the super pom.
 
-## Parent POM and dependencyManagement
+## Parent POM and DependencyManagement
 In a multimodule project a parent pom is created with maven coordinates like below with the packaging type as pom.
 
 ```xml
@@ -58,9 +60,9 @@ In a multimodule project a parent pom is created with maven coordinates like bel
 	<name>productparent</name>
 ```
 
-DependencyManagment and Plugin Management helps with consistency with the dependency version and plugin version used across the project or at organization level.
+**DependencyManagment and Plugin Management** helps with consistency with the dependency version and plugin version used across the project or at organization level.
 - Not just the plugin, but the configurations can be put in common place
-- But we still have to mention the dependency, and plugin, but the version and configuration not required.
+- But we still have to mention the dependency, and plugin, but the version and configuration not required in the required dependent maven pom.xml.
 
 ```xml
 <!-- under project root-->
@@ -148,22 +150,24 @@ Some phases have goals bound to them by default. All relevant goals associated w
 A goal is relevant for a phase if the Maven plug-in or the pom binds this goal to the corresponding life cycle phase.
 
 For example - By running the command compiler:compile, Maven gets the goal of compiling application sources done by using the parameters specified in POM.xml.  
-![Alt text](image.png)
+
 ## Maven Repositories
 
 - A local repository refers to the repository on a developer's computer.
 - A central repository is the one that Maven community provides.
 - A remote repository could be one on the web server from where the dependencies can be downloaded.
 
-mvn dependency:copy-dependencies - downloads all the dependencies from maven central repo and downloads to local and build target.
-mvn dependency:tree view the dependencies and its transtive dependencies.
+`mvn dependency:copy-dependencies` - downloads all the dependencies from maven central repo and downloads to local and build target.<br>
+`mvn dependency:tree` view the dependencies and its transtive dependencies.
 <optional>true</optional> tells maven not to download this dependencies, when downloading other tramstive dependencies
 <https://search.maven.org/> official maven repository.
 
 ## External dependencies in pom.xml
 
-At times, the jar files to be added as project dependency might reside outside the Maven repository. These can also be added as an external dependency in POM.xml file. Very important is scope=system.
+At times, the jar files to be added as project dependency might reside outside the Maven repository. These can also be added as an external dependency in pom.xml file. Very important this external dependency scope must be <scope>system</scope>.
 
+
+```xml
 <dependency>
   <groupId>mydependency</groupId>
   <artifactId>mydependency</artifactId>
@@ -171,38 +175,45 @@ At times, the jar files to be added as project dependency might reside outside t
   <version>1.0</version>
   <systemPath>${basedir}\war\WEB-INF\lib\frescoplay-gems.jar</systemPath>
 </dependency>
+```
 
 ## Dependencies declaration with range
 
 Dependencies Version as Greater than Range
-Dependency Range for JUnit will be specified as: JUnit > 3.8
+Dependency Range for JUnit will be specified as: JUnit > 3.8 
 We can define using Exclusive quantifiers boundary, denoted as (, ]
+
+```xml
 <dependency>
     <groupId>junit</groupId>
      <artifactId>junit</artifactId>
-     <version>(3.8,]</version>
+     <version>(3.8,]</version> <!-- (excludes 3.8, includes > 3.8)-->
      <scope>test</scope>
 </dependency>
+```
+
 Dependency Range for Junit will be specified as: JUnit 3.8 to JUnit 4.0
+
 <dependency>
        <groupId>junit</groupId>
     <artifactId>junit</artifactId>
-       <version>[3.8,4.0)</version>
+       <version>[3.8,4.0)</version> <!-- 3.8, 3.9-->
        <scope>test</scope>
 </dependency>
-What does the dependency range [2.0.7, 2.0.9) mean? 2.0.7,2.0.8
+
+What does the dependency range [2.0.7, 2.0.9) mean? 2.0.7,2.0.8 <br>
 Inclusive quantifiers boundary range is defined as[,3.8] <=3.8
 
-## Maven scope
+## Maven Dependence Scope
+
 There are 6 scope values you can provide: `compile, runtime, provided, test, system, and import`.
 Below is scope and in they are used in maven build cycle where its used.
+
 - compile (default) -> build, test, run
 - provide -> test, run and not required to be exported in package(war, jar). (e.g) servlet-api dependencies
 - runtime -> test, and run
 - test -> compile and run tests (Junit) not required for source files
-- system libraries which are not pulled from the maven repo, and not provided by the web container then we use the system scope those externalDependence jar files can be mentioned using 
-- <systemPath> ${basedir}\war\WEB-INF\lib\ext\Dependency.jar
-import -> pom based project
+- system libraries which are not pulled from the maven repo, and not provided by the web container then we use the system scope those externalDependence jar files can be mentioned using `<systemPath> ${basedir}\war\WEB-INF\lib\ext\Dependency.jar</systemPath>`
 
 
 ## Maven build profiles
@@ -238,23 +249,24 @@ Run below command to create a project.
 Single command to create a maven war project interactionMode set to false, since the artifactId, groupId are already given.
 `mvn archetype:generate -DgroupId=com.fresco.play -DartifactId=First-WebApp -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false`
 
-creating the war file with cmd `mvn war:war` to compile and create `mvn compile war:war`
+To compile and create a war file use `mvn compile war:war`
 
 ## Maven plugins
 
-A Maven Plugin comprises of 1...* goals.
+A Maven `Plugin` comprises of `1...* goals`.
 A goal is a unit of work. It is to execute a specific task and perform certain operations for the project.
 A custom actions can be included in the build process with the help of Maven Plugins.
 
 ```yml
- archetype:generate <pluginId>:<goalId>
+ archetype:generate 
+ above is nothing but <pluginId>:<goalId>
 ```
 
 There are two types of plugins
 
-Build Plugin - Used while executing the build. They are included in `<build>` element of the POM.
+**Build Plugin** - Used while executing the build. They are included in `<build>` element of the POM.
 
-Reporting Plugin - Used while generating the site. They are included in `<Reporting>` element of the POM.
+**Reporting Plugin** - Used while generating the site. They are included in `<Reporting>` element of the POM.
 
 Some of the frequently used Maven Plugins:
 
@@ -380,7 +392,9 @@ mvn clean test -fn surefire-report:report
     ```
     c) Generate Sonar token: Go to Sonar link Security->Users(select admin user)->Tokens
 4. Generating sonar report by running `mvn clean verify sonar:sonar -Dsonar.login=$SONAR_TOKEN`
- 
+
+[Maven sonar config](https://docs.sonarsource.com/sonarqube/latest/analyzing-source-code/scanners/sonarscanner-for-maven/) 
+
 ## Integrating with jenkins
 
  
@@ -406,7 +420,7 @@ You can create your own repository manager in local by using Nexus. Here we foll
 
 There are three types of repositories
 
-- `proxy` it acts a proxy to maven central, pulls the dependencies from central repository and cache it
+- `proxy` it acts a proxy to maven central, pulls the dependencies from central repository and cache it into the private server or local machine where nexus is running 
 - `hosted`  repository for your local artifacts
 - `group` this is a group of repositores. you can group multiple repositories in a single group.(e.g) `http://localhost:8081/repository/maven-public/` this is a single URL to maven-release, maven-snapshot, maven-central
 
@@ -639,28 +653,28 @@ project is  the instance of type `org.apache.maven.model.Model`
 - some of them: os.name, file.separator, java.home, java.class.path
 
 
-Along with build management maven also provides which of the following for a project? Dependency management
-Using which of the following does maven achieve reuse ? Plugins
-Which of the following represents the type of maven project we want to create ? archetypeArtifactId
-Which maven goal can be used to create a maven project from the command line? archetype:generate
-Which of the following is not a maven coordinate element in the pom.xml? dependency, correct ones are groupId, artifactId, version, packaging.
-Which maven plugin do we use when we create a maven project? archetype
-Maven runs all the life cycle phases before the phase that is being executed? True
-Which of the following parameters should be used to skip tests from the command line? -DskipTests
-Maven can download the dependencies transitively? True
-Which of the following scope can be used to tell maven that we do not need a dependency to be packaged in to a war that will be deployed to a container which will already have that jar/dependecy? Provided
-The name of the final project artifact like jar or war is derived from which of the following in pom.xml ?  Project Coordinates(groupId, and artifactId)
-The folder structure in which maven places the jars or wars in a repository is derived from the projects artifactId? false
-What is the archtypeld to create a maven java web project ? maven-archetype-webapp
-What is the xml element inside parent pom.ml which we define all the child modules? modules
-Which of the following is not a direct child element of the profile element? resources others as direct child are id, build, properties
-In a multi module maven project the packaging in the parent project pom will be? pom
-This scope indicates that the dependency is not required for compilation, but is for execution ? runtime
-When we use which of the following scopes we provide a path to the dependency on that  machine instead of pulling it from a maven repository? System
-Which of the following is achieved through maven profiles? portability
-Which of the following option can be used with a maven command to use/activate a profile? -p
-Which of the following feature of spring boot uses pom.xml? Spring starters
-When we use the traditional spring approach everything is automatically configured for us and the version ? false. Its in spring-boot
-Which of the following staters is added as a dependency to the pom.xml when we create a simple Spring Boot Project ? spring-boot-starter
-Where does the version information for the dependencies in a spring boot projects pom.xml come from? spring-boot-starter-parent
-The @SpringBootApplication annotation encapsulates which of the following annotations ? `@ComponentScan, @SpringBootConfiguration,  @EnableAutoConfig`
+- Along with build management maven also provides which of the following for a project? Dependency management
+- Using which of the following does maven achieve reuse ? Plugins
+- Which of the following represents the type of maven project we want to create ? archetypeArtifactId
+- Which maven goal can be used to create a maven project from the command line? archetype:generate
+- Which of the following is not a maven coordinate element in the pom.xml? dependency, correct ones are groupId, artifactId, version, packaging.
+- Which maven plugin do we use when we create a maven project? archetype
+- Maven runs all the life cycle phases before the phase that is being executed? True
+- Which of the following parameters should be used to skip tests from the command line? -DskipTests
+- Maven can download the dependencies transitively? True
+- Which of the following scope can be used to tell maven that we do not need a dependency to be packaged in to a war that will be deployed to a container which will already have that jar/dependecy? Provided
+- The name of the final project artifact like jar or war is derived from which of the following in pom.xml ?  Project Coordinates(groupId, and artifactId)
+- The folder structure in which maven places the jars or wars in a repository is derived from the projects artifactId? false
+- What is the archtypeld to create a maven java web project ? maven-archetype-webapp
+- What is the xml element inside parent pom.ml which we define all the child modules? modules
+- Which of the following is not a direct child element of the profile element? resources others as direct child are id, build, properties
+- In a multi module maven project the packaging in the parent project pom will be? pom
+- This scope indicates that the dependency is not required for compilation, but is for execution ? runtime
+- When we use which of the following scopes we provide a path to the dependency on that  machine instead of pulling it from a maven repository? System
+- Which of the following is achieved through maven profiles? portability
+- Which of the following option can be used with a maven command to use/activate a profile? -p
+- Which of the following feature of spring boot uses pom.xml? Spring starters
+- When we use the traditional spring approach everything is automatically configured for us and the version ? false. Its in spring-boot
+- Which of the following staters is added as a dependency to the pom.xml when we create a simple Spring Boot Project ? spring-boot-starter
+- Where does the version information for the dependencies in a spring boot projects pom.xml come from? spring-boot-starter-parent
+- The @SpringBootApplication annotation encapsulates which of the following annotations ? `@ComponentScan, @SpringBootConfiguration,  @EnableAutoConfig`
