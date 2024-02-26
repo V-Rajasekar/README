@@ -256,19 +256,32 @@ Map.ofEntries(
   ```
 
 - Map merger(R, )
+If the specified key is not already associated with a value or is associated with null, associates it with the given non-null value. Otherwise, replaces the associated value with the results of the given remapping function, or removes if the result is null. This method may be of use when combining multiple mapped values for a key. For example, to either create or append a String msg to a value mapping:
+ 
+default V merge​(K key, V value, BiFunction<? super V,​? super V,​? extends V> remappingFunction)
+
 
 ```java
-var map = new HashMap<Integer, Integer>();
-  map.put(1, 10);
-  map.put(2, 20);
-  map.put(3, null);
-  map.put(4, 200);
-  map.merge(1, 3, (a,b) -> a + b);
-  map.merge(3, 3, (a,b) -> a + b);
-  map.merge(4, 100, (a,b) -> a + b);
-  map.merge(5, 400, (a,b) -> a + b);
+
+Map<String, String> map = new LinkedHashMap<>();
+   BinaryOperator<String> operator = (s1, s2)-> null;
+   map.put("John", "Teacher");
+   map.merge("John", "Doctor", operator);
+   map.merge("Jane", "Doctor", operator);
+   System.out.println(map); //[Jane, Doctor]
+
+var map1 = new HashMap<Integer, Integer>();
+  map1.put(1, 10);
+  map1.put(2, 20);
+  map1.put(3, null);
+  map1.put(4, 200);
+  map1.merge(1, 3, (a,b) -> a + b);
+  map1.merge(2, 10, (a, b)-> null);
+  map1.merge(3, 3, (a,b) -> a + b);
+  map1.merge(4, 100, (a,b) -> a + b);
+  map1.merge(5, 400, (a,b) -> a + b); 
   System.out.println(map);
-//Result: map ==> {1=13, 2=20, 3=3, 4=300, 5=400}
+//Result: map ==> {1=13, 3=3, 4=300, 5=400}
 ```
 
 ```java
