@@ -2,31 +2,35 @@
 
 - [Chapter 20  NIO.2](#chapter-20--nio2)
     - [Overview](#overview)
-    - [Introducing Path](#introducing-path)
-      - [ABSOLUTE VS. RELATIVE PATHS](#absolute-vs-relative-paths)
-      - [Obtaining A Path with a URI class](#obtaining-a-path-with-a-uri-class)
+  - [Introducing Path](#introducing-path)
+    - [ABSOLUTE VS. RELATIVE PATHS](#absolute-vs-relative-paths)
     - [Obtaining a Path from the _java.io.File_ Class](#obtaining-a-path-from-the-javaiofile-class)
     - [Applying Path Symbols](#applying-path-symbols)
+    - [Providing optional Arguments](#providing-optional-arguments)
     - [Interacting With Paths](#interacting-with-paths)
     - [Creating a New Path with subpath()](#creating-a-new-path-with-subpath)
     - [Accessing Path Elements with getFileName(), getParent(), and getRoot()](#accessing-path-elements-with-getfilename-getparent-and-getroot)
     - [Checking Path Type with isAbsolute() and toAbsolutePath()](#checking-path-type-with-isabsolute-and-toabsolutepath)
-      - [Path.resolve(Path/String)](#pathresolvepathstring)
-      - [Deriving a Path with relativize()](#deriving-a-path-with-relativize)
-    - [Cleaning Up a Path with normalize()](#cleaning-up-a-path-with-normalize)
+  - [Path methods: normalize, relativize, resolve](#path-methods-normalize-relativize-resolve)
+    - [pathRef.normalize()](#pathrefnormalize)
+    - [pathRef.resolve(Path/String)](#pathrefresolvepathstring)
+    - [pathRef.relativize()](#pathrefrelativize)
     - [Retrieving the File System Path with _toRealPath()_](#retrieving-the-file-system-path-with-torealpath)
     - [Reviewing Path Methods](#reviewing-path-methods)
-    - [Operating on Files and Directories](#operating-on-files-and-directories)
-      - [Files.exists(Path)](#filesexistspath)
-      - [Files.isSameFile(Path p1, Path p2)](#filesissamefilepath-p1-path-p2)
+  - [java.nio.file.Files (Reading and Writing)](#javaniofilefiles-reading-and-writing)
+    - [Reading and Writing Data with newBufferedReader() and newBufferedWriter()](#reading-and-writing-data-with-newbufferedreader-and-newbufferedwriter)
+    - [Files.writeString(string)](#fileswritestringstring)
+  - [Managing File Attribute](#managing-file-attribute)
+    - [Files.exists(Path)](#filesexistspath)
+    - [Files.isSameFile(Path p1, Path p2)](#filesissamefilepath-p1-path-p2)
       - [Making directories with createDirectory() and createDirectories()](#making-directories-with-createdirectory-and-createdirectories)
-      - [Copying Files with copy()](#copying-files-with-copy)
-      - [Copying and Replacing Files](#copying-and-replacing-files)
-      - [Copying Files with I/O Streams](#copying-files-with-io-streams)
-      - [Copying Files into a Directory](#copying-files-into-a-directory)
-      - [Moving or Renaming Paths with move()](#moving-or-renaming-paths-with-move)
-      - [Deleting a File with delete() and deleteIfExists()](#deleting-a-file-with-delete-and-deleteifexists)
-      - [Reading and Writing Data with newBufferedReader() and newBufferedWriter()](#reading-and-writing-data-with-newbufferedreader-and-newbufferedwriter)
+  - [Files Copy, Move and Delete](#files-copy-move-and-delete)
+    - [Copying Files with copy()](#copying-files-with-copy)
+    - [Copying and Replacing Files](#copying-and-replacing-files)
+    - [Copying Files with I/O Streams](#copying-files-with-io-streams)
+    - [Copying Files into a Directory](#copying-files-into-a-directory)
+    - [Moving or Renaming Paths with move()](#moving-or-renaming-paths-with-move)
+    - [Deleting a File with delete() and deleteIfExists()](#deleting-a-file-with-delete-and-deleteifexists)
       - [Reviewing Files Methods](#reviewing-files-methods)
       - [Managing File Attributes](#managing-file-attributes)
       - [Checking File Accessibility](#checking-file-accessibility)
@@ -43,53 +47,56 @@
 
 <p>“I/O,” we presented the java.io API and discussed how to use it to interact with files and streams. In this chapter, we focus on the java.nio version 2 API, or NIO.2 for short, to interact with files. NIO.2 is an acronym that stands for the second version of the Non‐blocking Input/Output API, and it is sometimes referred to as the “New I/O.”</p>
 
-### Introducing Path
+## Introducing Path
 
-- `java.nio.file.Path` interface. A Path instance represents a hierarchical path on the storage system to a file or directory
-- Obtaining a Path with the Path Interface
+- `java.nio.Path` interface. A Path instance represents a hierarchical path on the storage system to a file or directory. You can think of `Path` as `java.io.File`. Both java.io.File and Path objects may refer to an absolute path or relative path within the file system. In addition, both may refer to a file or a directory. 
+- Unlike the java.io.File class, the Path interface contains support for symbolic links. A symbolic link is a special file within a file system that serves as a reference or pointer to another file or directory.
+- Giving below the java.nio.Path(I) and java.nio.filePaths(c)
 
-```java
-    Path path1 = Path.of("pandas/cuddly.png");
-    Path path2 = Path.of("c:\\zooinfo\\November\\employees.txt");
-    Path path3 = Path.get("/home/zoodirectory"); // Path.get is the older method
-```
+### ABSOLUTE VS. RELATIVE PATHS
+
+- If a path starts with a `forward slash ( /), it is absolute`, with / as the root directory. Examples: /bird/parrot.png, Also it is absolute, with the drive letter as the root directory. Examples: c:/bird/parrot.png
+
+- Otherwise, it is a relative path. Examples: bird/parrot.png, ./bird, ../bird
+
+[More about Path](https://docs.oracle.com/javase/tutorial/essential/io/path.html)
+
+![alt text](image.png)
+
+- Obtaining a Path with the Path Interface and ***Paths*** class
+ - Syntax
+  
+   ```java
+   Path.of(String first, String... more);
+   Path.of(URI uri)
+
+   Paths.get(String first, String... more);
+   Paths.get(URI uri)
+   ```
+ - Example
+  
+   ```java
+      Path.of(String first, String... more);
+      Path.of(URI uri)
+      Path path1 = Path.of("pandas/cuddly.png"); // relative path
+      Path path2 = Path.of("c:\\zooinfo\\November\\employees.txt"); // Windows absolute path
+      
+      
+      Path path3 = Paths.get("/home/zoodirectory"); // Path.get is the older method
+      // Creating using URI 
+      public URI(String str) throws URISyntaxException
+      URI a = new URI("file://icecream.txt");
+         Path b = Path.of(a);
+         Path c = Paths.get(a);
+         URI d = b.toUri();
+   ```
 
 - The Path.of() method also includes a varargs to pass additional path elements. The values will be combined and automatically separated by the operating system–dependent file separator
   - `Path path1 = Path.of("pandas", "cuddly.png");`
   - `Path path2 = Path.of("c:", "zooinfo", "November", "employees.txt");`
 
-#### ABSOLUTE VS. RELATIVE PATHS
-
-- If a path starts with a `forward slash ( /), it is absolute`, with / as the root directory. Examples: /bird/parrot.png, Also it is absolute, with the drive letter as the root directory. Examples: c:/bird/parrot.png
-
-- Otherwise, it is a relative path. Examples: bird/parrot.png
-
-#### Obtaining A Path with a URI class
-
-The `java.net .URI` class is used to create URI values.
-
-```java
-// URI Constructor
-public URI(String str) throws URISyntaxException
-```
-
-- Conversions method to and from `Path` and `URI` objects
-
-```java
-// URI to Path, using Path factory method
-public static Path of(URI uri)
- 
-// URI to Path, using Paths factory method
-public static Path get(URI uri)
- 
-// Path to URI, using Path instance method
-public URI toURI()
-
-URI a = new URI("file://icecream.txt");
-Path b = Path.of(a);
-Path c = Paths.get(a);
-URI d = b.toUri();
-```
+- Obtaining a Path with the Paths Class
+  Paths.get() is the older, and the earlier Path is newer one introduce in Java 11. Syntactly obtains the Path reference is same only the factory method will have Paths.of and Paths.get instead of Path
 
 <p>Some of these examples may actually throw an  IllegalArgumentException at runtime, as some systems require URIs to be absolute. The URI class does have an isAbsolute() method, although this refers to whether the URI has a schema, not the file location.</p>
 
@@ -101,16 +108,17 @@ URI d = b.toUri();
   ```
 
 - Obtaining a Path from the FileSystem Class
-- The FileSystems class does give us the freedom to connect to a remote file system, where in Path is for the local
+
+- The FileSystems class does give us the freedom to connect to a remote file system, where in Path is for the local. We use Path for local file access and FileSystem for Remove file access
 
 ```java
-// FileSystems factory method
+// FileSystems factory method for local. You can use Path.of and Path.get directly
 public static FileSystem getDefault()
 Path path1 = FileSystems.getDefault().getPath("pandas/cuddly.png");
 Path path2 = FileSystems.getDefault()
    .getPath("c:\\zooinfo\\November\\employees.txt");
 
-//Remote
+//Connecting to the Remote
  FileSystem fileSystem = FileSystems.getFileSystem(
       new URI("http://www.selikoff.net"));
    Path path = fileSystem.getPath("duck.txt");   
@@ -142,28 +150,45 @@ boolean exists = Files.exists(path, LinkOption.NOFOLLOW_LINKS);
 
 - The `Files.exists()` simply checks whether a file exists. If the parameter is a symbolic link, though, then the method checks whether the target of the symbolic link exists instead of the default behaviour that the symbolic link exists.
 
+### Providing optional Arguments 
+
+
+| EnumType |     |     |
+| -------- | --- | --- |
+|          |     |     |
+|          |     |     |
+|          |     |     |
+|          |     |     |
+
+
+
 - Using Files.exists() prevents the IOException
 
 ### Interacting With Paths
 
 - `java.nio.file.Path` provides a rich plethora of methods and classes that operate on Path
- than one available in `java.io` API. Just like `String` values, `Path` instances are immutable.
+ than one available in `java.io` API. Just like `String` values, `Path` instances are immutable. Just Like any operation on Path creates a new Path
 
- ```java
- Path p = Path.of("whale");
-p.resolve("krill"); // Lost since Path is immutable.
-System.out.println(p);  // whale
- ```
+Basic path methods: 
+- Path path = Path.of("D:\Git\master-java");
+```yml
+Absolute Path: D:\Git\master-java   [toString()]
+File/Dir of Path object: master-java   [getFileName()]
+Parent Directory: D:\Git   [getParent()]
+Getting subpath: Git\master-java   [subpath(0,2)]
+Number of Sub-Directories: 2   [getNameCount()]
+Directory Structure using path.getName()
+D:\   [getRoot()]: 
+        ---> Git   [getName(0)]
+                ---> master-java   [getName(1)]
+Directory Structure using path iterator
+        ---> Git
+                ---> master-java
+```       
 
 - Viewing the Path:
 
 ```java
-public String toString() //Returns a String representation of the entire path
- 
-public int getNameCount() //
- 
-public Path getName(int index) // Retrieve the no of elements in the path and a reference.
-
 Path path = Paths.get("/land/hippo/harry.happy");
 System.out.println("The Path Name is: " + path);
 for(int i=0; i<path.getNameCount(); i++) {
@@ -247,8 +272,37 @@ System.out.println("Absolute Path2 " + path2.toAbsolutePath());
 Path2 is Absolute? false
 Absolute Path2 /home/work/birds/condor.txt
 ```
+## Path methods: normalize, relativize, resolve
 
-#### Path.resolve(Path/String)
+### pathRef.normalize()
+
+- `public Path normalize()` method used to remove the unnecessary redundancies in a path.
+- Also allow use to compare equivalent paths. Consider the following examples.
+
+```java
+var p1 = Path.of("./armadillo/../shells.txt");
+System.out.println(p1.normalize()); // shells.txt
+ 
+var p2 = Path.of("/cats/../panther/food");
+System.out.println(p2.normalize()); // /panther/food
+ 
+var p3 = Path.of("../../fish.txt");
+System.out.println(p3.normalize()); // ../../fish.txt 
+
+var p1 = Paths.get("/pony/../weather.txt");
+var p2 = Paths.get("/weather.txt");
+System.out.println(p1.equals(p2));                         // false
+System.out.println(p1.normalize().equals(p2.normalize())); // true
+
+   p = Path.of("a/../../../b/./../c");
+        System.out.println("Normalize transforms \n\t" + p.toString()
+                + "\n to: \n\t" + p.normalize() + "\n---------------"); // ../../c
+
+        p = Path.of("/a/../../../b/./../c");
+        System.out.println("Normalize transforms \n\t" + p.toString()
+                + "\n to: \n\t" + p.normalize() + "\n---------------"); // /c
+```
+### pathRef.resolve(Path/String)
 
 The Path interface provides two overloaded forms of resolve() method
 
@@ -257,32 +311,30 @@ The Path interface provides two overloaded forms of resolve() method
 
 The second one takes the path in string format and constructor a path reference.
 
-- resolve() method passing relative path concat the paths.
+ **If the path argument(other) is absolute meaning /food or c:/food then result absolute path, if releative path then appends to the invoking path**
 
 ```java
 Path path1 = Path.of("/cats/../panther");
-Path path2 = Path.of("food");
-Path path3 = Path.of("/food");
+Path path2 = Path.of("food"); // Relative path
+Path path21 = Path.of("./food");// Relative path
+Path path3 = Path.of("/food"); //absolute path, if c:/food then result c:/food
 System.out.println(path1.resolve(path2)); // /cats/../panther/food
-System.out.println(path1.resolve(path3)); 
+System.out.println(path1.resolve(path21)); // /cats/../panther/.food
+System.out.println(path1.resolve(path3)); // /food
 ```
 
-- resolve() method passing absolute path returns the absolute path
+- **If the path argument(other) is absolute path (i.e) starting with / then returns the passed argument**
 
-```java
-Path path3 = Path.of("/turkey/food");
-System.out.println(path3.resolve("/tiger/cage")); // /tiger/cage
-```
+### pathRef.relativize()
 
-#### Deriving a Path with relativize()
-
-- `public Path relativize()` The Path interface includes a method for constructing the relative path from one Path to another
+- `public Path relativize()` The Path interface includes a method for constructing the relative path from one Path to another path
 
 ```java
 var path1 = Path.of("fish.txt");
 var path2 = Path.of("friendly/birds.txt");
 System.out.println(path1.relativize(path2)); // ../friendly/birds.txt
-System.out.println(path2.relativize(path1)); // ../../fish.txt
+//relativizing from path2 to path1 since path1 is in root, to relativize to path1 from Path2 it has to go two level back which is ../../fish.txt
+System.out.println(path2.relativize(path1)); // ../../fish.txt 
 ```
 
 - For example, to get to fish.txt from friendly/birds.txt, you need to go up two levels (the file itself counts as one level) and then select fish.txt.
@@ -307,27 +359,6 @@ Path path4 = Paths.get("d:\\storage\\bananas.txt");
 path3.relativize(path4); // IllegalArgumentException
 ```
 
-### Cleaning Up a Path with normalize()
-
-- `public Path normalize()` method used to remove the unnecessary redundancies in a path.
-- Also allow use to compare equivalent paths. Consider the following examples.
-
-```java
-var p1 = Path.of("./armadillo/../shells.txt");
-System.out.println(p1.normalize()); // shells.txt
- 
-var p2 = Path.of("/cats/../panther/food");
-System.out.println(p2.normalize()); // /panther/food
- 
-var p3 = Path.of("../../fish.txt");
-System.out.println(p3.normalize()); // ../../fish.txt 
-
-var p1 = Paths.get("/pony/../weather.txt");
-var p2 = Paths.get("/weather.txt");
-System.out.println(p1.equals(p2));                         // false
-System.out.println(p1.normalize().equals(p2.normalize())); // true
-```
-
 ### Retrieving the File System Path with _toRealPath()_
 
 - This method is similar to normalize(), in that it eliminates any redundant path symbols. It is also similar to toAbsolutePath(), in that it will join the path with the current working directory if the path is relative.
@@ -342,144 +373,51 @@ System.out.println(Paths.get(".././food.txt").toRealPath());
 
 ### Reviewing Path Methods
 
-|                          |     |
-| ------------------------ | --- |
-| Path of(String, String…) |     | Path getParent()             |
-| URI toURI()              |     | Path getRoot()               |
-| File toFile()            |     | boolean isAbsolute()         |
-| String toString()        |     | Path toAbsolutePath()        |
-| int getNameCount()       |     | Path relativize()            |
-| Path getName(int)        |     | Path resolve(Path)           |
-| Path subpath(int, int)   |     | Path normalize()             |
-| Path getFileName()       |     | Path toRealPath(LinkOption…) |
+|                          |     |                              |
+| ------------------------ | --- | ---------------------------- |
+| Path of(String, String…) |     | Path:getParent()             |
+| URI toURI()              |     | Path:getRoot()               |
+| File toFile()            |     | boolean:isAbsolute()         |
+| String toString()        |     | Path:toAbsolutePath()        |
+| int getNameCount()       |     | Path:relativize()            |
+| Path:getName(int)        |     | Path:resolve(Path)           |
+| Path:subpath(int, int)   |     | Path:normalize()             |
+| Path:getFileName()       |     | Path:toRealPath(LinkOption…) |
 
-### Operating on Files and Directories
+## java.nio.file.Files (Reading and Writing)
 
-#### Files.exists(Path)
-
-Checking for Existence with exists() public static boolean exists(Path path, LinkOption… options)
-
+- Writing with StandardOpenOption and Reading using Files
 ```java
-var b1 = Files.exists(Paths.get("/ostrich/feathers.png"));
-System.out.println("Path " + (b1 ? "Exists" : "Missing"));
- 
-var b2 = Files.exists(Paths.get("/ostrich"));
-System.out.println("Path " + (b2 ? "Exists" : "Missing"));
+   Path testFile = Path.of("test.txt");
+   //Wrting File with the standardOpenOptions.   
+      try {
+            // Exception occurs if file already exists
+            Files.write(byteFile, "Secret sauce".getBytes(),
+                  StandardOpenOption.CREATE_NEW);
+      } catch (IOException e) {
+            System.out.println(e);
+            Files.write(byteFile, "Secret sauce".getBytes(),
+                  StandardOpenOption.CREATE);
+
+      }
+
+   List<String> fileLines = Files.readAllLines(testFile);
+               fileLines.forEach(System.out::println);
+   
+   byte[] byteArray = Files.readAllBytes(testFile);
+   System.out.println(new String(byteArray));
 ```
 
-#### Files.isSameFile(Path p1, Path p2)
+Note> CREATE_NEW: Create a new file, failing if the file already exists.
 
-- Take two Path parameter and returns true if they are same, it also applicable for symbolic link(i.e) real path = symbolic link: true
-- throws IOException if the path is not found
-- It can also be used to check two Directories are same.
-- Return immediately true if the two path objects are equals, without checking whether the file exits.
 
-```java
-public static boolean isSameFile​(Path path, Path path2)
-   throws IOException
-```
+Standard Options: 1.CREATE, 2.CREATE_NEW, 3.READ, 4.WRITE, 5.APPEND, <br> 6.TRUNCATE_EXISTING, 7.SYNC(CONTENT+METDATA), 8.DSYNC(CONTENT), 9.DELETE_ON_CLOSE, 10.SPARSE.
 
-#### Making directories with createDirectory() and createDirectories()
+[More details StandardOpenOptions](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/file/StandardOpenOption.html)
 
-- It creates the target directory along with any nonexistent parent directories leading up to the path. If all of the directories already exist, createDirectories() will simply complete without doing anything.
+### Reading and Writing Data with newBufferedReader() and newBufferedWriter()
 
-```java
-public static Path createDirectory​(Path dir,
-   FileAttribute<?>… attrs) throws IOException
- 
-public static Path createDirectories​(Path dir,
-   FileAttribute<?>… attrs) throws IOException
-```
-
-#### Copying Files with copy()
-
-- NIO.2 Files class provides a method for copying files and directories within the file system.
--
-
-```java
- public static Path copy​(Path source, Path target,
-   CopyOption… options) throws IOException 
-```
-
-#### Copying and Replacing Files
-
-- By default, `if the target already exists, the copy() method will throw an exception`. You can change this behavior by providing the StandardCopyOption enum value REPLACE_EXISTING to the method.
-
-```java
-Files.copy(Paths.get("book.txt"), Paths.get("movie.txt"),
-   StandardCopyOption.REPLACE_EXISTING);
-```
-
-#### Copying Files with I/O Streams
-
-- Convenient method to quickly read/write data from/to disk.
-
-```java
-public static long copy​(InputStream in, Path target,
-   CopyOption… options) throws IOException
- 
-public static long copy​(Path source, OutputStream out)
-   throws IOException
-//examples
-try (var is = new FileInputStream("source-data.txt")) {
-   // Write stream data to a file
-   Files.copy(is, Paths.get("/mammals/wolf.txt"));
-}
- 
-Files.copy(Paths.get("/fish/clown.xsl"), System.out);   
-```
-
-#### Copying Files into a Directory
-
-- Following method trying to create a new file named `/enclosure` its not trying to create a new file at `/enclosure/food.txt`. It throws runtime if the path /enclosure already exists.
-
-```java
-var file = Paths.get("food.txt");
-var directory = Paths.get("/enclosure");
-Files.copy(file, directory);
-
-//If you want the same file name then 
-var directory = Paths.get("/enclosure/food.txt");
-//or better approach use 
-var directory = Paths.get("/enclosure").resolve(file.getFileName());
-
-```
-
-#### Moving or Renaming Paths with move()
-
-- move(Path source, Path target)
-
-```java
-//renames the zoo directory to a zoo‐new directory,
-Path renameDir = Files.move(Path.of("c:\\zoo"), Path.of("c:\\zoo-new"));
-//moves the addresses.txt file from the directory user to the directory zoo‐new, and it renames it to addresses2.txt.
-Files.move(Path.of("c:\\user\\addresses.txt"),
-   Path.of("c:\\zoo-new\\addresses2.txt"));
-```
-
-- Note:
-
-- copy(), amd move() requires `REPLACING_EXISTING` to overwrite the target if it exists, else it will throw an exception(FileAlreadyExists).
-
-- copy(), move() will not put a file in a directory if the source is a file and the target is a directory. Instead, it will create a new file with the name of the directory.
-
-- Performing an Atomic Move
-  - Any process monitoring the file system never sees an incomplete or partially written file. If the file system does not support this feature, an AtomicMoveNotSupportedException will be thrown.
-  - It will likely throw an exception if passed to a copy() method.
-
-#### Deleting a File with delete() and deleteIfExists()
-
-- Both of these methods throw an exception if operated on a nonempty directory.
-
-```java
-public static void delete​(Path path) throws IOException
-public static boolean deleteIfExists​(Path path) throws IOException
-// Returns true if delete successful else false.
-```
-
-#### Reading and Writing Data with newBufferedReader() and newBufferedWriter()
-
-- NIO.2 includes two convenient methods for working with I/O streams.
+- NIO.2 includes two convenient methods for working with I/O streams. both of these methods use buffered streams rather than low‐level file streams (i.e) new BufferedReader(new FileReader(srcFile))
 
 ```java
 public static BufferedReader newBufferedReader​(Path path)
@@ -517,6 +455,177 @@ try (var writer = Files.newBufferedWriter(path)) {
 var path = Path.of("/animals/gopher.txt");
 final List<String> lines = Files.readAllLines(path);
 lines.forEach(System.out::println);
+```
+
+### Files.writeString(string)
+
+```java
+Path path = Path.of("test.txt");
+Files.writeString(path, "Hello");
+Files.writeString(path, "Good bye!");
+System.out.println( " " + Files.readString(p)); //Prints Good bye!
+```
+|                                                |                                   |
+| ---------------------------------------------- | --------------------------------- |
+| boolean exists(Path,LinkOption…)               | Path move(Path, Path,CopyOption…) |
+| boolean isSameFile(Path, Path)                 | void delete(Path)                 |
+| Path createDirectory(Path,FileAttribute<?>…)   | boolean deleteIfExists(Path)      |
+| Path createDirectories(Path,FileAttribute<?>…) | BufferedReader                    |
+| newBufferedReader(Path)                        |
+| Path copy(Path, Path,CopyOption…)              | BufferedWriter newBufferedWriter( |
+| Path, OpenOption…)                             |
+| long copy(InputStream, Path,CopyOption…)       | List<String> readAllLines(Path)   | long copy(Path, OutputStream) |
+All of these methods except exists() declare IOException
+
+## Managing File Attribute
+The Files class also provides numerous methods for accessing file and directory metadata, referred to as file attributes. A file attribute is data about a file within the system, such as its size and visibility, that is not part of the file contents
+
+Reading common Attribute:
+
+```java
+public static boolean Files.isDirectory​(Path path, LinkOption… options)
+public static boolean Files.isSymbolicLink​(Path path)
+public static boolean Files.isRegularFile​(Path path, LinkOption… options)
+
+var path = Paths.get("/turtles/sea.txt");
+BasicFileAttributes data = Files.readAttributes(path,
+   BasicFileAttributes.class);
+//other fileAttributes are PosixFileAttributeView, and DosFileAttributeView   
+
+//checking File Accessibility
+public static boolean isHidden​(Path path) throws IOException
+public static boolean isReadable(Path path)
+public static boolean isWritable(Path path)
+public static boolean isExecutable(Path path)
+System.out.print(Files.size(Paths.get("/zoo/animals.txt")));
+public static FileTime getLastModifiedTime​(Path path,
+   LinkOption… options) throws IOException
+
+
+
+```
+### Files.exists(Path)
+
+Checking for Existence with exists() public static boolean exists(Path path, LinkOption… options)
+
+```java
+var b1 = Files.exists(Paths.get("/ostrich/feathers.png"));
+System.out.println("Path " + (b1 ? "Exists" : "Missing"));
+ 
+var b2 = Files.exists(Paths.get("/ostrich"));
+System.out.println("Path " + (b2 ? "Exists" : "Missing"));
+```
+
+### Files.isSameFile(Path p1, Path p2)
+
+- Take two Path parameter and returns true if they are same, it also applicable for symbolic link(i.e) real path = symbolic link: true
+- throws IOException if the path is not found
+- It can also be used to check two Directories are same.
+- Return immediately true if the two path objects are equals, without checking whether the file exits.
+
+```java
+public static boolean isSameFile​(Path path, Path path2)
+   throws IOException
+```
+
+#### Making directories with createDirectory() and createDirectories()
+
+- It creates the target directory along with any nonexistent parent directories leading up to the path. If all of the directories already exist, createDirectories() will simply complete without doing anything.
+
+```java
+public static Path createDirectory​(Path dir,
+   FileAttribute<?>… attrs) throws IOException
+ 
+public static Path createDirectories​(Path dir,
+   FileAttribute<?>… attrs) throws IOException
+```
+
+## Files Copy, Move and Delete
+
+### Copying Files with copy()
+
+- NIO.2 Files class provides a method for copying files and directories within the file system.
+-
+
+```java
+ public static Path copy​(Path source, Path target,
+   CopyOption… options) throws IOException 
+```
+
+### Copying and Replacing Files
+
+- By default, `if the target already exists, the copy() method will throw an exception`. You can change this behavior by providing the StandardCopyOption enum value REPLACE_EXISTING to the method.
+
+```java
+Files.copy(Paths.get("book.txt"), Paths.get("movie.txt"),
+   StandardCopyOption.REPLACE_EXISTING);
+```
+
+### Copying Files with I/O Streams
+
+- Convenient method to quickly read/write data from/to disk.
+
+```java
+public static long copy​(InputStream in, Path target,
+   CopyOption… options) throws IOException
+ 
+public static long copy​(Path source, OutputStream out)
+   throws IOException
+//examples
+try (var is = new FileInputStream("source-data.txt")) {
+   // Write stream data to a file
+   Files.copy(is, Paths.get("/mammals/wolf.txt"));
+}
+ 
+Files.copy(Paths.get("/fish/clown.xsl"), System.out);   
+```
+
+### Copying Files into a Directory
+
+- Following method trying to create a new file named `/enclosure` its not trying to create a new file at `/enclosure/food.txt`. It throws runtime if the path /enclosure already exists.
+
+```java
+var file = Paths.get("food.txt");
+var directory = Paths.get("/enclosure");
+Files.copy(file, directory);
+
+//If you want the same file name then 
+var directory = Paths.get("/enclosure/food.txt");
+//or better approach use 
+var directory = Paths.get("/enclosure").resolve(file.getFileName());
+
+```
+
+### Moving or Renaming Paths with move()
+
+- move(Path source, Path target)
+
+```java
+//renames the zoo directory to a zoo‐new directory,
+Path renameDir = Files.move(Path.of("c:\\zoo"), Path.of("c:\\zoo-new"));
+//moves the addresses.txt file from the directory user to the directory zoo‐new, and it renames it to addresses2.txt.
+Files.move(Path.of("c:\\user\\addresses.txt"),
+   Path.of("c:\\zoo-new\\addresses2.txt"));
+```
+
+- Note:
+
+- copy(), amd move() requires `REPLACING_EXISTING` to overwrite the target if it exists, else it will throw an exception(FileAlreadyExists).
+
+- copy(), move() will not put a file in a directory if the source is a file and the target is a directory. Instead, it will create a new file with the name of the directory.
+
+- Performing an Atomic Move
+  - Any process monitoring the file system never sees an incomplete or partially written file. If the file system does not support this feature, an AtomicMoveNotSupportedException will be thrown.
+  - It will likely throw an exception if passed to a copy() method.
+
+### Deleting a File with delete() and deleteIfExists()
+
+- Both of these methods throw an exception if operated on a nonempty directory.
+
+```java
+public static void delete​(Path path) throws IOException
+public static boolean deleteIfExists​(Path path) throws IOException
+// Returns true if delete successful else false.
 ```
 
 #### Reviewing Files Methods

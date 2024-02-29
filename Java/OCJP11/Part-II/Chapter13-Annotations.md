@@ -597,10 +597,12 @@ public class NetworkRepair {
 // Vertebrate.java
 import java.lang.annotation.Inherited;
 
-@Inherited public @interface Vertebrate {} 
+@Inherited
+public @interface Vertebrate {} 
  
 // Mammal.java
-@Vertebrate public class Mammal {}
+@Vertebrate
+public class Mammal {}
  
 // Dolphin.java
 public class Dolphin extends Mammal {}
