@@ -1,7 +1,17 @@
 # Exam Essentials
 
 - [Exam Essentials](#exam-essentials)
+  - [Data type:](#data-type)
   - [Assignment operations](#assignment-operations)
+  - [String](#string)
+    - [String concat null](#string-concat-null)
+    - [String concat rule](#string-concat-rule)
+    - [String join, split, StringBuilder delete](#string-join-split-stringbuilder-delete)
+    - [String Builder (delete, comparision)](#string-builder-delete-comparision)
+  - [var declaration:](#var-declaration)
+  - [Increment operator](#increment-operator)
+  - [Bitwise and Logic operator](#bitwise-and-logic-operator)
+- [Loops](#loops)
   - [Lamdas and Functional Interfaces](#lamdas-and-functional-interfaces)
     - [Function(T, R)-\> R:apply(T)](#functiont-r--rapplyt)
     - [Lambda expressions](#lambda-expressions)
@@ -15,6 +25,74 @@
     - [java.util.concurrent.atomic.AtomicInteger/Boolean/Long](#javautilconcurrentatomicatomicintegerbooleanlong)
   - [java.util.concurrent.lock.ReentrantLock](#javautilconcurrentlockreentrantlock)
     - [java,util.concurrent.CyclicBarrier](#javautilconcurrentcyclicbarrier)
+
+## Data type: 
+- Data type conversion
+  Casting is required when assigning large value to small value
+
+```java
+  float f = 12.25f
+  long l = 100_00;
+  l = (long)f;
+
+ /* which primitive types are allowed here, Is var allowed ? var not allowed in compound statement. To print 3 byte out f range, short, int, long returns length 3, where as fload and double have .0 with 5 length. Its short, int, long */
+  /*INSERT*/ x = 7, y = 200;
+        System.out.println(String.valueOf(x + y).length()); // to print 3
+```
+
+
+- Java can do implict casting int to double, but not then autoboxing int -> double -> Double
+```java
+   m(1); // Number version 
+   //Here 1 int -> Integer  Note all the numeric wrapper classes (Byte, Short, Integer, Long, Float and Double) extend from Number
+   // If no is not there then Object version.
+   private static void m(Object obj) {
+        System.out.println("Object version");
+    }
+    
+    private static void m(Number obj) {
+        System.out.println("Number version");
+    }
+    
+    private static void m(Double obj) {
+        System.out.println("Double version");
+    }
+```
+
+  
+
+- Java Casting method call
+ - add(10.0, null) // calls Double version
+ - add(10.0, new Double(10.0)) // runtime ambiguous error
+```java
+
+    private static void add(double d1, double d2) {
+        System.out.println("double version: " + (d1 + d2));
+    }
+    
+    private static void add(Double d1, Double d2) {
+        System.out.println("Double version: " + (d1 + d2));
+    }
+    
+```
+
+- byte increment statement behaviour
+
+
+```java
+byte var = 127;
+
+var = var - 1: 'var - 1' results in int type and it cannot be assigned to byte type without explicit casting, hence it causes compilation error.
+
+var = var + 1: 'var + 1' results in int type and it cannot be assigned to byte type without explicit casting, hence it causes compilation error.
+
+Please note that implicit casting is added by the compiler for prefix, postfix and compound assignment operators.
+
+++var: Compiler converts it to var = (byte) (var + 1) and hence it compiles successfully.
+
+--var: Compiler converts it to var = (byte) (var - 1) and hence it compiles successfully.
+```
+
 
 ## Assignment operations
 
@@ -30,6 +108,255 @@ assignment operator are evaluated from right to left.
 z = z - x; 2
 y = y * z; 4
 x = x + y; 5
+
+## String 
+
+### String concat null
+
+If only one operand expression is of type String, then string conversion is performed on the other operand to produce a string at run time.
+
+If one of the operand is null, it is converted to the string "null".
+
+If operand is not null, then the conversion is performed as if by an invocation of the toString method of the referenced object with no arguments; but if the result of invoking the toString method is null, then the string "null" is used instead.
+
+>Note: //If one of operand in the String concat is string then the result will be concated String.
+String text = null;
+
+```java
+String text = null;
+1. System.out.println(text.repeat(3)); // compile error
+
+2. System.out.println(null + null + null); //error
+
+3. System.out.println(null + "null" + null); // correct
+
+4. System.out.println(text *= 3); //error
+
+5. System.out.println(text += "null".repeat(2)); //correct nullnullnull
+
+6. System.out.println(text + text + text); //correct
+
+7. text += null; System.out.println((text.concat(null))); //NPE
+```
+
+- **strip()** method of String class (available since Java 11) returns a string whose value is this string, with **all leading and trailing white space removed**.
+- `String contentEquals(StringBuilder)`, contentEquals().Please note that String, StringBuilder and StringBuffer classes implement CharSequence interface, hence contentEquals(CharSequence) method defined in String class cab be invoked with the argument of either String or StringBuilder or StringBuffer. 
+
+```java
+String s1 = "OcP";
+String s2 = "oCP";
+s1.contentEquals(s2); //false char mismatch
+
+//String print with assignment
+String fName = "Joshua";
+String lName = "Bloch";
+System.out.println(fName = lName); // Bloch 
+
+### Removing leading, trailing space using
+Methods: trim(), strip(),
+stripLeading(), StringTrailing()
+There is nothing like trimLeading(), trimTrailing()
+  String text = "    BE YOURSELF!    ";  
+  text.trimLeading().trimTrailing();
+
+### String Repeat, indexOf
+
+```java
+final String str = "+";
+str.repeat(2); // +++
+
+String str = "PANIC";
+StringBuilder sb = new StringBuilder("THET");
+System.out.println(str.replace("N", sb)); //Line n1 PATHETIC
+
+boolean flag1 = "Java" == "Java".replace('J', 'J'); //Line n1
+boolean flag2 = "Java" == "Java".replace("J", "J"); //Line n2
+System.out.println(flag1 && flag2); //false new String object is created after replace call.   
+
+"faraway".indexOf("a", 4); => 5, 4 is the searching starting index
+```
+
+### String concat rule
+
+<p>Rule1: Strings computed by concatenation at compile time, will be referred by String Pool during execution.
+Rule 2: Compile time String concatenation happens when both of the operands are compile time constants, such as literal, final variable etc.</p>
+
+```java
+  String s1 = "1Z0-819"; //String literal
+  String s2 = "1Z0-819" + ""; // string constants are from String literal adding them refer to String literal pool.
+ System.out.println(s1 == s2); //true during compile time s2 = "1Z0-819" and in runtime refers the already existing String in StringPool.
+
+  final String fName = "James";
+  String lName = "Gosling";
+  String name1 = fName + lName; //concatination happens in runtime, and not refer in String pool
+  String name2 = fName + "Gosling"; //constant + constant literal result in string pool
+  String name3 = "James" + "Gosling";//constant literal + constant literal and compile time James Gosling.
+  System.out.println(name1 == name2); //false
+  System.out.println(name2 == name3); // true
+
+  final int i1 = 1;
+  final Integer i2 = 1; // i2 is neither a primitive nor string type
+  final String s1 = ":ONE";
+
+  String str1 = i1 + s1;
+  String str2 = i2 + s1;
+
+  System.out.println(str1 == "1:ONE"); //true
+  System.out.println(str2 == "1:ONE");//false
+
+   String javaworld = "JavaWorld";
+        String java = "Java";
+        String world = "World";
+        java += world; //Creates a new String object
+        System.out.println(java == javaworld); //nonPool object == pool object, so false
+```
+
+### String join, split, StringBuilder delete
+
+```java
+String [] arr1 = {null, null};
+System.out.println("1. " + String.join("::", arr1));// null::null   
+
+System.out.println("4. " + String.join(".", null)); // compile time error requires non null value.
+String str = "BEVERAGE";
+String [] arr = str.split("E", 3);
+// str.split("E", 3); returns ["B","V","RAGE"] as pattern is applied 3 - 1 = 2 times.
+
+
+```
+
+### String Builder (delete, comparision)
+
+<p>toString() method defined in StringBuilder class doesn't use String literal rather uses the constructor of String class to create the instance of String class.</p>
+
+```java
+ StringBuilder sb = new StringBuilder("Dream BIG");
+  String s1 = sb.toString();
+  String s2 = sb.toString();
+  
+  System.out.println(s1 == s2); // false since uses 
+
+  //To delete characters in a String use StringBuilder delete
+  String strBuilder = new StringBuilder("Dream BIG").delete(5,6);// DreamBIG
+
+  strBuilder.append(null) //compile error
+ //outputs 0
+  new StringBuilder("Friends are treasures")
+        .delete(0, 100)
+        .length();
+//replace
+strBuilder.replace(start, end, "replacing string");
+
+ StringBuilder str = new StringBuilder("I love India");
+  str.replace(2,6, "live"); // I live India
+  str.replace(2,6, "live in");// I live in India
+
+//
+
+ StringBuilder sb = new StringBuilder("ELECTROTHERMAL"); //Line n1
+    sb.setLength(7); //Reduces the SB length to 7
+    System.out.print(sb.toString().strip()); //Line n3
+    System.out.print(":"); //Line n4
+    sb.setLength(14); //Line n5// extend the length to 14 with trailing spaces after 7
+    System.out.println(sb.toString().strip()); //Line n6 ELECTRO:ELECTRO
+
+```
+
+## var declaration:
+
+var x = "Java"; //x infers to String
+
+var m = 10; //m infers to int
+
+<p>Local variable Type inference is applicable only for local variables and not for instance or class variables. 
+var type cannot be the target type of lambda expressions and method references.
+var type cannot be used as constructor or method parameters or method return type
+</p>
+
+Below Statements are not allowed.
+
+```shell
+ private var place = "Unknown";  //Line n1
+ 
+ public static final var DISTANCE = 200; //Line n2 
+
+ var lambda1 = () -> System.out.println("Hello"); //Line n5
+ 
+  public static void operate(var v1, var v2) {
+        System.out.println(v1 + v2);
+  }
+jshell> var arr [] = new String[2];
+|  Error:
+|  'var' is not allowed as an element type of an array
+|  var arr [] = new String[2];
+```
+what are the types which can replace the insert ? 
+var, int, long, float and double. cannot be replaced with byte or short because int variable cannot be implicitly casted to byte or short types.
+  ```java
+    var m = 10; //Line n1
+    var n = 20; //Line n2
+    /*INSERT*/ p = m = n = 30; //Line n3
+    System.out.println(m + n + p); //Line n4
+  ```
+
+## Increment operator
+
+```java
+    int i = 2;
+    if (i++ == 2 && i-- == 2) { // after this condition i = 2, but after i++ condition evaluation  i = 3
+        System.out.println("print: True" + i);
+    } else {
+        System.out.println("print: False" + i); // Prints False 2
+    }
+
+
+int x = 7;
+boolean res = x++ == 7 && ++x == 9 || x++ == 9;
+System.out.println("x = " + x);     //10
+System.out.println("res = " + res); //true
+
+Order of precedence in this case x++, ++x, ==
+boolean res = (x++) == 7 && ++x == 9 || (x++) == 9; // 7==7 true & x=8 //postfix
+              (x++) == 7 && (++x) == 9 || (x++) == 9; // true & true x =9 //prefix
+              ((x++) == 7) && ((++x) == 9) || ((x++) == 9); //then comes == x = 10
+              
+
+ int a = 1000;
+ System.out.println(-a++); //at this point its -1000(only)
+```
+
+## Bitwise and Logic operator
+
+System.out.println(status = false || status = true | status = false);
+
+//Bitwise inclusive OR | has highest precedence over logical or || and assignment =
+For assignment operator to work, left operand must be variable but in above case, `(true | status) = false` causes compilation failure as left operand (true | status) evaluates to a boolean value and not boolean variable.
+
+# Loops
+
+```java
+int ctr = 100;
+        one: for (var i = 0; i < 10; i++) {
+            two: for (var j = 0; j < 7; j++) {
+                three: while (true) {
+                    ctr++;
+                    if (i > j) {
+                        break one;
+                    } else if (i == j) {
+                        break two;
+                    } else {
+                        break three;
+                    }
+                }
+            }
+            //output 102 break from all the outer loops
+
+ int i = 0;
+        for(System.out.print(i++); i < 2; System.out.print(i++)) {
+            System.out.print(i);
+        }
+        
+```
 
 ## Lamdas and Functional Interfaces
 

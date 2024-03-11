@@ -14,6 +14,7 @@
 
 
 # Class Design
+
 - Inheritance 
   * Java doesn't support multiple inheritance, but allows multi level inheritance.
   * A subclass inherits the parent class public, protected members, Also default if both parent and subclass in the same package.
@@ -23,6 +24,7 @@
   * A class can't be both abstract final
   * A top level class is a class which is available in another class file. It can only be `default`. no private or protected allowed. To make it public you have to move to a separate file.
 - Accessing `this` Reference 
+
  ```java
    public class Flamingo {
       private String color;
@@ -60,7 +62,9 @@ _Note:_ value of color = null. when compiler see color == color it thinks your a
         17:       new Beetle().printData();
         18:    }
         ```
+
 ## Declaring Constructor
+
   * `var` as param is not allowed in constructor.
   * Default constructor is provided by default, but when you overload the default constructor with overloaded constructor with param, you need to override the default constructor.
     ```java
@@ -74,6 +78,7 @@ _Note:_ value of color = null. when compiler see color == color it thinks your a
   * Calling Overloaded Constructors with this()
     * this() must be the first statement in the constructor call.
     * Overloaded constructor are not allowed to call itself, instead this(...).  
+
   ```java
    public Hamster(int weight) {
       Hamster(weight, "brown");      // DOES NOT COMPILE
@@ -94,8 +99,10 @@ _Note:_ value of color = null. when compiler see color == color it thinks your a
       this();   // DOES NOT COMPILE
    }
   ```
+
   * the first line of every constructor is a call to either `this() or super()`
   * `super()` followed by `this()`, `and viceverse are not allowed`. Remember super/this can be the first statement in the constructor.
+
 - Final fields in Constructor parama
   * final field can be assigned values in the instance initializer block, constructor.
   * remember all final variables should be initalized before the constructor completes.
@@ -131,7 +138,9 @@ _Note:_ value of color = null. when compiler see color == color it thinks your a
   * Result: `0-10-BestZoo-z-`
   
 ## Complex initialization flow.
+
  * We first process the static variables and static initializers—lines 4 and 5, with line 5 printing 0. Now that the static initializers are out of the way, the main() method can run, which prints Ready. Lines 2, 3, and 6 are processed, with line 3 printing swimmy and line 6 printing 1. Finally, the constructor is run on lines 8–10, which print Constructor.
+
 ```java
 1:  public class Cuttlefish {
 2:     private String name = "swimmy";
@@ -152,6 +161,7 @@ _Note:_ value of color = null. when compiler see color == color it thinks your a
 //Result 0 Ready swimmy 1 Constructor
   
 ```
+
 - Difficult example. 
 
 ```java
@@ -188,8 +198,10 @@ _Note:_ value of color = null. when compiler see color == color it thinks your a
 31:    }
 32: }
 ```
+
    * Result: AFBECHG
            * BECHG 
+
   1. Super class, sub class class static initialization block AF
   2. Super class instance block B
   3. Super class constructors in reverse order parent..descendant child
@@ -229,10 +241,12 @@ _Note:_ value of color = null. when compiler see color == color it thinks your a
 
   }
   ```
+
  ## Inheriting Members.
 
   * A child class inherits any parent class public or protected member including methods, primitives, or object references. and a child class can access parent class default members If the parent class and child class are part of the same package. 
   * super class private aren't accessable directly.
+
   ### Overriding Method.
 
   * The method in the child class **_must have the same signature_** as the method in the parent class.
@@ -244,6 +258,7 @@ _Note:_ value of color = null. when compiler see color == color it thinks your a
   
 
 ## Overloading vs Overriding
+
   *  `If two methods have the same name but different signatures, the methods are overloaded,` not overridden. Overloaded methods are considered independent and do not share the same polymorphic properties as overridden methods.
   *  Overriding method will have same method name with the following rules
   *  Java limiting the overriding method to access modifiers that are as accessiable or more accessiable than the inherited version public, protected, default are the more accessiable modifier in the order.
@@ -285,11 +300,13 @@ public class GalapagosTortoise extends Reptile {
  
    public void hideInShell() throws IllegalArgumentException {}
   //hideInShell compiles since its unchecked exception.
-   public void exitShell() throws IOException {} // DOES NOT COMPILE
+   public void exitShell() throws IOException {} // DOES NOT COMPILE IOException is broader exception
 }
 ```
+
   *  The overriding method must use a return type that is covariant with the return type of the inherited method.<br>
  _Note:_  String implements CharSequence
+
 ```java
 public class Rhino {
    protected CharSequence getName() {
@@ -309,8 +326,11 @@ class JavanRhino extends Rhino {
    }
 }
 ```
+
 ## Overloading and Overriding a Generic Method(compile error).
-  * generic methods cannot be overloaded by changing the generic parameter type only.
+ 
+* Generic methods cannot be overloaded, or overridden by changing the generic parameter type only.
+
 ```java
    public class LongTailAnimal {
       protected void chew(List<Object> input) {}
@@ -345,9 +365,11 @@ class JavanRhino extends Rhino {
   void sing2(List<? super String> v) {}    // lower bounded wildcard
   void sing3(List<? extends String> v) {}  // upper bounded wildcard
   ```
-  - Generic Return Types
+  
+- Generic Return Types
   - In a overridden the method of the return type generics values must be covariant.
    <p>The Monkey class compiles because ArrayList is a subtype of List. The play() method in the Goat class does not compile, though. For the return types to be covariant, the generic type parameter must match. Even though String is a subtype of CharSequence, it does not exactly match the generic type defined in the Mammal class. Therefore, this is considered an invalid override.</p>
+
 ```java
 public class Mammal {
    public List<CharSequence> play() { ... }
@@ -364,7 +386,9 @@ public class Goat extends Mammal {
    public String sleep() { ... }
 }
 ```
+
 ## Hiding Parent ins method, Static Methods with non static method, ins method name (Compile error)
+ 
   * When a parent class static method is overridden with the child class static method. 
   * If one is marked `static` and the other is not, the class will not compile.
 
@@ -390,9 +414,12 @@ public class Goat extends Mammal {
 
   public final static void flyAway() {}  // DOES NOT COMPILE
 ```
+
 ## Hiding parent variables in child class.
-   * A hidden variable occurs when a child class defines a variable with the same name as an inherited variable defined in the parent class. This creates two distinct copies of the variable
-   * The output changes depending on the reference variable used.
+
+- A hidden variable occurs when a child class defines a variable with the same name as an inherited variable defined in the parent class. This creates two distinct copies of the variable
+- The output changes depending on the reference variable used.
+  
   ```java
   Carnivore 
      protected boolean hasFur = false;
@@ -404,6 +431,7 @@ public class Goat extends Mammal {
       System.out.println(c.hasFur); //false
 
   ```
+
 ## Casting Objects.
 
 ```java
@@ -420,14 +448,18 @@ public class Capybara extends Rodent {
    }
 }
 ```
+
 1. Casting a reference from a **_subtype to a supertype doesn’t require an explicit cast_**. Line:1
 2. Casting a reference from a **_supertype to a subtype requires an explicit cast_**. Line:3
 3. The compiler disallows casts to an unrelated class.
+
 * At runtime, an invalid cast of a reference to an unrelated type results in a ClassCastException being thrown. Line:4
+
 4. The Rodent object created does not inherit the Capybara class in any way. 
+
 ```java
-   Rodent rodent = new Capybara();
-   Capybara capybara = (Capybara) rodent;
+   Rodent rodent = new Capybara(); // Child to Parent ref
+   Capybara capybara = (Capybara) rodent; // Parent to child ref
 ```
 ## Polymorphism and Method Overriding
   
@@ -478,6 +510,7 @@ public class Main
  ```
 
 ## Overriding vs Hiding Members
+
  * Unlike method overriding, hiding members is very sensitive to the reference type and location where the member is being used. <br>
  _Note:_ It is legal to access the static variables and method using this, but not recommended. 
 
@@ -529,12 +562,14 @@ public class Kangaroo extends Marsupial {
 
 Review Questions
 //1.A 2.B 3.C 4.D 5.E 6.F
+
 1. 5
 2. 2,3,~~4,6~~
    a) Overloaded methods must have the same return type. //FALSE
    b) Hidden methods must have the same return type. //FALSE
 3. 6
 4. ~~3~~ 5 // careless showding variables
+
 ```java
     class Speedster {
      int numSpots;
@@ -552,6 +587,7 @@ Review Questions
      }
   }
 ```
+
 1. ~~6~~, 1 (**an overridden method can have a broader access modifier, and protected access is broader than package-private access. **)
 2. ~~1, 3,~~ 2,  5 (1. An overriden method must contain method param that are the same, no covariant.
 3. An overridden method must have same or more accessible than the method in the parent class.)
@@ -559,6 +595,7 @@ Review Questions
 5. 3
 6.  ~~1~~, 2, 6
 7.  ~~3~~, 4
+
  - Line 2 var not allowed in constructor
  - Line 8 Subclass must implement default constructor calling explicitly super as there is no default constructor in parent.
  - Line 9: Number is not Covariant of Integer, inherited method in parent is static, and overridden method is non static 
@@ -579,6 +616,7 @@ Review Questions
   11:       return 2;
   12:    } }
 ```
+
 11. 2, 3,(5) a final instance method cannot be overridden in a subclass, so calls in the parent class will not be replaced,
 12. 1, 2, 5,/ Missed 6 (Careless)
 13. 7,/ Missed 1 (Careless)
@@ -589,6 +627,7 @@ Review Questions
 18. c,~~ 5~~, 6. Calling a non static variable from static method is not allowed so option 5 is incorrect. option 6 You can access a private constructor with the main() method in the same class.
 19. ~~4~~, 3, 6
 20. ~~5~~, 6
+
  <p>The Reptile class defines a constructor, but it is not a no-argument constructor. Therefore, the Lizard constructor must explicitly call super(), passing in an int value.</p>
     ```java
     class Reptile {
@@ -630,6 +669,7 @@ class Child extends Person
     System.out.println (m.name + " " + t.name);
 }}
   ```
+
 23. 2 qpzj
 24. 6, Missed 1, 4
     - Ploymorphism and method inheritance rules:
@@ -657,6 +697,7 @@ class Child extends Person
   12:    public int eat(String p) {}
   13: }
 ```
+
 * The eat() method in Mammal is correctly overridden on line 7.
 * The eat() method in Mammal is correctly overloaded on line 7.
 * The drink() method in Mammal is correctly hidden on line 10.

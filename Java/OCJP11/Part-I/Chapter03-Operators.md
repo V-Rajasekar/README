@@ -50,7 +50,7 @@ Java operators follow order of operation, listed in the below table by descreasi
 ```java
   double zooTemperature = 1.21;
   zooTemperature = -(-zooTemperature);
-  System.out.println(zooTemperature);  // -1.21
+  System.out.println(zooTemperature);  // 1.21
 
 
     int lion = 3;
@@ -59,7 +59,7 @@ Java operators follow order of operation, listed in the below table by descreasi
     System.out.println("tiger is " + tiger);
     //output
         lion is 3
-        tiger is 5
+        tiger is 5 //while in the expression computing the lion remains 3
 ```
 #### Order of precedence in arithmetic operations
   - (), *, /,  %, +, -
@@ -75,7 +75,7 @@ Java operators follow order of operation, listed in the below table by descreasi
 ### Numeric Promotion Rules(*)
 
 1. If two values have different data types, Java will automatically promote one of the values to the larger of the two data types.
-2. If one of the values is integral and the other is floating-point, Java will automatically promote the integral value to the floating-point value’s data type.
+2. If one of the values is interger and the other is floating-point, Java will automatically promote the integral value to the floating-point value’s data type.
 3. Smaller data types, namely, `byte, short, and char`, are first promoted to `int` any time they’re used with a Java binary arithmetic operator, even if neither of the operands is int.
 4. After all promotion has occurred and the operands have the same data type, the resulting value will have the same data type as its promoted operands. 
 
@@ -128,10 +128,10 @@ long manager = 192301398193810323L;
 ```
 #### Compund Assignment Operators
 
-Operator| Description|
-----|-----|
-+=, -=, *= | Add, sub, multiply the value on the right to the variable on the left and assigns the product to the variable|
-/=| Divides the variable on the left by the value of the right and assigns the quotient to the variable.
+| Operator   | Description                                                                                                   |
+| ---------- | ------------------------------------------------------------------------------------------------------------- |
+| +=, -=, *= | Add, sub, multiply the value on the right to the variable on the left and assigns the product to the variable |
+| /=         | Divides the variable on the left by the value of the right and assigns the quotient to the variable.          |
 
 ```java
 long goat = 10;
@@ -153,10 +153,10 @@ System.out.println(coyote); // 3
 
 #### Equality Operators
 
-|Operator	|Apply to primitives|	Apply to objects|
-|----|----|----|
-|==	|Returns true if the two values represent the same value	|Returns true if the two values reference the same object|
-|!=	|Returns true if the two values represent different values	|Returns true if the two values do not reference the same object|
+| Operator | Apply to primitives                                       | Apply to objects                                                |
+| -------- | --------------------------------------------------------- | --------------------------------------------------------------- |
+| ==       | Returns true if the two values represent the same value   | Returns true if the two values reference the same object        |
+| !=       | Returns true if the two values represent different values | Returns true if the two values do not reference the same object |
 
 
 The equality operators are used in one of three scenarios:
@@ -170,17 +170,17 @@ The equality operators are used in one of three scenarios:
   File wednesday = tuesday;
   System.out.println(monday == tuesday);    // false
   System.out.println(tuesday == wednesday); // true
-  ----
+  //----
   System.out.print(null == null);  // true
   ```
 #### Relational Operators
-|Operator|	Description|
-|----|----|
-| <	| Returns true if the value on the left is strictly less than the value on the right |
-| <=	| Returns true if the value on the left is less than or equal to the value on the right |
-| >	| Returns true if the value on the left is strictly greater than the value on the right |
-| >=	| Returns true if the value on the left is greater than or equal to the value on the right |
-| a instanceof b	| Returns true if the reference that a points to is an instance of a class, subclass, or class that implements a particular interface, as named in b|
+| Operator       | Description                                                                                                                                        |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <              | Returns true if the value on the left is strictly less than the value on the right                                                                 |
+| <=             | Returns true if the value on the left is less than or equal to the value on the right                                                              |
+| >              | Returns true if the value on the left is strictly greater than the value on the right                                                              |
+| >=             | Returns true if the value on the left is greater than or equal to the value on the right                                                           |
+| a instanceof b | Returns true if the reference that a points to is an instance of a class, subclass, or class that implements a particular interface, as named in b |
 
 #### Numeric Comparision
 
@@ -228,10 +228,10 @@ Here are some tips to help you remember this table:
 #### Short-Circuit Operators
 -  the conditional operators, && and ||, which are often referred to as short-circuit operators 
 
-| Operator	| Description|
-|----|----|
-| &&	|Short-circuit `AND` is true only if `both values are true`. If the left side is false, then the right side will not be evaluated.|
-|\|\|| Short-circuit `OR` is true if `at least one of the values is true`. If the left side is true, then the right side will not be evaluated.|    
+| Operator | Description                                                                                                                              |
+| -------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| &&       | Short-circuit `AND` is true only if `both values are true`. If the left side is false, then the right side will not be evaluated.        |
+| \|\|     | Short-circuit `OR` is true if `at least one of the values is true`. If the left side is true, then the right side will not be evaluated. |
 
 #### Checking for Unperformed Side Effects
 ```java

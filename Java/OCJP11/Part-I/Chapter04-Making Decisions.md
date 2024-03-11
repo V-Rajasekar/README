@@ -23,7 +23,8 @@ switch(variableToTest) {
       break;
      case consExpression3, consExpression4 :
       break;  
-    default: //Optioal Default that may appear anywhere with Switch
+     case consEXpression5: case consExpression6: 
+    default: //Optional Default that may appear anywhere with Switch
       <statment>;   
 }
 ```
@@ -45,7 +46,7 @@ prints:
  Saturday
 ```
 - what if `var dayOfWeek = 6;` ? then the output is `Saturday`
-- what if `var dayOfWeek = 60;` ? then all three statements is executed
+- what if `var dayOfWeek = 0;` ? then all three statements is executed
   
 
 #### Acceptable Case Values:
@@ -178,6 +179,18 @@ for (Iterator<Integer> iter = nums.iterator(); iter.hasNext();) {
 ### Nested for Loop(2 dimensional array iteration)
 
 ```java
+String [][] fancyColors = new String[][] {{"black", "blue", "viloet"},
+                                        {"red", "peace", "orange"}};
+
+String [][] fancyColors = new String[][] {{"black", "blue", "viloet"},
+                                        {"red", "peace", "orange"}};
+for (int row = 0; row < 2; row++) {
+   for (int column = 0; column < 3; column++) {
+      System.out.print(" " + fancyColors[row][column] + "\t");
+   } 
+   System.out.println();	
+}
+
 int[][] myComplexArray = {{5,2,1,3},{3,9,8,9},{5,7,12,7}};
  
 for(int[] mySimpleArray : myComplexArray) {
@@ -208,6 +221,34 @@ OUTER_LOOP:  for(int[] mySimpleArray : myComplexArray) {
 ### Break from Loops
 
 ```java
+
+  for (int i = 1; i <= 5; i++) {
+      for (int j = 1; j <= 5; j++) {
+         if (i == 3 && j == 3) {
+            break; // breaks only from the nearest loop not from the entire nested loop(outerloop)
+         }
+         System.out.print("*");
+      }
+      System.out.println();
+   }
+   /*
+      *****
+      *****
+      **
+      *****
+      *****
+   */
+
+  OL: for (int i = 1; i <= 5; i++) {
+      IL: for (int j = 1; j <= 5; j++) {
+         if (i == 3 && j == 3) {
+            break OL;
+         }
+         System.out.print("*");
+      }
+      System.out.println();
+   }
+
 //Find the (x, y) value and break out of the entire lookp when the searched element found in a 2 dimenational array.
 public class FindInMatrix {
    public static void main(String[] args) {

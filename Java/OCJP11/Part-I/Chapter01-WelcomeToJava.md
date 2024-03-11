@@ -55,13 +55,13 @@ java Zoo "San Diego" Zoo// While passing value to param, enclose with "" or spac
 `java SingleFileZoo.java Cleveland`
 instead of 2 steps like `javac SingleFileZoo.java Cleveland` and then `java SingleFileZoo Cleveland`.
 
-|Full command	          |Single-file source-code command|
-|----|----|
-|javac HelloWorld.java  |java HelloWorld||
-|java HelloWorld.java   ||
-|Produces a class file	Fully in memory|
-|For any program |	For programs with one file|
-|Can import code in any available Java library |	Can only import code that came with the JDK|
+| Full command                                  | Single-file source-code command             |
+| --------------------------------------------- | ------------------------------------------- |
+| javac HelloWorld.java                         | java HelloWorld                             |  |
+| java HelloWorld.java                          |                                             |
+| Produces a class file	Fully in memory         |
+| For any program                               | For programs with one file                  |
+| Can import code in any available Java library | Can only import code that came with the JDK |
 
 ### Import libraries 
 - Including so many classes slows down your program execution, but it doesn’t. The compiler figures out what’s actually needed.
@@ -80,7 +80,7 @@ import java.nio.file.Paths.*; // NO GOOD - you cannot import methods
 ### Using an Alternate Directory
 By default, the **javac** command places the compiled classes in the same directory as the source code. It also provides an option to place the class files into a different directory. The -d option specifies this target directory
 
-`javac -d classes packagea/ClassA.java packageb/ClassB.java`
+`javac -d target packagea/ClassA.java packageb/ClassB.java`
 
 All three available options to execute a java class
 
@@ -98,8 +98,12 @@ All three available options to execute a java class
 ```java
   jar -cvf myNewFile.jar . //Create a jar file in the current director
   jar --create --verbose --file myNewFile.jar . //same as above
-  jar -cvf myNewFile.jar -C dir . // create jar in the requested dir path
+  jar -cvf ./target/myNewFile.jar -C <sourceDir> . // create jar with the files from the source directory to the destination folder target
+
 ```
+### Explode a JAR file
+`jar -xf myNewFile.jar -C <targetDirectWhereToExtract>`
+- -x means extract, f file name 
 
 ### Review Questions
 1. 2, 5

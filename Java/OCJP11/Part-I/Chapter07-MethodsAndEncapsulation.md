@@ -15,7 +15,7 @@
 
   ![Alt text](DesigningMethod.png)
 
-- optional specifiers: static, abstract, final, synchronized, native, strictfp.
+- Optional specifiers: `static, abstract, final, synchronized, native, strictfp`.
 - String walk7(int a) { if (a == 4) return ""; } //Doesn't compile.
 
 >Note: The walk7() method is a little tricky. There is a return statement, but it doesn’t always get run. If a is 6, the return statement doesn’t get executed. Since the String always needs to be returned, the compiler complains.
