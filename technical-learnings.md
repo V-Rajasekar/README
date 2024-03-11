@@ -4,8 +4,8 @@
 - [CRON Expression](#cron-expression)
 - [Query to kill Ideal connections](#query-to-kill-ideal-connections)
 - [Loading resource files in spring boot test](#loading-resource-files-in-spring-boot-test)
-- [Add alias in Git](#add-alias-in-git)
-- [Logging](#Logging)
+- [Logging](#logging)
+- [Utility code to scrap selected lines](#utility-code-to-scrap-selected-lines)
 
 ## Implementing the Resilence4j 
 
@@ -100,3 +100,26 @@ import org.springframework.core.io.ResourceLoader;
 ## Logging 
 [Logback structured logging](https://www.innoq.com/en/blog/2019/05/structured-logging/)
 
+## Utility code to scrap selected lines
+
+```java
+/**
+* Utility method to do selective line and print only the repo name 
+* var s = "bring/ph-oem-eve-synthetic-event-producer-batch-v1 · service/build.gradle"; 
+**/
+ static void writeToConsoleWithNewBuffer(Path src) throws IOException {
+        Set<String> repos = new TreeSet<>();
+              try (var reader = Files.newBufferedReader(src, StandardCharsets.UTF_8)) {
+                
+                String s;
+                while ((s = reader.readLine()) != null) {
+                    if (s.startsWith("bring/")) {
+                        repos.add(s.split(" ", 2)[0]);
+                    }
+               }
+               for (String repos2 : repos) {
+                System.out.println(repos2);
+               }
+        }
+    }
+```
