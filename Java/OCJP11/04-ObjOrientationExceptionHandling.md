@@ -260,7 +260,10 @@ the result of invoking this object's getLocalizedMessage() method
 
 If getLocalizedMessage returns null, then just the class name is returned.
 </p>
-
+- If finally block throws exception, then exception thrown by try or catch block is ignored.
+- catch(MyException e1 | YourException e2) wrong syntax only one variable ref is allowed
+- catch(MyException | YourException e) {e = null} variable e used in multi catch block is final it cannot be reassigned with null.
+- 
 - Error
 
 ```java
@@ -465,3 +468,150 @@ class Sub extends Super {
             System.out.println(1);
             ArithmeticException ex = (ArithmeticException)e;     
    ```        
+## Exception handling in Polymorphism/Overridden method
+
+what are the allowed class in the *INSERT* ? 
+
+```java
+ void multiply(int... x) throws SQLException;
+
+  public void multiply(int... x) throws /*INSERT*/ {
+  }
+```    
+**Can:**
+1. Can throw same exception dcl in the super class or interface
+2. Can throw any subclass in this case SQLWarning
+3. Can throw RuntimeException, or any type of runtimeException NPE
+4. Can throw Error
+**Cannot:**
+1. Cannot throw super class (Exception, or Throwable)
+2. Cannot throw unrelated checked exception
+
+## Exception handling in calling
+
+```java
+ interface Printer {
+    default void print() throws FileNotFoundException {
+        System.out.println("PRINTER");
+    }
+}
+ 
+class FilePrinter implements Printer {
+    public void print() { //Line n1
+        System.out.println("FILE PRINTER");
+    }
+}
+
+ public static void main(String[] args) {
+    Printer p = new FilePrinter();
+    p.print(); //cause compile error as FileNotFoundException is not handled.
+    ((FilePrinter)p).print()// compiles
+    FilePrinter fp = new FilePrinter();
+    fp.print(); // compiles fine. As this method doesn't throw any check exception
+ }
+``` 
+## Overridden method can throw any runtime exception
+class A{}
+class B extends A{}
+ 
+abstract class Super {
+    abstract List<A> get() throws IndexOutOfBoundsException;
+}
+ 
+abstract class Sub extends Super {
+    /*INSERT*/
+}
+
+abstract List<A> get() throws ArrayIndexOutOfBoundsException; => ✓ It returns the same return type 'List<A>' and it is allowed to throw any RuntimeException (ArrayIndexOutOfBoundsException is RuntimeException)
+
+
+
+abstract List<B> get(); => ✗ List<B> is not subtype of List<A>, it is not covariant return type.
+
+abstract ArrayList<A> get() throws Exception; => ✗ As overridden method declares to throw IndexOutOfBoundsException, which is a Runtime Exception, overriding method is not allowed to declare to throw any checked Exception. Class Exception and its subclasses are checked exceptions.
+
+abstract ArrayList<B> get(); => ✗ ArrayList<B> is not subtype of List<A>, it is not covariant return type.
+
+In generics syntax, Parameterized types are not polymorphic, this means even if B is subtype of A, List<B> is not subtype of List<A>. Remember this point. So below syntaxes are NOT allowed: 
+
+List<A> list = new ArrayList<B>(); OR ArrayList<A> list = new ArrayList<B>();
+
+## Constructor Exception handling behaviour.
+
+It is legal for the constructors to have throws clause.
+
+Constructors are not inherited by the Derived class so there is no method overriding rules related to the constructors but as one constructor invokes other constructors implicitly or explicitly by using this(...) or super(...), hence exception handling becomes interesting.
+- super(); invokes the constructor of Super class (which declares to throw RuntimeException), as RuntimeException is unchecked exception, therefore no handling is necessary in the constructor of Sub class.
+- super(); invokes the constructor of Parent class (which declares to throw IOException), but as no-argument constructor of Child class declares to throw Exception (super class of IOException), hence IOException is also handled. There is no compilation error
+```java
+class Base {
+    Base() throws IOException { //throw RuntimeException compiles, no issue
+        System.out.print(1);
+    }
+}
+ 
+class Derived extends Base {
+    Derived() throws FileNotFoundException {//compile error IOException must be handled. // throws Exception compiles, no issue
+        System.out.print(2);
+    }
+}
+```
+## Try with resource
+1. Resources used in try-with-resources statement are implicitly final, which means they can't be reassigned. fileReader = null; not allowed inside the try block.
+2. FileReader, IOStream, BufferReader, all throws IOException and they have to be handled.
+3. Resources used in try-with-resources statement must be initialized. //try(PrintWriter writer = null) compile error.
+4. Classes used in try-with-resources statement must implement java.lang.AutoCloseable or its sub interfaces such as java.io.Closeable.
+5. After the try block execution the resources are closed in the reverseOrder (LIFO)
+6. Scope of the IO file reference is within the try block they can't be referenced outside try (e.g)
+   ```java
+    try(PrintWriter writer = new PrintWriter(System.out)) {
+            writer.println("Hello");
+        } catch(Exception ex) {
+            writer.close();//compilation error
+        }
+
+    //prints HELLO
+    try(PrintWriter writer = null) {
+        System.out.println("HELLO");
+    }
+    ```
+7.  AutoCloseable interface has below close method declaration:
+
+    `void close() throws Exception;` 
+    when ever the class implementing the Autocloseable overrides the method with the throws Exception, then the calling method must handle otherwise CompilationError. If throws Exception is left out no compilation error.
+8. exception thrown from catch and finally block are supressed, only exception thrown from the try block is notified. To retrieve Suppressed exception use Throwable[]:e.getSuppressed()
+    ```java
+        class MyResource implements AutoCloseable {
+                @Override
+                public void close() throws IOException{
+                        throw new IOException("IOException"); //Suppressed Exception
+                }
+            
+                public void execute() throws SQLException {
+                        throw new SQLException("SQLException");
+                }
+        }
+        public class Test {
+                public static void main(String[] args) {
+                        try(MyResource resource = new MyResource()) {
+                                resource.execute();
+                        } catch(Exception e) {
+                                System.out.println(e.getMessage()); //SQLException
+                            System.out.println(java.util.Arrays.toString(e.getSuppressed()));//[java.io.IOException: IOException]
+                        }
+                }
+        }
+    ```
+9.  `Resources` are always closes, even in case of exceptions. And in case of multiple resources, these are closed in the reverse order of their declaration. So r2 is closed first and then r1. Output will have 'EC' together.
+```java
+    try (Resource1 r1 = new Resource1();
+        Resource2 r2 = new Resource2()) {
+    r1.m1(); //Prints A throws Exception B close method: C
+    r2.m2(); //Close method: E
+} catch (Exception e) {
+    System.out.print(e.getMessage());
+}
+//Prints AECB A(try print),E (r2 close method),C(r1 close method), B(r1 exception)
+```
+
+   

@@ -323,6 +323,22 @@ boolean res = (x++) == 7 && ++x == 9 || (x++) == 9; // 7==7 true & x=8 //postfix
 
  int a = 1000;
  System.out.println(-a++); //at this point its -1000(only)
+
+ public class Test {
+    public static void main(String[] args) {
+        String[] arr = { "L", "I", "V", "E" }; //Line n1
+        int i = -2;
+ 
+        if (i++ == -1) { //Line n2 i=-2 (-2 = -1)
+            arr[-(--i)] = "F"; //Line n3
+        } else if (--i == -2) { //Line n4 i=-1 (-2 = -2)
+            arr[-++i] = "O"; //Line n5 i=-2 -(++-2)-> -(-1) = i=2
+        }
+ 
+        System.out.println(String.join("", arr)); //Line n6
+    }
+}
+
 ```
 
 ## Bitwise and Logic operator
