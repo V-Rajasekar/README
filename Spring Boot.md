@@ -16,6 +16,7 @@
     - [Messaging](#messaging)
     - [Spring Initializr](#spring-initializr)
     - [Spring Batch](#spring-batch)
+    - [References](#Reference)
 
 ## Securing Apps.
 Spring Security can be broadly classified as
@@ -410,3 +411,6 @@ Spring Batch is a `lightweight` framework that can quickly run scheduled jobs.
 This framework also provides additional features such as logging, transaction management, job statistics, etc.
 
 Spring Batch jobs can be `easily scaled up` by executing job steps in parallel as well as multiple threads in parallel.
+
+### Reference
+[spring-boot dependencies compatability](https://docs.spring.io/spring-boot/docs/2.7.x/reference/html/dependency-versions.html#appendix.dependency-versions.coordinates)
