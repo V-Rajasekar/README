@@ -1,6 +1,7 @@
 Class name and method name can be same and that is why given method can be declared in any of the given classes: 'emp', 'Emp', 'employee', 'Employee', 'Student' and '_emp_'.
 - Top level class can be only default, final or abstract.
 - Instance method can access both instance and static members.
+- Non Instance method or variable can't be accessed from static context (static block or method)
 - Immutable class should have private fields and no setters.
 - Static method can access only static members.
 - A constructor can call another constructor by using this(...) and not the constructor name.
@@ -11,7 +12,7 @@ Class name and method name can be same and that is why given method can be decla
 ## Overridding method rules
 
 1. A subclass having same instance variables as in super class are observed as hidden and not overridden, hence overriding rules are not for the instance variables.They can be accessed by using explicit casting
-2. you cannot override methods with weaker access modifiers the order of public, protected, default and private. see below example child with protected access modifier where in parent has default.
+2. you cannot override methods with weaker access modifiers the order of `public, protected, default and private`. see below example child with protected access modifier where in parent has default.
 3. Instance method of subclass cannot override the static method of superclass.//compile error
 4. static method of subclass cannot hide the instance method of the super class. //compile error 
    
@@ -61,31 +62,31 @@ class USDollar extends Currency {
 ```java
 class Lock {
 
-  int id = 10;
-  Lock() {
+    int id = 10;
+    Lock() {
     lock();
-  }
+    }
     public void open() {
         System.out.println("LOCK-OPEN");
     }
-  public void lock() {
-   System.out.println("Lock: "+ (++id));
-  }
+    public void lock() {
+    System.out.println("Lock: "+ (++id));
+    }
 }
  
 class Padlock extends Lock {
- int id = 20;
+    int id = 20;
     public void open() {
         System.out.println("PADLOCK-OPEN");
     }
- public void lock() {
-   System.out.println("Lock: "+ (--id));
-  }
+    public void lock() {
+    System.out.println("Lock: "+ (--id));
+    }
 }
  
 class DigitalPadlock extends Padlock {
   public void open() {
-	super().open();
+	//super().open(); call to super must be first statement in constructor
         System.out.println("DIGITALPADLOCK-OPEN");
     }
 }
@@ -118,12 +119,13 @@ void speed(Byte val) { //Line n1
         System.out.println("DARK"); //Line n2
     } //Line n3
  
-    void speed(byte... vals) {
-        System.out.println("LIGHT");
-    }
+void speed(byte... vals) {
+    System.out.println("LIGHT");
+}
 
-     new Car().speed(byte(10)); //prints DARK
+new Car().speed(byte(10)); //prints DARK
 ```
+
 - Object Reference in method calls
   
 ```java
@@ -148,6 +150,7 @@ class Threat {
         System.out.println(name);
     }
 }
+//Prints VIRUS, VIRUS
 ```
 -- static and non static Increment operation
 
@@ -250,12 +253,13 @@ public class Dog extends Animal {
 
 - A constructor cannot have both super() and this()
   
-  ```java
+    ```java
     Child(int i, int j) {
         super(i);
         this(j);
     }
- ```
+    ```
+
 - The derived class constructor always calls super()
 
 ```java

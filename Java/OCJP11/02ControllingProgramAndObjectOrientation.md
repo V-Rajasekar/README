@@ -2,22 +2,28 @@
 
 If a class contains, constructor, instance initializer block and static initializer block and constructor is invoked, then the execution order is:
 
-static initializer block, instance initializer block and then constructor.
+1. Static initializer block,
+2. Instance initializer block
+3. Constructor.
 
 ### Inner Classes:
 
 1. Inner class declaration
 
-- Inner class be in a class, or method. Allowed modifiers are public, final and abstract
+- Inner class be in a class, or method. Allowed modifiers are `public, final and abstract`
 - Regular inner class cannot define anything static(block, method), except static final variables
 
+```java
 class Outer {
     class Inner {
         // Static initializer blocks, and static method are not allowed within inner classes.
     }
 }
+```
 
 1. Inner Class Reference:
+
+```java
 class Outer {
     class Inner {
         // Inner class definition
@@ -28,8 +34,11 @@ class Test {
     Outer.Inner innerObject = new Outer().new Inner();
     // Correct syntax for referencing inner class.
 }
+```
 
-3. Variable Shadowing and Resolution:
+1. Variable Shadowing and Resolution:
+
+```java
 class Outer {
     private int var = 10;
     private String name = "NOW OR NEVER";
@@ -43,6 +52,7 @@ class Outer {
         }
     }
 }
+```
 
 #### Method local inner class
 
@@ -82,10 +92,6 @@ class Outer {
     }
 }
 Constructor and Instance block are allowed in static block local inner class
-
-//
-
- obj.Log(); //prints LET IT BE
 ```
 
 ### Anonymous inner class
@@ -105,7 +111,6 @@ class Logger {
         };
         obj.Log(); //Compilation error as there is no method Log() in Logger
     }
-
 ```
 
 ### For Loop
@@ -113,10 +118,10 @@ class Logger {
 <p>
 Basic/Regular for loop has following form:
 
-for ( [ForInit] ; [Expression] ; [ForUpdate] ) {...}
+`for ( [ForInit] ; [Expression] ; [ForUpdate] ) {...}`
 
 [ForInit] can be local variable initialization or the following expressions:
-
+-----------------------------------------------------------------------------------
 Assignment
 
 PreIncrementExpression
@@ -134,7 +139,7 @@ ClassInstanceCreationExpression
 
 
 [ForUpdate] can be following expressions:
-
+----------------------------------------------------------------------
 Assignment
 
 PreIncrementExpression
@@ -153,43 +158,44 @@ The [Expression] must have type boolean or Boolean, or a compile-time error occu
 
 All the expressions can be left blank; **for(;;) is a valid for loop and it is an infinite loop** as [Expression] is blank and evaluates to true. The program results out of memory run time exception.
 
-String.join(delimiter, character/stringSequence);
-String.join(".", "A", "B", "C"); returns "A.B.C"
+<p>
+String.join(delimiter, character/stringSequence); </br>
+String.join(".", "A", "B", "C"); returns "A.B.C"  </br>
 
-String.join("+", new String[]{"1", "2", "3"}); returns "1+2+3"
+String.join("+", new String[]{"1", "2", "3"}); returns "1+2+3" </br>
 
-String.join("-", "HELLO"); returns "HELLO"
-String.join(null, "HELLO"); returns "HELLO" // NPE
-String.join("-", null); // compile time error ambiguous
-String str = null;
-String.join("-", str); returns "null";
+String.join("-", "HELLO"); returns "HELLO" </br>
+String.join(null, "HELLO"); returns "HELLO" // NPE </br>
+String.join("-", null); // compile time error ambiguous </br>
+String str = null; </br>
+String.join("-", str); returns "null"; </br>
 </p>
 
 ```java
  int i = 0;
-        String res = null;
-        for(String [] s = {"A", "B", "C", "D"};;res = String.join(".", s)) { //Line n1
-            if(i++ == 0)
-                continue;
-            else
-                break;
-        }
-        System.out.println(res); //Line n2
+String res = null;
+for(String [] s = {"A", "B", "C", "D"};;res = String.join(".", s)) { //Line n1
+    if(i++ == 0)
+        continue;
+    else
+        break;
+}
+System.out.println(res); // prints A.B.C.D Line n2
 ```
 
 ### Logical break and continue:
 
 ```java
     var i = 1;
-        var j = 5;
-        var k = 0;
+    var j = 5;
+    var k = 0;
         A: while(true) {
             i++;
             B: while(true) {
                 j--;
                 C: while(true) {
                     k += i + j;
-                    if(i == j)
+                    if (i == j)
                         break A;
                     else if (i > j)
                         continue A;
@@ -198,15 +204,23 @@ String.join("-", str); returns "null";
                 }
             }
         }
-        System.out.println(k);
+        System.out.println(k); // prints 15
 ```
-
+| i   | j   | k+=(i+j) |                              |
+| --- | --- | -------- | ---------------------------- |
+| 1   | 5   | 0        | Inital                       |
+| 2   | 4   | 6        | continue B                   |
+| 2   | 3   | 11       | continue B                   |
+| 2   | 2   | 15       | break A (Go out from Loop A) |
 ### Garbage Collection:
 1. Eligibility for Garbage Collection:
+
+
+```java
 class Test {
     void method() {
         Object obj = new Object();
         // Object created here is eligible for garbage collection once method() exits.
     }
 }
-
+```

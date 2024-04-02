@@ -4,15 +4,62 @@
     - [Consumer: void accept(T t)](#consumer-void-acceptt-t)
     - [Supplier: T get()](#supplier-t-get)
     - [Comparator:  int compare(T o1, T o2)](#comparator--int-comparet-o1-t-o2)
+  - [Exercise](#exercise)
   
 # Chapter06 Lambdas and Functional Interfaces
 
-A lambda expression is a short block of code which takes in parameters and returns a value.
-Lambda expressions address the bulkiness of anonymous inner classes by converting five lines of code into a single statement
-The break and continue keywords are illegal at the top level, but are permitted within loops. If the body produces a result, every control path must return something or throw an exception.
+- A lambda expression is a short block of code which takes in parameters and returns a value.
+- Lambda expressions address the bulkiness of anonymous inner classes by converting five lines of code into a single statement 
+- The break and continue keywords are illegal at the top level, but are permitted within loops. If the body produces a result, every control path must return something or throw an exception.
 
 - Find below the lambda syntax rules.
-  
+<p>
+  Lambda expressions in Java are a concise way to represent anonymous functions – functions without a name, which can be passed around as if they were objects and executed on demand. Lambda expressions were introduced in Java 8 to provide a more functional approach to programming. Here are the key rules for using lambda expressions in Java:
+
+Syntax: The syntax for a lambda expression in Java is as follows:
+
+```
+(parameters) -> expression
+or
+(parameters) -> { statements; }
+```
+Parameters: Lambda expressions can take zero or more parameters. If there's only one parameter, you can omit the parentheses. If there are no parameters, you still need to include empty parentheses (). For example:
+
+```java
+
+() -> System.out.println("Hello");
+(int x, int y) -> x + y;
+x -> x * x;
+```
+Body: The body of a lambda expression can consist of a single expression or a block of code (enclosed in curly braces {}). If the body contains a single expression, the return value of the lambda is the result of that expression. If the body is a block of code, you must explicitly use a return statement if the block computes a value to return. For example:
+
+```java
+
+() -> System.out.println("Hello"); // Single expression body
+```
+(int x, int y) -> { return x + y; } // Block body
+Type Inference: In many cases, the types of parameters can be inferred by the compiler, so you don't need to specify them explicitly. However, in some cases, you might need to specify the types explicitly. For example:
+
+```java
+(String s) -> System.out.println(s);
+```
+Functional Interfaces: Lambda expressions can only be used where the type they're being assigned to is a functional interface. A functional interface is an interface with a single abstract method. For example:
+
+
+```java
+interface MyInterface {
+    void myMethod();
+}
+```
+
+MyInterface myLambda = () -> System.out.println("My Method");
+Effectively Final Variables: Lambda expressions can access local variables of the enclosing scope, but those variables must be effectively final, meaning their value should not change after initialization. This is because lambda expressions capture the value of variables, not the variable itself.
+
+Exceptions: Lambda expressions can throw checked exceptions, but they must be declared in the functional interface's abstract method. Alternatively, you can handle the exceptions within the lambda expression itself.
+
+Lambda expressions provide a concise and expressive way to represent simple behavior in Java, especially when working with collections, streams, and functional interfaces. They are a fundamental part of modern Java programming, enabling more functional and declarative coding styles.
+</p>
+
 ```java
 
   public static boolean checkMe(Predicate<Integer> p) {
@@ -44,8 +91,8 @@ The break and continue keywords are illegal at the top level, but are permitted 
 ## Functional Interfaces
 
 - A functional interface has only one abstract method.
-- In some classes its mentioned `@FunctionalInterface`, irrespective whether this annotation is there or not, if an ibterface  has only one abstract method then its called Functional Interface.
-- There are four functional interfaces you are likely to see on the exam. The next sections take a look at Predicate, Consumer, Supplier, and Comparator.
+- In some classes its mentioned `@FunctionalInterface`, irrespective whether this annotation is there or not, if an interface  has only one abstract method then its called Functional Interface.
+- There are four functional interfaces you are likely to see on the exam. The next sections take a look at ***Predicate, Consumer, Supplier, and Comparator***.
 
 ### Predicate boolean:test(T t)
 
@@ -115,14 +162,13 @@ public void variables(int a) {
 ```
 
 - Variables Referenced from the Lambda Body
-  - lambda can access an instance variable, method parameter, or local variable under certain conditions. Instance variables (and class variables) are always allowed.
-  - Method parameters and local variables are allowed to be referenced if they are effectively final.
   - Variable type Rule
     - Instance variable Allowed
     - Static variable Allowed
     - Local variable Allowed if effectively final
     - Method parameter Allowed if effectively final
     - Lambda parameter Allowed
+    - Lambda parameters are not allowed to use the same name as another variable in the same scope. `s.forEach(s -> System.out.println(s));`
 - Calling APIs with Lambdas
    1. List and set declare a `removeIf()` method that takes predicate.
 
@@ -149,24 +195,27 @@ public void variables(int a) {
                 bunnies.forEach((k, v) -> System.out.println(k + " " + v));
         ```
 
-   1. A
-   2. C
-   3. A, C, D, F/ C wrong.
+## Exercise
 
-   ```java
-   //commented throws compile error
-      List<String> list = new ArrayList();
-    list.add("");
-    list.add("123");
-    list.removeIf(s -> s.isEmpty());
-    //  list.removeIf(s -> {s.isEmpty()}); //missing return
-    //   list.removeIf( s -> { s.isEmpty();}); //missing return
-    list.removeIf(s -> {return s.isEmpty();});
-    //   list.removeIf(String s -> s.isEmpty());
-    list.removeIf((String s) -> s.isEmpty());
-   ```
+  1. A
+  2. C
+  3. A, C, D, F/ C wrong.
 
-  4. A,  F
+  ```java
+  //commented throws compile error
+    List<String> list = new ArrayList();
+  list.add("");
+  list.add("123");
+  list.removeIf(s -> s.isEmpty());
+  //  list.removeIf(s -> {s.isEmpty()}); //missing return
+  //   list.removeIf( s -> { s.isEmpty();}); //missing return
+  list.removeIf(s -> {return s.isEmpty();});
+  //   list.removeIf(String s -> s.isEmpty());
+  list.removeIf((String s) -> s.isEmpty());
+  ```
+
+  4. A,F
+   `(e) -> { String e = ""; return "Poof"; } //compile error e is reused`
   5. A, B, D, F/ A&F wrong
 
 ```java
@@ -184,10 +233,22 @@ public void variables(int a) {
  //A & F incorrect parameter atleast one parameter. C missing paramtheses for single argument (String s). E param name mistmatch with actual impl s1 != s
 ```
 
-  6. E
+  6. E code in lambda compiles and var represents the corresponding type in the method DCL
+   ```java
+    public void method() {
+      x((var x) -> {}, (var x, var y) -> 0);
+    }
+    public void x(Consumer<String> x, Comparator<Boolean> y) {
+    }
+   ```
   7. A, B, E, F
+   ```java
+    Map map = Map.of(1, 2, 3, 4);
+    //only map compile error allowed: list, set, keySet->k and values -> value
+    map.values()/keySet().forEach(x -> System.out.println(x)); 
+   ```
   8. A, F/ C missed (careless)
-  9. C/ A, B missed (scope of variables inside lambda expression)
+  9.  C/ A, B missed (scope of variables inside lambda expression)
   10. C
   11. B/ A (Careless) UpperCase is stored before lowercase so [Olivia, leo] `cats.sort((c1, c2) -> -c1.compareTo(c2));` since there is - answer [leo, Olivia]
   12. C,E, F/ CDE
@@ -206,6 +267,15 @@ Supplier<Set<Float>>
 
   13. A/E // `Supplier<Integer> supplier = () -> length;` compiles.
   14. E/C
+     ```java
+   //compiles char c, start = '1' or end = '1' doesn't compiles
+   public void remove(List<Character> chars) {
+     char end = 'z';
+    chars = null;
+     chars.removeIf(c -> {
+        char start = 'a'; return start <= c && c <= end; });
+  }
+  ```
   15. A/C
   16. A, D
   17. A/C (Lambda using braces around the body missing return and semicolon;)
@@ -231,8 +301,10 @@ Supplier<Set<Float>>
    **Lambda parameters are not allowed to use the same name as another variable in the same scope.**
 
 ```java
-  s.forEach(s -> System.out.println(s));
-  x.forEach(x -> System.out.println(x));
+Set<String> s = Set.of("mickey", "minnie");
+List<String> x = new ArrayList<>(s);
+s.forEach(s -> System.out.println(s));
+x.forEach(x -> System.out.println(x));
 ```
 
   19. A, C
