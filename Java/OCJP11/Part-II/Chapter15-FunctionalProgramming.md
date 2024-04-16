@@ -1,11 +1,15 @@
 # Chapter15- Functional Programming
 
 - [Chapter15- Functional Programming](#chapter15--functional-programming)
+  - [Lambda Expressions](#lambda-expressions)
+  - [Built-in Functional Interfaces](#built-in-functional-interfaces)
     - [Supplier](#supplier)
     - [Consumer](#consumer)
     - [BiConsumer](#biconsumer)
     - [Predicate and BiPredicate](#predicate-and-bipredicate)
     - [Function and BiFunction](#function-and-bifunction)
+    - [DoubleFunction \& DoubleUnaryOperator](#doublefunction--doubleunaryoperator)
+    - [LongFunction \& LongUnaryOperator](#longfunction--longunaryoperator)
     - [Custom Functional Interface](#custom-functional-interface)
     - [Optional](#optional)
     - [Implementing UnaryOperator and BinaryOperator](#implementing-unaryoperator-and-binaryoperator)
@@ -38,6 +42,72 @@
       - [Collectors.mapping](#collectorsmapping)
   - [Summary of Collectors methods](#summary-of-collectors-methods)
 
+## Lambda Expressions
+
+- Valid Lambda expressions
+
+```
+  interface Operator {
+      int operate(int i, int j);
+  }
+  Operator opr = (int x, int y) -> { return x + y; };
+
+  ✓  operate(int, int) method accepts two int type parameters and returns the addition of passed parameters.
+
+  Operator opr = (x, y) -> { return x + y; };
+  ✓  Type is removed from left part, type inference handles it.
+
+  Operator opr = (x, y) ->  return x + y;
+  ✗  Compilation error, if there is only one statement in the right side then semicolon inside the body, curly brackets and return keyword(if available) can be removed. But all should be removed. You can't just remove one and leave others.
+
+  Operator opr = (x, y) ->  x + y;
+  ✓  Semicolon inside the body, curly brackets and return keyword, all 3 are removed from right side.
+
+  Operator opr = x, y ->  x + y;
+  ✗  Compilation error, if there are no parameters or more than one parameter available, then parentheses or round brackets '()' cannot be removed from left side.
+
+  Operator opr = (int x, var y) ->  x + y;
+  ✗  Compilation error, local variable type inference and explicitly-typed parameters cannot be mixed.
+
+  Operator opr = (int x, y) ->  x + y;
+  ✗  Compilation error, implicitly-typed and explicitly-typed parameters cannot be mixed.
+```
+
+- Lambda expression declaration and its rules.
+```java
+interface Operator {
+    int operate(int i, int j);
+}
+ Operator opr = (int x, int y) -> { return x + y; };
+```
+
+System.out.println((String s1, String s2) -> s1 + s2); // error
+System.out.println((Operator)(String s1, String s2) -> s1 + s2);
+
+- Reference variable to which lambda expression is assigned is known as target type. Target type can be a static variable, instance variable, local variable, method parameter or return type. Lambda expression doesn't work without target type and target type must be a functional interface. Functional interface was added in JDK 8 and it contains one non-overriding abstract method. 
+- 
+
+
+
+
+## Built-in Functional Interfaces
+  - Build-in function are part of `java.util.function` package
+```java
+Supplier<T> : T get();
+
+Function<T, R> : R apply(T t);
+
+Consumer<T> : void accept(T t);
+
+Predicate<T> : boolean test(T t);
+
+BiPredicate<T, U> : boolean test(T t, U u);
+
+BiFunction<T, U, R> : R apply(T t, U u);
+
+Note: Rest of the built-in functional interfaces are either similar to or dependent upon these four interfaces. BooleanSupplier is the only Functional interface available for boolean primitive type.
+```
+
 Functional interface| Return type |Method name | of parameters|Example|
 ---------|----------|---------|---------|-------|
 Supplier<T>           |  T        | get()         |0        |LocalDate::now;
@@ -50,7 +120,7 @@ BiFunction<T, U, R>   |  R        | apply(T,U)     |2 (T, U) |String::length
 UnaryOperator<T>   |  T        | apply(T)     |1 (T)    |String::toUpperCase
 BinaryOperator<T>   |  T        | apply(T,T)     |2 (T, T) |String::concat
 
-- An Optional<T> can be empty or store a value. You can check whether it contains a value with isPresent() and get() the value inside.
+- An `Optional<T>` can be empty or store a value. You can check whether it contains a value with `isPresent()` and `get()` the value inside.
 - You can return a different value with `orElse(T t)` or throw an exception with `orElseThrow()`.
 - There are even three methods that take functional interfaces as parameters:
   - `ifPresent(Consumer c), orElseGet(Supplier s), and orElseThrow(Supplier s)`. There are three optional types
@@ -101,15 +171,43 @@ System.out.println(p1.test(""));  // true
 ```java
 BiPredicate<String, String> b1 = String::startsWith;
  System.out.println(b1.test("chicken", "chick"));  // true
+
+System.out.println(predicate.test("JaVa", "Java"));
+ // is equivalen to (s1, s2) -> s1.equalsIgnoreCase(s2);, so true
+
+BiPredicate<String, String> predicate = String::contains;
+        BiFunction<String, String, Boolean> func = (str1, str2) -> {
+            return predicate.test(str1, str2) ? true : false;
+        };
+ System.out.println(func.apply("Tomato", "at")); //true  
 ```
 
 ### Function and BiFunction
+
+```java
+
+Function<char [], String> obj = String::new; //Line n1
+String s = obj.apply(new char[] {'j', 'a', 'v', 'a'}); //Line n2 // Prints java
 
 Function<String, Integer> f1 = String::length;
 System.out.println(f1.apply("cluck")); // 5
 
 BiFunction<String, String, String> b1 = String::concat;
 System.out.println(b1.apply("baby ", "chick")); // baby chick
+```
+### DoubleFunction & DoubleUnaryOperator
+
+```java
+DoubleFunction<DoubleUnaryOperator> func = m -> n -> m + n; 
+//Line n1 System.out.println(func.apply(11).applyAsDouble(24)); //Line n2 prints 35.0
+```
+
+### LongFunction & LongUnaryOperator
+
+```java
+LongFunction func = a -> b -> b - a; //Line n1
+System.out.println(calc(func.apply(100), 50)); //Line n2 //prints -50
+```
 
 ### Custom Functional Interface
 
@@ -140,7 +238,8 @@ Optional is a container object which may or may not contain a non-null value.
 ### Implementing UnaryOperator and BinaryOperator
 
 - In the Javadoc, you'll notice that these methods are actually inherited from the Function/ BiFunction superclass. The generic declarations on the subclass are what force the type to be the same.
-
+- interface BinaryOperator extends Function<T, T, T>, so its apply function has the signature: `T apply(T, T)`.
+  
 ```java
 UnaryOperator<String> u1 = String::toUpperCase;
 System.out.println(u1.apply("chirp"));  // CHIRP
@@ -151,6 +250,9 @@ We don't need to specify the return type in the generics because UnaryOperator r
 ```java
 BinaryOperator<String> b1 = String::concat;
 System.out.println(b1.apply("baby ", "chick")); // baby chick
+
+BinaryOperator<List<String>> operator = BinaryOperator.minBy((s1, s2) -> s1.size() - s2.size()); //Line n1
+if we pass two lists (l1= ["A"], l2= ["A", "B"]) operator.apply(l1, l2) -> [A]  
 ```
 
 <p>Notice that this does the same thing as the BiFunction example. The code is more succinct, which shows the importance of using the correct functional interface. It's nice to have one generic type specified instead of three.</p>
@@ -164,8 +266,11 @@ Functional interface | MethodName | Method param
  Consumer | andThen() | Consumer  
  Function | andThen() , compose() | Function
 
+>Note:compose and andThen methods doesn't change the object, on which these methods are invoked, rather creates a new Function<T, T> object.
+
 #### Predicate(and(), negate())
 
+```java
 Predicate<String> egg = s -> s.contains("egg");
 Predicate<String> brown = s -> s.contains("brown");
 
@@ -173,6 +278,7 @@ Predicate<String> brown = s -> s.contains("brown");
 Predicate<String> brownEggs = egg.and(brown);
 //Get me eggs other than brown
 Predicate<String> otherEggs = egg.and(brown.negate());
+```
 
 #### Consumer (andThen)
 
@@ -182,16 +288,19 @@ Consumer<String> c2 = x -> System.out.print(",2: " + x);
  
 Consumer<String> combined = c1.andThen(c2);
 combined.accept("Annie");              // 1: Annie,2: Annie
+
+
 ```
 
 #### Function compose(Function)
 
 ```java
-Function<Integer, Integer> before = x -> x + 1;
-Function<Integer, Integer> after = x -> x * 2;
- 
-Function<Integer, Integer> combined = after.compose(before);
-System.out.println(combined.apply(3));   // 8
+Function<Integer, Integer> f = x -> x + 10;
+Function<Integer, Integer> g = y -> y * y;
+
+Function<Integer, Integer> fog = g.compose(f); //Line n1
+System.out.println(fog.apply(10)); // prints 400
+g.compose(f) means first apply the f function and then the g. It can be replaced as f.andThen(g)
 ```
 
 #### Returning an _Optional_
