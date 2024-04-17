@@ -1,10 +1,12 @@
 # 08 Stream
 
+## filter, transform and process data
+
+## 
 ### flatMap
 stream is not of Stream<String> type rather it is of Stream<String[]> type.
 
 flatMap method combines all the non-empty streams and returns an instance of Stream<String> containing the individual elements from non-empty stream.
-
 ```java
 String [] arr1 = {"Virat", "Rohit", "Shikhar", "Dhoni"};
         String [] arr2 = {"Bumrah", "Pandya", "Sami"};
@@ -252,14 +254,100 @@ emp => [{"Aurora", 10000.0}, {"Naomi", 12000.0}, {"Hailey", 7000.0}].
         System.out.println(stream.summaryStatistics());     
 
 //reduce 
+### reduce method
 
+<p>
+Stream<T> interface has below 3 overloaded reduce methods:
+
+- Optional<T>   reduce​(BinaryOperator<T> accumulator)
+- T    reduce​(T identity, BinaryOperator<T> accumulator)
+- <U> U    reduce​(U identity, BiFunction<U,​? super T,​U> accumulator, BinaryOperator<U> combiner)
+</p>
 int res = 1;
         IntStream stream = IntStream.rangeClosed(1, 5);
         stream.reduce(1, (i, j) -> i * j); //prints 120
 
  Stream<Double> stream = Arrays.asList(1.8, 2.2, 3.5).stream();
+        // System.out.println(stream.reduce(0, (d1, d2) -> d1 + d2)); compile error since int inplace of Double
+        System.out.println(stream.reduce(0.0,(d1, d2) -> d1 + d2)); 
+        System.out.println(stream.reduce(0.0, Double::sum);
         System.out.println(stream.reduce((d1, d2) -> d1 + d2)); //Optional[7.5]
+  // reduction with BiFunction
+   var list = List.of(false, Boolean.valueOf(null), Boolean.valueOf("1"), Boolean.valueOf("0"));
+        BinaryOperator<Boolean> operator = (b1, b2) -> b1 || b2;
+        System.out.println(list.stream().reduce(false, operator)); // prints false. if the identity is true or one of the value in list is true then prints true
+
+ Function<CryptoCurrency, Integer> extractor = curr -> curr.getUnit();
+        UnaryOperator<Integer> operator = i -> i % 100;
+        int val = Stream.of(new CryptoCurrency("DOGE", 8921),
+                    new CryptoCurrency("ETH", 99), new CryptoCurrency("LTC", 17689))
+                    .map(extractor.andThen(operator))
+                    .reduce(0, (a, b) -> a + b); // 209
 ```
 
+### Transform
 
+```java
+ //transforming Stream(String) -> TreeSet(sorting)
+import java.util.stream.Collectors;
+   Stream<String> stream = Stream.of("mars", "pluto", "sun",
+            "earth", "mars", "pluto");
+        Set<String> set = stream.collect(Collectors.toCollection(/*insertline*/));
+        System.out.println(set);
+     
+ //TreeSet::new, Collectors.toSet();, Collectors.toList     
+ //List of languages sorted.
+   List<String> uniqueLang = stream.sorted().collect(Collectors.toList());  
+
+ Person p1 = new Person(1010, "Sean");
+        Person p2 = new Person(2843, "Rob");
+        Person p3 = new Person(1111, "Lucy");
  
+        Stream<Person> stream = Stream.of(p1, p2, p3);
+        Map<Integer, Person> map = stream.collect(/*INSERT*/);
+        System.out.println(map.size());
+
+/* 1. `Collectors.toMap(p -> p.id, Function.identity())`</br> 
+2. `Collectors.toMap(p -> p.id, p -> p)` are exactly same, as `Function.identity()` is same as lambda expression `p -> p`.</br>
+3. Collectors.toCollection(TreeMap::new) causes compilation error as TreeMap doesn't extend from Collection interface.</br>*/
+
+var a = DoubleStream.iterate(Double.valueOf(1.0), i -> i <= 3.0, i -> i + 1);
+        var b = a.mapToObj(i -> "" + i) //Mapper function accepts double and converts it to String
+                        .collect(Collectors.joining(", ")); //1.0,2.0,3.0
+
+  String str = Stream.of("an", "and", "after", "or", "before")
+            .takeWhile(s -> s.length() < 4)
+            .collect(Collectors.joining(", ")); // an, and                        
+
+  String str = Stream.of("a", "an", "and", "alas", "after")
+            .dropWhile(s -> s.length() > 4)
+            .collect(Collectors.joining(", ")); // prints all with , separated.
+
+  Stream.of(List.of('A', 'N', 'T'), List.of('A', 'Q', 'U', 'A'))
+            .filter(Predicate.not(l -> l.size() > 3))
+            .flatMap(l -> l.stream())
+            .collect(Collectors.toList())
+            .forEach(System.out::print); //prints ANT           
+``` 
+
+### partitioningBy, groupingBy
+
+```java
+ Certification c1 = new Certification("S001", "OCA", 87);
+        Certification c2 = new Certification("S002", "OCA", 82);
+        Certification c3 = new Certification("S001", "OCP", 79);
+        Certification c4 = new Certification("S002", "OCP", 89);
+        Certification c5 = new Certification("S003", "OCA", 60);
+        Certification c6 = new Certification("S004", "OCA", 88);
+ 
+        Stream<Certification> stream = Stream.of(c1, c2, c3, c4, c5, c6);
+        Map<Boolean, List<Certification>> map =
+            stream.collect(Collectors.partitioningBy(s -> s.getTest().equals("OCA")));
+        System.out.println(map.get(true)); //prints true, OCA record
+
+        Stream<Certification> stream = Stream.of(c1, c2, c3, c4, c5, c6);
+        Map<Boolean, List<Certification>> map =
+            stream.collect(Collectors.groupingBy(Certification::getTest));
+        System.out.println(map.get("OCP")); // prints OCP records
+```
+## Parallel Streams
