@@ -2,7 +2,65 @@
 
 ## filter, transform and process data
 
-## 
+
+```java
+   Stream<StringBuilder> stream = Stream.of(); // returns a blank stream of Stream<StringBuilder>
+        stream.map(s -> s.reverse()) // reverse in StringBuilder
+                .forEach(System.out::println); //compile nothing printed
+
+    Stream.of() // created a Stream<Object>
+            .map(s -> s.reverse()) // compile error as no reverse in Object
+            .forEach(System.out::println);
+
+ //Peek is an intermediate operation, so nothing is printed.
+     Stream.of(true, false, true)
+            .map(b -> b.toString()
+            .toUpperCase())
+            .peek(System.out::println);     
+
+      Stream.of(true, false, true)
+            .map(b -> b.toString().toUpperCase())
+            .peek(System.out::println)
+            .count(); // nothing printed,   If result of count() can directly be computed from the stream source, then the implementation may choose to not execute the stream pipeline.  
+       Stream.of(true, false, true).count(); // prints 3        
+
+       map.stream().count();// compile error since map is not a Collection    
+```
+### working with map in stream
+
+```
+For example, below code prints all the key value pairs available in the map:
+
+map.entrySet()
+	.stream()
+	.forEach(x -> System.out.println(x.getKey() + ":" + x.getValue()));
+
+
+Below code prints all the keys of the map:
+
+map.keySet()
+	.stream()
+	.forEach(System.out::println);
+
+
+Below code prints all the values of the map:
+
+map.values()
+	.stream()
+	.forEach(System.out::println);
+```
+
+### peek operation
+
+```java
+List<Employee> employees = Arrays.asList(new Employee("Jack", 10000),
+            new Employee("Lucy", 12000));
+        employees.stream()
+            .peek(e -> e.setSalary(e.getSalary() + 1000))
+            .forEach(System.out::println);
+  //Prints  {Jack, 11000.0} {Lucy, 13000.0}        
+
+```
 ### flatMap
 stream is not of Stream<String> type rather it is of Stream<String[]> type.
 
@@ -18,11 +76,31 @@ String [] arr1 = {"Virat", "Rohit", "Shikhar", "Dhoni"};
                 .forEach(s -> System.out.print(s + " "));
 ```
 
+### UnaryOperator and Function 
+
+```java
+//Option-1: UnaryOperator<Character> operator = c -> (char) (c.charValue() + 1); 
+//Option-2: Function<Character, Character> operator = x -> (char)(x+1);
+var vowels = List.of('A', 'E', 'I', 'O', 'U');
+        vowels.stream().map(x -> operator.apply(x)).forEach(System.out::print); //Line n1
+```
+### anyMatch, allMatch, noneMatch
+
+- boolean anyMatch(Predicate<? super T>) Return false if Stream is empty and true if any match
+- boolean allMatch(Predicate<? super T>) Return true if stream is empty and all match
+- boolean noneMatch(Predicate<? super T>) Returns true if stream is empty and none match
+
+```java
+Stream<Integer> stream = Stream.iterate(1, i -> i + 1); // creates a infiniteStream
+        System.out.println(stream.anyMatch(i -> i > 1)); //But here when 2 > 1 returns true immediately.
+```
+
 ### Optional
 
 ```java
 import java.util.Optional;
-//Optional<Integer> optInt = Optional.of(null); L1 throws NPE
+Optional<Integer> optInt = Optional.of(null); //L1 throws NPE
+
 //It returns an Optional describing the given non-null value.
 //If null argument is passed to of method, then NullPointerException is thrown at runtime.
 Optional<Integer> optInt = Optional.ofNullable(null);
@@ -67,9 +145,6 @@ And the statements:
 4. System.out.println(optional.orElseThrow()); // No such element
 
 5. optional.ifPresentOrElse(System.out::print, () -> {throw new RuntimeException();}); //throws
-###
-
-## Stream methods
 
 ### Stream.generate() and intermediate operators
 
@@ -351,3 +426,107 @@ var a = DoubleStream.iterate(Double.valueOf(1.0), i -> i <= 3.0, i -> i + 1);
         System.out.println(map.get("OCP")); // prints OCP records
 ```
 ## Parallel Streams
+
+All streams in Java implements BaseStream interface and this interface has parallel() and sequential() methods. Hence all streams can either be parallel or sequential.
+
+performance of parallel stream is **not always** better than the sequential stream. Parallel streams internally use fork/join framework only, so there is always an overhead of splitting the tasks and joining the results.   
+
+Parallel streams improves performance for streams with large number of elements, easily splittable into independent operations and computations are complex.
+
+- java.util.Collection interface has default stream() to return sequential() stream for the executing collection
+- java.util.stream.Stream class has parallel(), sequential() to convert a stream to parallel and sequential
+- isParallel() method of Stream class returns true for parallel Stream.
+  
+   `List.of("A", "E", "I", "O", "U").stream().parallel() or  List.of("A", "E", "I", "O", "U").parallelStream()`
+```java
+  IntStream.rangeClosed(1, 10)
+            .parallel()
+            .forEach(System.out::println); // prints 1..10 in random       
+
+  IntStream.rangeClosed(1, 10)
+            .parallel()
+            .forEachOrdered(System.out::println); // prints 1..10 in asc order
+
+//base stream is IntStream with sequential order(it has encounter order) regardless of sequential or parallel findFirst() return 51
+     int res = IntStream.rangeClosed(1, 1000)
+                    .parallel()
+                    .filter( i -> i > 50).findFirst().getAsInt(); // prints 51      
+
+    var list2 = List.of(List.of('N', 'A'), List.of('M', 'O'));
+     list2.parallelStream()
+            .flatMap(i -> i.stream()) //list2 => [{'N', 'A','M', 'O'}]
+            .findFirst() //Optional[N]
+            .stream() //Optional class has Stream method => Stream<Character>['N']
+            .forEach(System.out::print);    //prints N      
+
+```
+
+### reduce(identity, U BinaryOperation<U,T>)
+
+<p> The reduce() method in Java 8 is a terminal operation that takes a binary operator function as an argument and returns a single value as the result of the reduction operation. The binary operator function is applied to each element in the stream, and the result of each application is passed to the next application as the first argument.</p> 
+
+```java
+
+Stream<Integer> stream = Stream.of(1, 2, 3, 4, 5);
+
+        // Calculate the sum of all the elements in the stream
+        int sum = stream.reduce(0, (a, b) -> a + b); // prints 15
+
+       List<Book> books = new ArrayList<>();
+        books.add(new Book("9781976704031", 9.99));
+        books.add(new Book("9781976704032", 15.99));
+ 
+        Book b = books.stream().reduce(new Book("9781976704033", 0.0), (b1, b2) -> {
+            b1.price = b1.price + b2.price;
+            return new Book(b1.isbn, b1.price);
+        });
+ 
+        books.add(b);
+        books.parallelStream().reduce((x, y) -> x.price > y.price ? x : y)
+            .ifPresent(System.out::println); //prints Book[9781976704033:25.98].
+
+//1. 1. The identity value must be an identity for the combiner function. This means that for all u, combiner(identity, u) is equal to u.
+
+//   As u is of String type, let's say u = "X", combiner("", "X") = "X". Hence, u is equal to combiner("", "X"). First rule is obeyed.                  
+
+//2. To get consistent output, accumulator must be associative and stateless. concat is associative as (s1.concat(s2)).concat(s3) equals to s1.concat(s2.concat(s3)). Given method reference syntax is stateless as well.
+    var s2 = List.of("A", "E", "I", "O", "U").parallelStream()
+            .reduce("_", String::concat);// s2 may refer to "_A_E_I_O_U" or "_AE_I_OU" or "_AEIOU". So output cannot be predicted.
+
+        var str2 = List.of("S", "P", "O", "R", "T").parallelStream()
+            .reduce("", String::concat); // str2 is predictable its always SPORT
+
+      var str2 = Stream.iterate(1, k -> k <= 10, i -> i + 1)
+            .parallel()
+            .reduce("", (i, s) -> i + s, (s1, s2) -> s1 + s2); // without parallel also same output. 
+
+       var stream = Stream.of("J", "A", "V", "A");
+        var text = stream.parallel().
+            reduce(String::concat)
+            .get(); //prints JAVA (consistantly)            
+```
+
+<p>
+var list = List.of("S", "P", "I", "R", "I", "T");
+And below statements all prints SPIRIT:
+1. list.forEach(System.out::print);
+
+2. list.stream().forEach(System.out::print);
+
+3. list.stream().map(Function.identity()).forEach(System.out::print);
+ `Function.identity()` is same as `t -> t` (which returns the passed value). In fact, this in redundant map call. forEach(System.out::print) method prints SPIRIT on to the console.
+1. list.parallelStream().forEachOrdered(System.out::print);
+
+2. System.out.println(list.stream().collect(Collectors.joining()));
+</p>
+
+### groupingBy
+- Collectors.groupingByConcurrent(...) returns a concurrent and unordered Collector whereas, Collectors.groupingBy(...) returns a non-concurrent and ordered (based on encounter order) Collector
+- 
+```java
+var stream = Stream.of("SON", "WIFE", "MOTHER", "FATHER", "UNCLE", "DAUGHTER");
+        var map = stream.parallel()
+                    .collect(Collectors.groupingByConcurrent(s -> s.length() > 4));
+
+sout(map.get(false)).size(); // 2
+```
