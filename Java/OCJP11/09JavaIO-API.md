@@ -2,13 +2,13 @@
 
 ## Java I/O API: Read and write file data
 - Console instance is got by` System.console();`
-- Methods: 
+- Methods:
   - `char [] readPassword() {...}`
   - `char [] readPassword(String fmtString, Object... args) {...}`
-  - format(), printf(), 
+  - format(), printf(),
   - writer():PrintWriter class associated with this console, which has a printf(String format, Object ... args) method
   - reader():Reader object associated with this console.which has read() method reads the single character (as an int value)
-  - 
+  -
 ```java
 import java.io.*;
 
@@ -26,7 +26,7 @@ import java.io.*;
 
 
   var console = System.console();
-        var name = console.readLine("What's your name? "); // console can be null if OS doesn't have a console 
+        var name = console.readLine("What's your name? "); // console can be null if OS doesn't have a console
         System.out.printf("You entered: %s", name);
 ```
 
@@ -36,7 +36,7 @@ import java.io.*;
 
 import java.io.IOException;
 import java.util.stream.IntStream;
- 
+
 public class Test {
     public static void main(String[] args) throws IOException {
         var console = System.console();
@@ -66,12 +66,12 @@ public class Test {
 - File class has below 2 methods:
   * public File getParentFile() {...}
   * public String getParent() {...}
-  
+
 ```java
  //mkdir, mkdirsm delete usage
   var dirs = new File("F:\\A\\B\\C");
   System.out.println(dirs.mkdirs()); // true
-  var dir = new File("F:\\A"); 
+  var dir = new File("F:\\A");
   System.out.println(dir.mkdir()); // false as A is already present
   System.out.println(dir.delete()); // false a A has child elements.
 
@@ -83,16 +83,16 @@ public class Test {
 ### File methods sample pgm
 
 - Program to delete all PDF file from a directory and its sub directory.
-  
+
 ```java
 import java.io.File;
 import java.io.IOException;
- 
+
 public class Test {
     public static void main(String[] args) throws IOException {
         deleteFiles(new File("F:\\Test"), ".pdf");
     }
- 
+
     public static void deleteFiles(File dir, String extension) throws IOException {
         var list = dir.listFiles();
         if (list != null && list.length > 0) {
@@ -147,14 +147,14 @@ is.readChar(); //returns a single char
             pw.write(1); // no issue  nothing printed after execution
         } catch(IOException e) {
             System.out.println("IOException");
-        } 
+        }
 ```
 
 ### Resource leakage
 
 - To avoid resource leak, either use try-with-resources statement or provide try-finally block.
 - If statements before `bos.close();` throw any exception, then `bos.close();` will not execute and this will result in resource leak.
-  
+
 ```java
 //no try finally or try with resource can cause resource leakage.
    var bos = new BufferedOutputStream(
@@ -176,14 +176,14 @@ is.readChar(); //returns a single char
             }
   } finally {}
 //solution
-	//void write​(byte[] b, int off, int len)	Writes len bytes from the specified byte array starting at offset off to this file output stream.
- fos.write(arr, 0, res);  
+        //void write​(byte[] b, int off, int len)        Writes len bytes from the specified byte array starting at offset off to this file output stream.
+ fos.write(arr, 0, res);
 ```
 
 ## Java I/O:Serialization
 
 - java.io.Serializable is a marker interface and hence classes which implement this interface are not required to implement any methods for serialization to work.
-- Only 4 methods are used to serialize/de-serialize objects: Object readObject(ObjectInputStream ois), void writeObject(ObjectOutputStream oos), Object writeReplace() & Object readResolve(). 
+- Only 4 methods are used to serialize/de-serialize objects: Object readObject(ObjectInputStream ois), void writeObject(ObjectOutputStream oos), Object writeReplace() & Object readResolve().
 - To write and read object a class must implement either Serializable or Externalizable, other wise throws runtime Exception.
 - State of transient and static fields are not persisted.
 - While de-serializing, transient fields are initialized to default values (null for reference type and respective Zeros for primitive types) and static fields refer to current value. (e.g) If a static counter is increment after writing to the object, while reading the object counter = 0, and then the subsequent increment are added and curr value is presented.
@@ -193,36 +193,36 @@ is.readChar(); //returns a single char
 class Person {
     private String name;
     private int age;
- 
+
     public Person(){}
- 
+
     public Person(String name, int age) {
         this.name = name;
         this.age = age;
     }
- 
+
     public String getName() {
         return name;
     }
- 
+
     public int getAge() {
         return age;
     }
 }
- 
+
 class Student extends Person implements Serializable {
     private String course;
- 
+
     public Student(String name, int age, String course) {
         super(name, age);
         this.course = course;
     }
- 
+
     public String getCourse() {
         return course;
     }
 }
- 
+
 public class Test {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         var stud = new Student("Aafia", 24, "Chemistry");
@@ -230,7 +230,7 @@ public class Test {
              var ois = new ObjectInputStream(new FileInputStream("F:\\stud.ser")))
         {
             oos.writeObject(stud);
- 
+
             var s = (Student) ois.readObject();
             System.out.printf("%s, %d, %s", s.getName(), s.getAge(), s.getCourse()); //prints null, 0, Chemistry
         }
@@ -242,26 +242,26 @@ public class Test {
 ### ObjectOutputStream and ObjectInputStream
 
 - **ObjectStreamField[] must be declared with private static final, other RuntimeException is thrown.**
-- 
+-
 
 ```java
 import java.io.*;
- 
+
 class Product implements Serializable {
     int i = 100;
     private static final ObjectStreamField[] serialPersistentFields = {
         new ObjectStreamField("name", String.class),
         new ObjectStreamField("geners", String[].class)
     };
-	
+
     private void writeObject(ObjectOutputStream s) throws IOException {
         ObjectOutputStream.PutField fields = s.putFields();
         fields.put("name", "BOOK");
         fields.put("geners", new String [] {"Fiction", "Mystery", "Thriller"});
- 
+
         s.writeFields();
     }
- 
+
     private void readObject(ObjectInputStream s)
                     throws IOException, ClassNotFoundException {
         ObjectInputStream.GetField fields = s.readFields();
@@ -269,7 +269,7 @@ class Product implements Serializable {
         System.out.println(((String[])fields.get("geners", new String[]{"F", "M", "T"}))[1]);
     }
 }
- 
+
 public class Test {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         var product = new Product();
@@ -277,7 +277,7 @@ public class Test {
              var ois = new ObjectInputStream(new FileInputStream("J:\\product.ser")))
         {
             oos.writeObject(product);
- 
+
             var s = (Product)ois.readObject();
             System.out.println(s.i);
         }
@@ -316,3 +316,153 @@ String, StringBuilder and ArrayList also implement Serializable but Object class
 
 Instance variable object refers to an instance of un-named sub class of Object class, which means to an instance of anonymous inner class, which is not Serializable.  Any non implementing Serializable classes when trying to do deserializable cause RuntimeException.
 </p>
+
+## java.nio.file API:Path & Paths
+
+### Path & Paths
+
+- toRealPath() returns the path of an existing file. It returns the path after normalizing. Can throw IOException (checked) exception.
+- toAbsolutePath() method doesn't care if given path elements are physically available or not. It just returns the absolute path.
+- Paths.get("Book.java"); represents a relative path. This means relative to current directory. Suppose the current directory is "C:\classes" then calling `var file = Paths.get("Book.java")`, file.toAbsolutePath()-> c:\classes\Book.java
+- path.subpath(int beginIndex, int endIndex) throws IllegalArgumentException if 'beginIndex >= No. of path elements', 'endIndex > No. of path elements' and 'endIndex <= beginIndex'.
+- Path.normalize() It removes all the redundant name elements, and the method doesn't make any changes to the Path object referred by reference variable 'path'.
+- toPath() method of File class returns a Path object.
+- path1.relativize(path2) both the path should be of same type. Either relative or absolute.
+- 
+    
+```java
+//Paths.get and file.toAbsolutePath and file.toRealPath
+ import java.nio.file.Paths;
+  var file = Paths.get("F:\\A\\.\\B\\C\\D\\..\\Book.java");
+  sout(file.toAbsolutePath()); // Prints 'F:\A\B\C\Book.java' exists on the file system, hence no exception.
+try {
+ sout(file.toRealPath()); // Prints 'F:\A\B\C\Book.java' exists on the file system, hence no exception.
+ } catch (IOException exception) {
+ }
+ //file.resolve and file.resolveSibiling
+    var file1 = Paths.get("F:\\A\\B\\C");
+    var file2 = Paths.get("Book.java");
+    System.out.println(file1.resolve(file2)); //'F:\A\B\C\Book.java'.
+    //Parent path of file1 is 'F:\A\B\' and hence
+    System.out.println(file1.resolveSibling(file2)); // 'F:\A\B\Book.java'.
+    
+    var file1 = Paths.get("F:\\A\\B");
+    var file2 = Paths.get("F:\\A\\B\\C\\Book.java");
+    //Both refer to  Path object referring to 'F:\A\B\C\Book.java'
+    System.out.println(file1.resolve(file2).equals(file1.resolveSibling(file2))); //true
+ //path.subpath
+    var path = Paths.get("F:\\A\\B\\C\\Book.java");
+    System.out.println(path.subpath(1,4));  //inclusive=1, exclusive=4 B\C\Book.java
+   // Root folder or drive is not considered in count and indexing. In the given path A is at 0th index
+    System.out.println(path.subpath(1,5)); \\IllegalArgumentException
+  
+    var size1 = Files.size(path);
+    var file = new File("F:\\A\\B\\C\\Book.java");
+    var size2 = file.length();
+    System.out.println(size1 == size2); // true
+
+    var path = Paths.get("F:\\A");
+    System.out.println(path.getRoot().equals(path.getParent())); //true
+
+ //Path normalize
+     var path = Paths.get("F:\\A\\.\\B\\C\\D\\..\\Book.java");
+        path.normalize(); //returns a new path
+        System.out.println(path); // 'F:\A\.\B\C\D\..\Book.java' 
+
+ //Path equal false compares the content without normalizing
+  var file1 = new File("F:\\A\\B\\D\\..\\C\\Book.java");
+        var file2 = new File("F:\\A\\B\\.\\.\\C\\Book.java"); // Paths are different
+        System.out.println(file1.toPath().equals(file2.toPath())); // false     
+ //path.relativize
+   var path1 = Paths.get("F:\\A\\B\\C");
+        var path2 = Paths.get("F:\\A");
+        System.out.println(path1.relativize(path2)); // ..\..
+        System.out.println(path2.relativize(path1)); // B\C      
+
+  var path1 = Paths.get("F:", "Other", "Logs");
+        var path2 = Paths.get("..", "..", "Shortcut", "Child.lnk", "Message.txt");
+ 
+        var path3 = path1.resolve(path2).normalize();
+        var path4 = path1.resolveSibling(path2).normalize();
+ 
+        System.out.println(path3.equals(path4));//true
+
+        //path3 = path1.resolve(path2) --> [F:\Other\Logs\..\..\Shortcut\Child.lnk\Message.txt]. 
+        //After normalize: F:\Shortcut\Child.lnk\Message.txt
+        //path4 = path1.resolveSibling(path2) [F:\Other\..\..\Shortcut\Child.lnk\Message.txt].      
+        //After normalize: F:\Shortcut\Child.lnk\Message.txt
+      'Path["A\\..\\B\\.."]'.normalize()   --> "" (emptyPath) -> getNameCount() retuens 1
+        ./.././../../. => ../../.. nameCount is 3 path.getName(0) returns .. length is 2 
+```
+
+### path.normalize
+
+<p>
+According to Javadoc of normalize method:
+
+1. It removes all the redundant name elements.
+
+2. "." represents current directory in Windows/Linux environment, hence it is considered redundant.
+
+3. ".." represents parent directory in Windows/Linux environment. If a ".." is preceded by a non-".." name, then both names are considered redundant. </p>
+   
+```java
+var path = Paths.get("F:", "user", "..", "udayan..");
+path.normalize() // F:\udayan..
+var path = Paths.get("A", "..", "B", "..").normalize(); // returns emptyPath
+var path = Paths.get(".", "..", ".", "..", "..", ".").normalize(); // ../../..
+path.getNameCount(); // 3
+path.getName(0).toString().length();// 2
+var path = Paths.get("F:", "..", ".", "..").normalize(); // Path[F:\\]
+path.getNameCount(); // 0
+```
+
+## java.nio.file.API:Files
+
+
+### Iterating Path
+
+- On Path reference using iterator, forEach, for, for with getNameCount, and getName
+- Given methods doesn't need actual path to physically exist and hence no exception is thrown at Runtime.
+
+```java
+    var path = Paths.get("F:\\A\\B\\C\\Book.java");
+    System.out.printf("%d, %s, %s", path.getNameCount(), path.getFileName(), path.getName(2));
+    //prints 3, C, C
+
+    for(var p : path) {
+        System.out.println(p);
+    }
+
+    for(var i = 0; i < path.getNameCount(); i++) {
+        System.out.println(path.getName(i));
+    }
+
+    var iterator = path.iterator();
+    while(iterator.hasNext()) {
+        System.out.println(iterator.next());
+    }
+
+    path.forEach(System.out::println);
+```
+
+### Files.move
+
+```java
+Files.move(Path source, Path target, CopyOption... options) method throws following exceptions- 
+
+[Copied from the Javadoc]
+
+1. UnsupportedOperationException - if the array contains a copy option that is not supported
+
+2. FileAlreadyExistsException - if the target file exists but cannot be replaced because the REPLACE_EXISTING option is not specified (optional specific exception)
+
+3. DirectoryNotEmptyException - the REPLACE_EXISTING option is specified but the file cannot be replaced because it is a non-empty directory (optional specific exception)
+
+4. AtomicMoveNotSupportedException - if the options array contains the ATOMIC_MOVE option but the file cannot be moved as an atomic file system operation.
+
+5. IOException - if an I/O error occurs
+
+6. SecurityException - In the case of the default provider, and a security manager is installed, the checkWrite method is invoked to check write access to both the source and target file.
+
+```
