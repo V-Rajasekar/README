@@ -419,6 +419,33 @@ path.getNameCount(); // 0
 
 ## java.nio.file.API:Files
 
+### Important methods
+
+- Files.isDirectory(path)
+- Files.getAttribute(path, "isDirectory") others: "creationTime"
+- Files.readAttributes(path, "*").get("creationTime")
+- Files.readAttributes(path, BasicFileAttributes.class).creationTime()
+- Files.createDirectories(Paths.get("F:\\x\\y\\z")) creates all the directory
+- Files.createDirectory(Paths.get("F:\\x\\y\\z")) creates the farthest directory element but all parents must exist.
+- Files.isSameFile(Path path1, Path path2)  returns true if both the paths locate the same physical file.
+- Files.isSameFile(Path path1, Path path2) returns true if both the paths locate the same physical file.
+- 
+```java
+//creating a file under F:\A\B\File.txt
+var path = Paths.get("F:", "A", "B", "File.txt");
+Files.createDirectories(path.getParent());
+Files.createFile(path);
+
+var src = Paths.get("F:\\A\\B\\C\\Book.java");
+var tgt = Paths.get("F:\\A\\B");
+Files.copy(src, tgt); //java.nio.file.FileAlreadyExistsException is thrown at runtime. 
+var tgt = Paths.get("F:\\A\\C\\");
+Files.copy(src, tgt); //
+```
+
+### java.nio.file.Files  
+
+[nio-files Docs](https://docs.oracle.com/javase/8/docs/api/java/nio/file/Files.html)
 
 ### Iterating Path
 
@@ -465,4 +492,34 @@ Files.move(Path source, Path target, CopyOption... options) method throws follow
 
 6. SecurityException - In the case of the default provider, and a security manager is installed, the checkWrite method is invoked to check write access to both the source and target file.
 
+```
+
+### Files.read
+
+```java
+ var src = Paths.get("F:\\A\\B\\Book.java");
+        try(var reader = Files.newBufferedReader(src))
+        {
+            String str = null;
+            while((str = reader.readLine()) != null) {
+                System.out.println(str);
+            }
+        }
+//Compile, execute and print in console
+```
+
+### Files.write
+
+```java
+   new File("C:\\Test\\t1.txt"); //Line n1
+    new FileWriter("C:\\Test\\t2.txt"); //Line n2
+    new PrintWriter("C:\\Test\\t3.txt"); //Line n3
+    new BufferedWriter(new FileWriter(new File("C:\\Test\\t4.txt"))); //Line n4
+    Files.newBufferedWriter(Paths.get("C:", "Test", "t5.txt")); //Line n5
+    Files.newBufferedWriter(Paths.get("C:", "Test", "t6.txt"), StandardOpenOption.CREATE); //Line n6
+    Files.newBufferedWriter(Paths.get("C:", "Test", "t7.txt"), StandardOpenOption.CREATE_NEW); //Line n7
+    Files.newBufferedWriter(Paths.get("C:", "Test", "t8.txt"), StandardOpenOption.WRITE); //Line n8
+ 
+ //Line n1 and n8 no physical file is created
+ //Line n2..n7 creates physical file.
 ```
