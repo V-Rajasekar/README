@@ -42,6 +42,15 @@ alias glst="git stash list "
 alias gpop="git stash pop "
 alias glog="git log --oneline --graph"
 
+// docker commands
+
+alias dcls='docker container ls'
+alias dclsa='docker container ls -a'
+alias dcrm='docker container rm '
+alias dcrma='docker rm $(docker ps -a -q)'
+alias dimgs='docker images'
+
+
 ```  
 ## 1.3. Productivity videos  
 - [unix-command-line-productivity](https://blog.sebastian-daschner.com/entries/unix-command-line-productivity)
