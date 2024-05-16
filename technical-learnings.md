@@ -6,6 +6,8 @@
 - [Loading resource files in spring boot test](#loading-resource-files-in-spring-boot-test)
 - [Logging](#logging)
 - [Utility code to scrap selected lines](#utility-code-to-scrap-selected-lines)
+- [How to use optimistic locking?](#how-to-use-optimistic-locking)
+
 
 ## Implementing the Resilence4j 
 
@@ -123,3 +125,6 @@ import org.springframework.core.io.ResourceLoader;
         }
     }
 ```
+## How to use optimistic locking?
+
+[optimistic-locking-version-property-jpa-hibernate-sample](https://github.com/V-Rajasekar/bax-interview-assignment-master)
