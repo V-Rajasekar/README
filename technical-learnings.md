@@ -9,6 +9,7 @@
 - [How to use optimistic locking?](#how-to-use-optimistic-locking)
 
 
+
 ## Implementing the Resilence4j 
 
 |Title| Reference|
@@ -128,3 +129,14 @@ import org.springframework.core.io.ResourceLoader;
 ## How to use optimistic locking?
 
 [optimistic-locking-version-property-jpa-hibernate-sample](https://github.com/V-Rajasekar/bax-interview-assignment-master)
+
+## Publish Kafka messages via Tools for Apacke Kafka
+- [Tools for Apacke Kafka ](https://marketplace.visualstudio.com/items?itemName=jeppeandersen.vscode-kafka)
+- Create a file kafka-producer.kafka and copy past the below content to publish messages to a topic.
+```yml
+
+PRODUCER todo-topic-message
+topic: todos-topic
+key: BuyMilk
+{ "name" : "Buy milk", "completed" : false }
+```
