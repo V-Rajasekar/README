@@ -17,6 +17,9 @@ Weight of the skills to be covered in the exam
 |Group 4| 15 - 20%| Monitor, trouble shoot, and optimize azure solutions|
 |Group 5| 15 - 20%| Connect to and consume Azure services and 3rd party services|
 
+3. Practise test
+[AZ-204 Practise Assessment test](https://learn.microsoft.com/en-us/credentials/certifications/azure-developer/practice/assessment?assessment-type=practice&assessmentId=35&practice-assessment-type=certification)
+
 # Develop AZ compute solutions
 1.1. Implement containerized solutions
  - Use ACR to build and maintain container artifacts.
