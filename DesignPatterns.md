@@ -1,5 +1,11 @@
 # Solid Principle
 
+- _Single-responsibility principle:_ "There should never be more than one reason for a class to change."[2] In other words, every class should have only one responsibility.
+- _Open–closed principle:_ "Software entities(class, modules, functions) ... should be open for extension, but closed for modification."
+- _Liskov substitution principle:_ "Functions that use pointers or references to base classes must be able to use objects of derived classes without knowing it.
+- _Interface segregation principle:_ "Clients should not be forced to depend upon interfaces that they do not use."
+- _Dependency inversion principle:_ "Depend upon abstractions, [not] concretes."
+
 1. Single Responsibility principle(SRP)
 
 - A class should have one, and only one reason to change.
