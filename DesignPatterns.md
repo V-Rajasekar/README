@@ -175,6 +175,12 @@ Microservices architecture is an approach to developing applications where a sin
 - Used with Retry with timeout
 - Using Resilence4j-springboot
 - [springboot3-resilence4j Getting started](https://resilience4j.readme.io/docs/getting-started-3)
+
+### Retry pattern 
+- Recover transient failure (connection failure)
+- It will increase the response time from normal 20ms to 200-300ms, so use timeout limit config
+- Do not retry 404 notfound (client exceptions), so have filters to do retry or excluse retry
+  
 ```code
 # build.gradle
  implementation group: 'io.github.resilience4j', name: 'resilience4j-spring-boot2', version: '1.7.1'
