@@ -162,11 +162,72 @@ Benefits:
 Microservices architecture is an approach to developing applications where a single application is broken down into a suite of small, autonomous services. Each of these services runs in its own process and communicates with lightweight mechanisms, often through an HTTP resource API1. Here are some key terms related to microservices:
 
 **Data Service:** A data service connects to a data source within the system. It’s not limited to databases alone; any valid source that can be served through a microservice applies. Data services are usually bound by domains defined within the global architecture.
+
 **Business Service** (or Business Process Service): This is a higher level of abstraction that builds on data services. It defines business domains that transcend individual data services, ensuring correctness from a business perspective.
+
 **Translation Service:** An abstraction on a third-party operation that you want to encapsulate under your own facade. It allows you to interact with external services seamlessly.
 **Edge Service:** Responsible for serving data to users and external systems. These services can provide web views, deliver content, and serve mobile devices.
+
 **Platform:** The all-encompassing arena for all service operations across multiple data centers. It includes infrastructure, runtime, ancillary services, networking, storage, and more.
 
+### Circuit breaker
+- To allow the client service to operate normally when the upstream service is not healthy.
+- Used with Retry with timeout
+- Using Resilence4j-springboot
+- [springboot3-resilence4j Getting started](https://resilience4j.readme.io/docs/getting-started-3)
+```code
+# build.gradle
+ implementation group: 'io.github.resilience4j', name: 'resilience4j-spring-boot2', version: '1.7.1'
+
+import io.github.resilience4j.core.IntervalFunction;
+import io.github.resilience4j.retry.RetryConfig;
+
+@Configuration
+class Resilence4jConfig { 
+   @Value("${services.configuration.max-retry}")
+    private int maxAttempts;
+
+    @Value("${services.configuration.initial-interval}")
+    private int initialInterval;
+
+  @Bean(name = "retryConfig")
+    public RetryConfig getRetryConfig() {
+        return RetryConfig.custom()
+                .maxAttempts(maxAttempts)
+                .intervalFunction(IntervalFunction.ofExponentialBackoff(initialInterval, 2))
+                .retryExceptions(CosmosAccessException.class) // Want to retry for CosmosAccessException
+                .build();
+    }
+}
+
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+import io.vavr.CheckedRunnable;
+import io.vavr.control.Try;
+import io.github.resilience4j.retry.Retry;
+import io.github.resilience4j.retry.RetryConfig;
+import io.github.resilience4j.retry.RetryRegistry;
+@Service
+class Resilence4jCaller {
+
+  private final Retry retry;
+
+ @Autowired
+public Resilence4jCaller(@Qualifier("retryConfig") RetryConfig retryConfig){
+ RetryRegistry retryRegistry = RetryRegistry.of(retryConfig);
+        retry = retryRegistry.retry("consEventService", retryConfig);
+        retry.getEventPublisher().onRetry(e -> LOG.info("Retry-operation for {}, attempt# {}", documentType, e.getNumberOfRetryAttempts()));
+        retry.getEventPublisher().onSuccess(e -> LOG.info("Retry-operation successful, for {}", documentType));
+        retry.getEventPublisher().onError(e -> LOG.error("Retry-operation failed, for {}", documentType));
+}
+
+  public void saveWithRetry(OpsConsignment opsConsignment) {
+        CheckedRunnable saveRunnable = () -> repo.saveConsignment(consignment);
+        CheckedRunnable save = Retry.decorateCheckedRunnable(retry, saveRunnable);
+        Try.run(save::run);
+        LOG.debug("{} details for {} saved", documentType, opsConsignment);
+    }
+```
 ### What Is Cloud Native?
 
 **Architectural Style:** Cloud native is an architectural style, not a specific problem-solving pattern.
