@@ -7,8 +7,7 @@
 - [Logging](#logging)
 - [Utility code to scrap selected lines](#utility-code-to-scrap-selected-lines)
 - [How to use optimistic locking?](#how-to-use-optimistic-locking)
-
-
+- [SQL Fundamentals](#SQL-Fundamentals)
 
 ## Implementing the Resilence4j 
 
@@ -140,3 +139,5 @@ topic: todos-topic
 key: BuyMilk
 { "name" : "Buy milk", "completed" : false }
 ```
+## SQL Fundamentals
+- [SQL Fundamentals notes and Slides](https://github.com/thomasnield/oreilly_sql_fundamentals_for_data/tree/master/notes_and_slides)
