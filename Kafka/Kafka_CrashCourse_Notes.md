@@ -285,17 +285,27 @@ kafka-run-class.bat kafka.tools.DumpLogSegments --deep-iteration --files /tmp/ka
 </p>
 </details>
 
+# Apache Kafka
+<details><summary>Apache Kafka</summary>
+</details>  
 # Kafka Topic and Partitions
-<details><summary>Kafka Topic</summary>
-<p>
+<details><summary>Kafka Topic, Partitions, Offset</summary>
+
 - Kafka Topic is an entity in Kafka broker
-- A Kafka broker can have one or more kafka topics
+- A Kafka broker can have as many topics as it can
+- Topics are split in partition(e.g max 100 partitions)
+- Support any kind of message format(JSON, AVRO, txt, binary)
+- Kafka topics are immutable: once data is written to a partition, it cannot be changed(immutability).
+- The default data retention period is 1 week
+- Order of the message is guaranted within the partition
+- Data is assigned randomly to a partition unless a key is provided
 - Kafka producer and consumer uses topic to publish and consume messages from a topic
+- The Offset of the partition is keep increment as and when the messages are coming to partition, the offset 3 in partition 0 is different from in partition 1
 - An topic name is used to publish and consume message from a topic
 - Consumer polls the broker using topic name to consume message at a regular interval
 - Once publisher publish the message using topic name the message resides in topic and consumer polls continueously for new message using the topic name.
 - Eventhough the message is read by the consumer the message still resides inside the topic depending on the retention period.
-</p>
+
 </details>
 <details><summary>Partition</summary>
 
@@ -310,7 +320,15 @@ an offset is created once an message/record is published in a topic.
 - All the records are persisted in a commit log in the file system where kafka is installed. its a distributed log file.
 
 </details>
-
+<details>
+  <summary>Producer</summary>
+  - Producer write data to topics parition
+  - Producer knows to which partition  to write to (and which kafka broker has it)
+  - Incase of Kafka failure, producers will automatically recovery
+  - If key==null data is sent round robin(i.e) Partition 0, and 1
+  - If key != null, then all the msg for that key are sent to the same partition(hashing)
+  - A key typically   sent if you need message ordering for a specific field (ex: consignment id)
+</details>
 <details><summary>Consumer Offsets</summary>
 
 - Consumer have three options to read
