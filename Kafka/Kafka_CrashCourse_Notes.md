@@ -288,7 +288,6 @@ kafka-run-class.bat kafka.tools.DumpLogSegments --deep-iteration --files /tmp/ka
 # Apache Kafka
 <details><summary>Apache Kafka</summary>
 </details>  
-# Kafka Topic and Partitions
 <details><summary>Kafka Topic, Partitions, Offset</summary>
 
 - Kafka Topic is an entity in Kafka broker
@@ -308,26 +307,49 @@ kafka-run-class.bat kafka.tools.DumpLogSegments --deep-iteration --files /tmp/ka
 
 </details>
 <details><summary>Partition</summary>
-
-- Partition is where the message lives inside the topic
-- Each topic will be created with 1 or more paritions
-- The paritions have significant effect on scaleable message consumptions.
-- Each parition is an ordered, immutable sequence of records
-- Each record is assgined a sequential number called **offset**
-an offset is created once an message/record is published in a topic.
-- Each partition is independent of each other.
-- Ordering is guaranteed only at the partition level. if you usecase if you would like publish and read record at certain order then you have to publish the record in the same paritions.
-- All the records are persisted in a commit log in the file system where kafka is installed. its a distributed log file.
-
+  
+  - Partition is where the message lives inside the topic
+  - Each topic will be created with 1 or more paritions
+  - The paritions have significant effect on scaleable message consumptions.
+  - Each parition is an ordered, immutable sequence of records
+  - Each record is assgined a sequential number called **offset**
+  an offset is created once an message/record is published in a topic.
+  - Each partition is independent of each other.
+  - Ordering is guaranteed only at the partition level. if you usecase if you would like publish and read record at certain order then you have to publish the record in the same paritions.
+  - All the records are persisted in a commit log in the file system where kafka is installed. its a distributed log file.
 </details>
-<details>
-  <summary>Producer</summary>
+
+<details><summary>Producer</summary>
+  
   - Producer write data to topics parition
   - Producer knows to which partition  to write to (and which kafka broker has it)
   - Incase of Kafka failure, producers will automatically recovery
   - If key==null data is sent round robin(i.e) Partition 0, and 1
   - If key != null, then all the msg for that key are sent to the same partition(hashing)
   - A key typically   sent if you need message ordering for a specific field (ex: consignment id)
+</details>
+<details>
+  <summary>Kafka Messages anatomy </summary>
+
+  - key-binary (can be null)
+  - value-binary (can be null)
+  - Compression type (GZIP)
+  - Headers (optional)
+  - Parition + Offset
+  - Timestamp
+</details>
+<details>
+  <summary>Kafka Message Serializer</summary>
+   -  Kafka only accept bytes as input from producer and sents bytes out as an output to consumer
+   -  Kafka has key and value serializer to transform the object into bytes
+   -  keys are hashed using **murmur2 algorithm**
+</details>
+<details>
+  <summary>Consumer</summary>
+
+  - Consumers read data from a topic (identified by name) - pull model
+  - A consumer can read data from more than one partition if partitions > consumer instance, in this case the order of the      message isn't guaranteed.
+  - Consumer deserialization indicates how to transform the byte to Objects/data
 </details>
 <details><summary>Consumer Offsets</summary>
 
@@ -351,6 +373,18 @@ an offset is created once an message/record is published in a topic.
   - To list kafka consumer
   > ./kafka-consumer-groups.sh --bootstrap-server localhost:9092 --list
 </details>
+<details><summary>zookeeper</summary>
+  
+  - Zookeeper manages brokers (keeps a list of them)
+  - Zookeeper helps in performing leader election for partitions, when a broker goes down in the cluster.
+  - Zookeeper send notifications to Kafka incase of changes like (e.g new topics, broker dies, broker comes up, delete 
+    topics e.t.c)
+  - Kafka 2.x can't work without running zookeeper
+  - Kafka 3.x can work without zookeeper (KIP 500) - Using Kafka Raft instead
+  - Kafka 4.x will not have zookeeper
+  - Zookeeper does NOT store consumer offset with Kafka > v0.10
+</details>
+
 <details><summary>Commit Log and Retention Policy</summary>
  
  - *Commit Log*
@@ -382,15 +416,15 @@ an offset is created once an message/record is published in a topic.
 ## How Topics are distributed ?
 Let consider a Kafka cluster with 3 kafka brokers.Out of the 3 broker one of the broker as a controller. When the create topic command is issued to zookeeper it redirect the command to the controller.
 
-The role of the controller(broker) is to distribute the paritions evenly to the available brokers (e.g) parition of 3 then broker-1: Partition-0, broker-2: Partition-1, broker-3: Partition-2
+The role of the controller(broker) is to distribute the partitions evenly to the available brokers (e.g) partition of 3 then broker-1: Partition-0, broker-2: Partition-1, broker-3: Partition-2
 broker-1 is the leader of the parition-0 and the messages in the parition-0 are replicated in the other brokers as well.
 
 ## Kafka Producer
 Producer has a layer called partitioner which takes care of determining which partition the message is going to go. Producer send the message to partitioner before the message goes to topic and paritioner resolves in which partition the message should go.
 
 ## Kafka Consumer
-When the poll loop is executed the request goes to all the partition leaders and retrieved the record from them and the retrieved records are handed to consumer to process.
-The client call goes only to the partition leaders. If there are one or more instances of the consumer with the same consumer group id then the partition are distributed for scalable purpose so here partition-0, partition-1 and partition-2 are distributed to 3 kafka consumer if there are 3 instances of kafka consumers with same consumer group id.
+When the poll loop is executed the request goes to all the partition leaders and retrieves the record from them and the retrieved records are handed to consumer to process.
+The client call goes only to the partition leaders. If there are one or more instances of the consumer with the same consumer group id then the partition are distributed for scalable purpose so here partition-0, partition-1 and partition-2 are distributed to 3 Kafka consumer if there are 3 instances of Kafka consumers with the same consumer group id.
 
 ## Summary
 - Parition leaders are assigned during the topic creation
