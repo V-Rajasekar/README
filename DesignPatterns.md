@@ -157,6 +157,84 @@ Benefits:
 2. **Flexibility:** Easily switch or add new message senders without modifying the high-level module. For example, you can add a PushNotificationSender by simply implementing the MessageSender interface and configuring it in Spring.
 3. **Testability:** Easier to test high-level modules using mocks or stubs of the MessageSender interface.
 
+<details><summary>Singleton Pattern</summary>
+  
+  - A Singleton pattern ensures that a class has only one instance and provides a global point of access to the instance.
+  - Several ways to implement a thread-safe Singleton Pattern in Java.
+     - Eager Initialization
+     - Synchronized Method
+     - Double-Checked Locking
+     - Bill Pugh Singleton Design
+  
+  ```java
+    public class EagerSingleton {
+    // Instance is created at the time of class loading
+    private static final EagerSingleton INSTANCE = new EagerSingleton();
+
+    // Private constructor to prevent instantiation
+    private EagerSingleton() { }
+
+    public static EagerSingleton getInstance() {
+        return INSTANCE;
+    }
+  }
+
+ //It has performance drawback due to synchronization overhead.
+  public class SynchronizedSingleton {
+    private static SynchronizedSingleton instance;
+
+    // Private constructor to prevent instantiation
+    private SynchronizedSingleton() { }
+
+    // Synchronized method to control simultaneous access
+    public static synchronized SynchronizedSingleton getInstance() {
+        if (instance == null) {
+            instance = new SynchronizedSingleton();
+        }
+        return instance;
+    }
+}
+
+public class DoubleCheckedLockingSingleton {
+    private static volatile DoubleCheckedLockingSingleton instance;
+
+    // Private constructor to prevent instantiation
+    private DoubleCheckedLockingSingleton() { }
+
+    public static DoubleCheckedLockingSingleton getInstance() {
+        if (instance == null) {
+            synchronized (DoubleCheckedLockingSingleton.class) {
+                if (instance == null) {
+                    instance = new DoubleCheckedLockingSingleton();
+                }
+            }
+        }
+        return instance;
+    }
+}
+
+//The Instance is created inside the static inner helper class to hold the Singleton instance. The instance is created
+//when the static inner class is loaded, ensuring lazy loading and thread safety.
+public class BillPughSingleton {
+    // Private constructor to prevent instantiation
+    private BillPughSingleton() { }
+
+    // Static inner class - inner classes are not loaded until they are referenced
+    private static class SingletonHelper {
+        // Inner class holds the singleton instance
+        private static final BillPughSingleton INSTANCE = new BillPughSingleton();
+    }
+
+    public static BillPughSingleton getInstance() {
+        return SingletonHelper.INSTANCE;
+    }
+}
+
+
+
+```
+</details>
+
 ## Microservices pattern 
 
 Microservices architecture is an approach to developing applications where a single application is broken down into a suite of small, autonomous services. Each of these services runs in its own process and communicates with lightweight mechanisms, often through an HTTP resource API1. Here are some key terms related to microservices:
