@@ -130,8 +130,11 @@ Lambda expressions provide a concise and expressive way to represent simple beha
 - Comparing in descending order
 
    ```java
-    Comparator<String> strings = (s1, s2) -> s2.compareTo(s1); //ascending
-    Comparator<String> moreStrings = (s1, s2) -> - s1.compareTo(s2); //descending
+   List<String> fruits = Arrays.asList(new String[]{"mango", "banana", "apple"});
+    Collections.sort(fruits, (s1, s2) -> s1.compareTo(s2));// fruits ==> [apple, banana, mango]
+       or
+    Collections.sort(fruits, String::compareTo);
+    Comparator<String> moreStrings = (s1, s2) -> - s2.compareTo(s1); //descending
    ```
 
 - Local Variables inside the Lambda Body

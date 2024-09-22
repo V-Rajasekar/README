@@ -1,5 +1,11 @@
 # Solid Principle
 
+- _Single-responsibility principle:_ "There should never be more than one reason for a class to change."[2] In other words, every class should have only one responsibility.
+- _Open–closed principle:_ "Software entities(class, modules, functions) ... should be open for extension, but closed for modification."
+- _Liskov substitution principle:_ "Functions that use pointers or references to base classes must be able to use objects of derived classes without knowing it.
+- _Interface segregation principle:_ "Clients should not be forced to depend upon interfaces that they do not use."
+- _Dependency inversion principle:_ "Depend upon abstractions, [not] concretes."
+
 1. Single Responsibility principle(SRP)
 
 - A class should have one, and only one reason to change.
@@ -151,16 +157,161 @@ Benefits:
 2. **Flexibility:** Easily switch or add new message senders without modifying the high-level module. For example, you can add a PushNotificationSender by simply implementing the MessageSender interface and configuring it in Spring.
 3. **Testability:** Easier to test high-level modules using mocks or stubs of the MessageSender interface.
 
+<details><summary>Singleton Pattern</summary>
+  
+  - A Singleton pattern ensures that a class has only one instance and provides a global point of access to the instance.
+  - Several ways to implement a thread-safe Singleton Pattern in Java.
+     - Eager Initialization
+     - Synchronized Method
+     - Double-Checked Locking
+     - Bill Pugh Singleton Design
+  
+  ```java
+    public class EagerSingleton {
+    // Instance is created at the time of class loading
+    private static final EagerSingleton INSTANCE = new EagerSingleton();
+
+    // Private constructor to prevent instantiation
+    private EagerSingleton() { }
+
+    public static EagerSingleton getInstance() {
+        return INSTANCE;
+    }
+  }
+
+ //It has performance drawback due to synchronization overhead.
+  public class SynchronizedSingleton {
+    private static SynchronizedSingleton instance;
+
+    // Private constructor to prevent instantiation
+    private SynchronizedSingleton() { }
+
+    // Synchronized method to control simultaneous access
+    public static synchronized SynchronizedSingleton getInstance() {
+        if (instance == null) {
+            instance = new SynchronizedSingleton();
+        }
+        return instance;
+    }
+}
+
+public class DoubleCheckedLockingSingleton {
+    private static volatile DoubleCheckedLockingSingleton instance;
+
+    // Private constructor to prevent instantiation
+    private DoubleCheckedLockingSingleton() { }
+
+    public static DoubleCheckedLockingSingleton getInstance() {
+        if (instance == null) {
+            synchronized (DoubleCheckedLockingSingleton.class) {
+                if (instance == null) {
+                    instance = new DoubleCheckedLockingSingleton();
+                }
+            }
+        }
+        return instance;
+    }
+}
+
+//The Instance is created inside the static inner helper class to hold the Singleton instance. The instance is created
+//when the static inner class is loaded, ensuring lazy loading and thread safety.
+public class BillPughSingleton {
+    // Private constructor to prevent instantiation
+    private BillPughSingleton() { }
+
+    // Static inner class - inner classes are not loaded until they are referenced
+    private static class SingletonHelper {
+        // Inner class holds the singleton instance
+        private static final BillPughSingleton INSTANCE = new BillPughSingleton();
+    }
+
+    public static BillPughSingleton getInstance() {
+        return SingletonHelper.INSTANCE;
+    }
+}
+
+
+
+```
+</details>
+
 ## Microservices pattern 
 
 Microservices architecture is an approach to developing applications where a single application is broken down into a suite of small, autonomous services. Each of these services runs in its own process and communicates with lightweight mechanisms, often through an HTTP resource API1. Here are some key terms related to microservices:
 
 **Data Service:** A data service connects to a data source within the system. It’s not limited to databases alone; any valid source that can be served through a microservice applies. Data services are usually bound by domains defined within the global architecture.
+
 **Business Service** (or Business Process Service): This is a higher level of abstraction that builds on data services. It defines business domains that transcend individual data services, ensuring correctness from a business perspective.
+
 **Translation Service:** An abstraction on a third-party operation that you want to encapsulate under your own facade. It allows you to interact with external services seamlessly.
 **Edge Service:** Responsible for serving data to users and external systems. These services can provide web views, deliver content, and serve mobile devices.
+
 **Platform:** The all-encompassing arena for all service operations across multiple data centers. It includes infrastructure, runtime, ancillary services, networking, storage, and more.
 
+### Circuit breaker
+- To allow the client service to operate normally when the upstream service is not healthy.
+- Used with Retry with timeout
+- Using Resilence4j-springboot
+- [springboot3-resilence4j Getting started](https://resilience4j.readme.io/docs/getting-started-3)
+
+### Retry pattern 
+- Recover transient failure (connection failure)
+- It will increase the response time from normal 20ms to 200-300ms, so use timeout limit config
+- Do not retry 404 notfound (client exceptions), so have filters to do retry or excluse retry
+  
+```code
+# build.gradle
+ implementation group: 'io.github.resilience4j', name: 'resilience4j-spring-boot2', version: '1.7.1'
+
+import io.github.resilience4j.core.IntervalFunction;
+import io.github.resilience4j.retry.RetryConfig;
+
+@Configuration
+class Resilence4jConfig { 
+   @Value("${services.configuration.max-retry}")
+    private int maxAttempts;
+
+    @Value("${services.configuration.initial-interval}")
+    private int initialInterval;
+
+  @Bean(name = "retryConfig")
+    public RetryConfig getRetryConfig() {
+        return RetryConfig.custom()
+                .maxAttempts(maxAttempts)
+                .intervalFunction(IntervalFunction.ofExponentialBackoff(initialInterval, 2))
+                .retryExceptions(CosmosAccessException.class) // Want to retry for CosmosAccessException
+                .build();
+    }
+}
+
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+import io.vavr.CheckedRunnable;
+import io.vavr.control.Try;
+import io.github.resilience4j.retry.Retry;
+import io.github.resilience4j.retry.RetryConfig;
+import io.github.resilience4j.retry.RetryRegistry;
+@Service
+class Resilence4jCaller {
+
+  private final Retry retry;
+
+ @Autowired
+public Resilence4jCaller(@Qualifier("retryConfig") RetryConfig retryConfig){
+ RetryRegistry retryRegistry = RetryRegistry.of(retryConfig);
+        retry = retryRegistry.retry("consEventService", retryConfig);
+        retry.getEventPublisher().onRetry(e -> LOG.info("Retry-operation for {}, attempt# {}", documentType, e.getNumberOfRetryAttempts()));
+        retry.getEventPublisher().onSuccess(e -> LOG.info("Retry-operation successful, for {}", documentType));
+        retry.getEventPublisher().onError(e -> LOG.error("Retry-operation failed, for {}", documentType));
+}
+
+  public void saveWithRetry(OpsConsignment opsConsignment) {
+        CheckedRunnable saveRunnable = () -> repo.saveConsignment(consignment);
+        CheckedRunnable save = Retry.decorateCheckedRunnable(retry, saveRunnable);
+        Try.run(save::run);
+        LOG.debug("{} details for {} saved", documentType, opsConsignment);
+    }
+```
 ### What Is Cloud Native?
 
 **Architectural Style:** Cloud native is an architectural style, not a specific problem-solving pattern.
