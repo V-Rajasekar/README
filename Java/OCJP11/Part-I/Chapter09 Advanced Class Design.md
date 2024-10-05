@@ -1,4 +1,12 @@
 # Chapter 9 Advanced Class Design
+- [Chapter 9 Advanced Class Design](#chapter-9-advanced-class-design)
+    - [Reviewing Interface Rules](#reviewing-interface-rules)
+    - [Abstract Interface Method Rules](#abstract-interface-method-rules)
+    - [Interface Variables Rules](#interface-variables-rules)
+    - [Introducing Inner Classes](#introducing-inner-classes)
+    - [Using a Member Inner Class](#using-a-member-inner-class)
+    - [Review Questions:](#review-questions)
+
 - Abstract class and methods
   * abstract keyword can be place before or after the modifier in methods.
   * `abstract public int claw(); or public abstract in claw();`
