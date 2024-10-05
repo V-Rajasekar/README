@@ -208,6 +208,7 @@ Dependency Range for Junit will be specified as: JUnit 3.8 to JUnit 4.0
 What does the dependency range [2.0.7, 2.0.9) mean? 2.0.7,2.0.8 <br>
 Inclusive quantifiers boundary range is defined as[,3.8] <=3.8
 
+
 ## Maven Dependence Scope
 
 There are 6 scope values you can provide: `compile, runtime, provided, test, system, and import`.
@@ -265,6 +266,27 @@ A custom actions can be included in the build process with the help of Maven Plu
 ```yml
  archetype:generate 
  above is nothing but <pluginId>:<goalId>
+```
+
+- Sample plugin snippet
+
+```xml
+<plugin>
+ <groupId>
+ <artifactId>
+ <version>
+ <configuration>
+ </configuration>
+ <executions>
+  <execution>
+        <id></id>
+  	<phase></phase>
+ 	<goals>
+		<goal></goal>
+	</goals>
+  </execution>
+ </executions>	
+</plugin> 
 ```
 
 There are two types of plugins
