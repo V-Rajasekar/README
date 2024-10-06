@@ -1,4 +1,29 @@
 # Reactive Programming
+- [Reactive Programming](#reactive-programming)
+  - [Reactive App Architecture.](#reactive-app-architecture)
+  - [Reactive Streams](#reactive-streams)
+  - [Reactive Success Scenario](#reactive-success-scenario)
+  - [Reactive failure Scenario.](#reactive-failure-scenario)
+  - [Project Reactor](#project-reactor)
+  - [To learn how to write reactive programming](#to-learn-how-to-write-reactive-programming)
+  - [Reactor type](#reactor-type)
+  - [Functional Programming in Modern Java](#functional-programming-in-modern-java)
+    - [Imperative code vs Functional code](#imperative-code-vs-functional-code)
+    - [Creating Reactor type](#creating-reactor-type)
+    - [consuming Reactor type](#consuming-reactor-type)
+    - [Testing Reactive type using reactor-test library](#testing-reactive-type-using-reactor-test-library)
+    - [Reactive stream event](#reactive-stream-event)
+  - [Transforming Data](#transforming-data)
+    - [filter(condition)](#filtercondition)
+    - [flatMap()](#flatmap)
+    - [flatMapMany() in Mono (Mono to Many transformation)](#flatmapmany-in-mono-mono-to-many-transformation)
+    - [transform()](#transform)
+    - [defaultIfEmpty() or switchIfEmpty()](#defaultifempty-or-switchifempty)
+  - [Introduction to combining reactive stream](#introduction-to-combining-reactive-stream)
+    - [**concat() and concatWith()**](#concat-and-concatwith)
+    - [merge() \& mergeWith()](#merge--mergewith)
+    - [mergeSequential()](#mergesequential)
+    - [zip() and zipWith()](#zip-and-zipwith)
 
 What is Reactive programming? 
 - Reactive programming is a new programming paradigm. 
@@ -140,12 +165,6 @@ end non-blocking communication between the client and service
 ```
 
 
-## Project Setup
-
-1. Checkout the project from [reactive-spring-webflux.git](https://github.com/RajasekarVadivelu/reactive-spring-webflux.git)
-2. Import in IntellJ
-3. Enable Lombok (Settings->Annotation processor)
-
 ### Creating Reactor type
 
 - `Flux.fromIterable(List<T>)`
@@ -219,8 +238,7 @@ by expressing expectations about the events that will happen upon subscription.
 - filter(<Lambda expression>) 
 - `map()`: tranform from one form to another form  1-1 (T to V)
 - `flatMap`: tranform 1-N (T to *),  Async in nature so (order is not preserved). Useful to flatten the obj that contains another Mono/Flux
-- `concatMap`: Work Similar to flatMap. ConcatMap operator preserves the ordering sequence of the reactor streams. By 
-  take more time compared to the flatMap
+- `concatMap`: Work Similar to flatMap. ConcatMap operator preserves the ordering sequence of the reactor streams. But it take more time compared to the flatMap
 - `flatMapSequential`. Fill fulls the drawbacks of flatMap and concatMap (i.e) (order is preserved with no execution 
   time lag).
 
@@ -258,23 +276,39 @@ by expressing expectations about the events that will happen upon subscription.
 
 - Use it when the transformation returns a Reactive Type (Flux or Mono)
 - Returns a `Flux<Type>`
-- Use flatMap if the transformation involves making a REST API call or any kind.
+
+
+- flatMap in Mono
+  - Use it when the transformation returns a Mono
+  - Returns a Mono<T>
+  - Use flatMap if the transformation involves making a REST API call or any kind.
   of functionality that can be done async.
-- `Mono FlatMap`
+ 
   ```java
     public Mono<List<String>> nameMono_flatMap(String name) {
         return Mono.just(name)
                 .map(String::toUpperCase)
                 .flatMap(this::splitStringMono).log();
     }
-   
-   Mono<List<String>> splitStringMono(String value) {
-    var charArray = value.split("");
-    return Mono.just(List.of(charArray));
-   }
+    
+    Mono<List<String>> splitStringMono(String value) {
+      var charArray = value.split("");
+      return Mono.just(List.of(charArray));
+    }
+
+    @Test
+    void nameMono_flatMap() {
+       var call = testObj.nameMono_flatMap("Alex")
+       StepVerifier.create(call)
+                   .expectNext(List.of("A", "L", "E", "X"))// Returning Mono<List<String>>
+                   .verifyComplete(); 
+    }
   ```  
+
 ### flatMapMany() in Mono (Mono to Many transformation)
-    - **When Mono transformation returns a Flux type then use flatMapMany()**
+
+  - **When Mono transformation returns a Flux type then use flatMapMany()**
+  
   ```java
     public Flux<String> nameMono_flatMapMany(String name) {
         return Mono.just(name)
@@ -284,58 +318,63 @@ by expressing expectations about the events that will happen upon subscription.
 
       void nameMono_flatMapMany() {
         Flux<String> input = fluxAndMonoGeneratorService.nameMono_flatMapMany("alex");
-        StepVerifier.create(input).expectNext("A","L","E","X")
+        StepVerifier.create(input).expectNext("A","L","E","X") // Returning Flux<String>
                 .verifyComplete();
     }
 
   ```
 
 ### transform()
-- Nothing fancy here moving the common functionality to a Functional interface and used it across the project
+
 - Used to transform from one type to another type.
+- Nothing fancy here moving the common functionality to a Functional interface and used it across the project
+
 - Accept **Function Functional interface**
   - Function Functional interface got released as part of Java 8
   - Input publisher - (Mono or Flux)
   - Output publisher - (Mono or Flux)
-  
-You extract the common functionality and assign it to a Function variable like the below one and use transform
-with the function variable. 
+- Useful in common functionality across the project.  
+You extract the common functionality here filterMap and assign it to a Function variable like the below one and use transform with the function variable. 
 
-    ```java
-        public Flux<String> nameFlux_transform() {
-        //Creating a function functional interface
-          Function<Flux<String>, Flux<String>> fluxFunction = name -> name.filter(s -> s.length() > 3)
-                  .map(String::toUpperCase);
-        
-          return Flux.fromIterable(List.of("Alex", "Ben", "Charlie"))
-                  .transform(fluxFunction)
-                 .log();
-      }
-    ```
+  ```java
+      public Flux<String> nameFlux_transform() {
+      //Creating a function functional interface
+        Function<Flux<String>, Flux<String>> filterMap = name -> name.filter(s -> s.length() > 3)
+                .map(String::toUpperCase);
+      
+        return Flux.fromIterable(List.of("Alex", "Ben", "Charlie"))
+                .transform(filterMap)
+                .log();
+    }
+  ```
      
 ### defaultIfEmpty() or switchIfEmpty()
-- It is not mandatory for a datasource to emit data all the time
-- Use defaultIfEmpty() or switchIfEmpty() when no data emit
 
-#### defaultIfEmpty()
-- Returning the raw type like <String>
+- It is not mandatory for a datasource to emit data all the time
+- Use defaultIfEmpty() or switchIfEmpty() operator when no data emit and want to provide default values.
+
+- defaultIfEmpty() accepts the actual type string "default"
+
 ```java   
  
          Flux<String> fluxNames = Flux.fromIterable(List.of("Alex", "Ben", "Chole"))
                 .filter(s -> s.length() > 6)
-                .map(String::toUpperCase)
+                .map(String::toUpperCase) // Returns empty at this pt.
                 .defaultIfEmpty("default") 
                 .log(); 
       //Output default removing defaultIfEmpty will throw error          
 ```
-#### switchIfEmpty()
+
+- switchIfEmpty()
 - Returning the Flux 
 ```java   
    //Creating a function functional interface
-        Function<Flux<String>, Flux<String>> fluxFunction = name -> name.filter(s -> s.length() > length)
+        Function<Flux<String>, Flux<String>> fluxFunction = name -> 
+                name.filter(s -> s.length() > length)
                 .map(String::toUpperCase);
 
         Flux<String> defaultFlux = Flux.just("default").transform(fluxFunction);
+        //"D", "E", "F", "A", "U", "L", "T"
 
         return Flux.fromIterable(List.of("Alex", "Ben", "Charlie"))
                 .transform(fluxFunction)
@@ -343,36 +382,42 @@ with the function variable.
                 .log(); 
 ```
 ## Introduction to combining reactive stream
-`Combining Flux & Mono`
+
+why `Combining Flux & Mono` ?
 
 ### **concat() and concatWith()**
+
 - Used to combine two reactive stream in to one.
+
+
 - Concatenation of Reactive Streams happens in a sequence
     - First one is subscribed first and completes
     - Second one is subscribed after that and then completes
 - **Flux.concat(flux1, flux2)** - static method and available (only) in Flux
-- **flux1.concatWith(flux2)** - Instance method in Flux and Mono
+- **mono1.concatWith(mono2)** - Instance method in Flux and Mono
 - concatWith in mono returns the flux
 - Both of these operators works similarly.
 
 ```java
-var flux1 = Flux.just("A", "B", "C")
-var flux2 = Flux.just("D", "E");
-//Returns A, B, C, D, E
-Flux.concat(flux1, flux2);
-flux1.concatWith(flux2); //Using the instance method
+  var flux1 = Flux.just("A", "B", "C")
+  var flux2 = Flux.just("D", "E");
+  //Returns A, B, C, D, E
+  Flux.concat(flux1, flux2);
+  flux1.concatWith(flux2); //Using the instance method
 
-var mono1 = Mono.just("A")
-var mono2 = Mono.just("D");
-//Returns A, B, C, D, E
-//Returns Flux.       
-Flux<String> alphas = mono1.concatWith(mono2);
+  var mono1 = Mono.just("A")
+  var mono2 = Mono.just("D");
+  //Returns A, B, C, D, E
+  //Returns Flux.       
+  Flux<String> alphas = mono1.concatWith(mono2);
 ```
 
 ### merge() & mergeWith()
+
 - Used to combine two publisher(Mono, Flux) together
   - _Flux.merge(Flux1, Flux2)_ is  a static method in Flux
   - _mono1.mergeWith(mono2)_ is an instance method in Flux and Mono
+  
 >Difference between concat and merge. Unlike concat(sequentially) merge happens in interleaved fashion, both the 
 > publisher and subscribed eagerly whereas concat() subscribes to the publishers in a sequence.
 
