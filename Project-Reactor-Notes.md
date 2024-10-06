@@ -418,27 +418,80 @@ why `Combining Flux & Mono` ?
   - _Flux.merge(Flux1, Flux2)_ is  a static method in Flux
   - _mono1.mergeWith(mono2)_ is an instance method in Flux and Mono
   
->Difference between concat and merge. Unlike concat(sequentially) merge happens in interleaved fashion, both the 
-> publisher and subscribed eagerly whereas concat() subscribes to the publishers in a sequence.
+```
+Difference between concat and merge?
+ - concat() subscribes to the Publishers in a sequence.
+ - merge() both the publishers are subscribed at the same time. Publishers are 
+   subscribed eagerly and the merge happens in an interleaved fashion.
+```
+
+  ```java
+     public static final Flux<String> explore_merge() {
+        Flux<String> flux1 = Flux.just("A", "B", "C").delayElements(Duration.ofMillis(100));
+
+        Flux<String> flux2 = Flux.just("D", "E", "F").delayElements(Duration.ofMillis(125));
+        return Flux.merge(flux1, flux2).log();
+        //Using flux instance mergeWith
+        // return flux1.mergeWith(flux2);
+    }
+    //As you can see both the publisher are sub
+      StepVerifier.create(explore_merge())
+                    .expectNext("A", "D", "B", "E", "C", "F")
+                    .verifyComplete();
+
+      public static final Flux<String> explore_mergeWith_mono() {
+        Mono<String> mono1 = Mono.just("A");
+
+        Mono<String> mono2 = Mono.just("B");
+        return mono1.mergeWith(mono2);
+    }
+  // test
+        StepVerifier.create(explore_mergeWith_mono())
+                    .expectNext("A", "B")
+                    .verifyComplete();
+    
+    
+
+  ```
 
 ### mergeSequential()
-- Used to combine two publisher(Mono, Flux) together
+
+- Used to combine two publisher(Mono or Flux) together
 - Static method in Flux Flux.mergeSequential(flux1, flux2)
 - Even though the publishers and subscribed eagerly the merge happens in a sequence.
 
+```java
+    Flux<String> explore_mergeSequentially() {
+        Flux<String> flux1 = Flux.just("A", "B", "C").delayElements(Duration.ofMillis(100));
+
+        Flux<String> flux2 = Flux.just("D", "E", "F").delayElements(Duration.ofMillis(125));
+        return Flux.mergeSequential(flux1, flux2).log();
+    }
+
+    @Test
+    void testExplore_mergeSequentially() {
+        StepVerifier.create(explore_mergeSequentially())
+                    .expectNext("A", "B","C","D",  "E",  "F")
+                    .verifyComplete();
+    }
+
+```
+
 ### zip() and zipWith()
+
 - Zip `Flux.zip():Flux`
-    - Is a static method in Flux
+  
+    - static method that's part of the Flox
     - Can be used to merge up-to 2 to 8 Publishers(Flux or Mono) in to one
 
 - ZipWith `mono1.zipWith(mono2):Mono`
     - This is an instance method that's part of the Flux and Mono
     - Used to merge two Publishers(_mono/flux_) in to one.
-- Publishers are subscribed eagerly
-- Waits for all the publishers involved in the transformation to emit one element.
+    - Publishers are subscribed eagerly
+    - Waits for all the publishers involved in the transformation to emit one element.
     - Continues until one publisher sends an OnComplete event.
 
- ##Zip and ZipWith sample
+ 
 ```java
 
   Flux<String> fluxa = Flux.just("A", "B", "C");
