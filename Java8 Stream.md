@@ -1,8 +1,8 @@
 
 ## Java 8 Stream
 
-#### What is Java Stream ?
-A stream in Java is a sequence of data. A stream pipeline consisits of the operations that run on a stream to produce a result.
+#### What is Java Stream?
+A stream in Java is a sequence of data.A stream pipeline consists of the operations running on a stream to produce results.
 
 ```mermaid
 sequenceDiagram
