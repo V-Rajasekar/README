@@ -1,1 +1,3 @@
 README.iml
+.gradle/*.* 
+.gradle/vcs-1/gc.properties
