@@ -510,3 +510,5 @@ Difference between concat and merge?
 ```
 >Note: ZipWith on Mono returns Mono unlike other operators like concatWith and MergeWith which returns Flux 
 
+[Project Reactor Examples](https://github.com/bradclarke2/Reactor-example-completed/blob/master/src/main/java/io/pivotal/literx/Part03StepVerifier.java)
+[Reactor Playground](https://tech.io/playgrounds/929/reactive-programming-with-reactor-3)
