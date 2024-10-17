@@ -160,9 +160,14 @@ GC was rebuild in Go 1.5 for very low latency.
 
 ##  1.5. Maps
 
-- A map in Go is a unordered collection, every time you iterate the map you get elments in unordered. 
-- TO get elements in ordered you have to hack using slice and sort.strings function
-
+- A map in Go is a unordered collection, every time you iterate the map you get elments in unordered.
+- All key and value must of same type
+- Use to represent collection of related properties
+- Keys are indexed - we can iterate over them
+- Don't need all key at the compile time
+- Its a Reference type when you pass a map as a argument any changes you do on the arg will reflect in the original/source
+- To get elements in ordered you have to hack using slice and sort.strings function
+  
 ```go
 
 import (
