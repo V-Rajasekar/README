@@ -236,6 +236,8 @@ Washington
 1. A struct is a collection of fields.
 2. Its fields are accessed using a dot.
 3. Struct fields can be accessed through a struct pointer.
+4. Values can be of different types
+5. Passing Struct as argument is (Pass by value) use pointers and address to change the value.
 
 ```go
     import "fmt"
