@@ -65,6 +65,7 @@ alias dimgs='docker images'
 
  # 2. Useful extensions
  - [Markdown-editor](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one)
+ - [Intellj Features](https://blog.sebastian-daschner.com/entries/13-lesser-known-intellij-features)
 
 # 3. Useful Plugin Visual Studio
 ```
