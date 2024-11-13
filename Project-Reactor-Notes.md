@@ -15,15 +15,17 @@
     - [Reactive stream event](#reactive-stream-event)
   - [Transforming Data](#transforming-data)
     - [filter(condition)](#filtercondition)
-    - [flatMap()](#flatmap)
-    - [flatMapMany() in Mono (Mono to Many transformation)](#flatmapmany-in-mono-mono-to-many-transformation)
-    - [transform()](#transform)
-    - [defaultIfEmpty() or switchIfEmpty()](#defaultifempty-or-switchifempty)
+    - [flatMap() `tx->Flux/Mono to Flux`](#flatmap-tx-fluxmono-to-flux)
+    - [Difference between map() and flatMap()](#difference-between-map-and-flatmap)
+    - [flatMapMany() in Mono `tx -> Mono to Flux`](#flatmapmany-in-mono-tx---mono-to-flux)
+    - [transform() tx -\> (Flux/Mono) to (Flux/Mono)](#transform-tx---fluxmono-to-fluxmono)
+    - [defaultIfEmpty() `default value` or switchIfEmpty() `alternate publisher`](#defaultifempty-default-value-or-switchifempty-alternate-publisher)
   - [Introduction to combining reactive stream](#introduction-to-combining-reactive-stream)
     - [**concat() and concatWith()**](#concat-and-concatwith)
     - [merge() \& mergeWith()](#merge--mergewith)
     - [mergeSequential()](#mergesequential)
     - [zip() and zipWith()](#zip-and-zipwith)
+  - [Exception in Reactive Stream](#exception-in-reactive-stream)
 
 What is Reactive programming? 
 - Reactive programming is a new programming paradigm. 
@@ -72,9 +74,9 @@ Publisher represents the DataSource
 • RemoteService etc.,
 ```
 
-
 **Subscriber**
-```
+
+```java
 public interface Subscriber<T> {
 
     public void onSubscribe(Subscription s);
@@ -84,11 +86,12 @@ public interface Subscriber<T> {
     public void onComplete();
 }
 ```
+
 **Subscription**
 ```kotlin
 public interface Subscription {
-    public void request(long n);
-public void cancel();
+  public void request(long n);
+  public void cancel();
 }
 Subscription is the one which connects the app and 
 ```
@@ -128,11 +131,11 @@ end non-blocking communication between the client and service
 
 ## To learn how to write reactive programming
 **Flux & Mono**
-- Flux and Mono is a reactive type that impl Ractive Streams specification
+- Flux and Mono is a reactive type that impl Reactive Streams specification (Publisher, Subscriber, Subscription and Processor)
 - Flux and Mono is part of the **reactor-core** module.
 - Flux is a reactive type to represent a list 0 to N elements.
 - Mono is a reactive type to represent  0 to 1 element.
-- 
+  
 
 - [Project Reactor Reference Guide](https://projectreactor.io/docs/core/release/reference/)
     - covers Mono and Flux creation
@@ -272,11 +275,11 @@ by expressing expectations about the events that will happen upon subscription.
 ```
 
 
-### flatMap()
+### flatMap() `tx->Flux/Mono to Flux`
 
 - Use it when the transformation returns a Reactive Type (Flux or Mono)
 - Returns a `Flux<Type>`
-
+- flatMap is async operation any delay will see an unordered output.
 
 - flatMap in Mono
   - Use it when the transformation returns a Mono
@@ -305,7 +308,18 @@ by expressing expectations about the events that will happen upon subscription.
     }
   ```  
 
-### flatMapMany() in Mono (Mono to Many transformation)
+### Difference between map() and flatMap()
+
+   map() | flatMap()
+   ----   |  ----
+   one to one transformation | one to N transformation
+   Does the simple transformation from T to V | More than transformation, subscribes to Flux or Mono that's part of the transformation and then flattens it and send it downstream
+   Used for simple synchronous transformation | Use for asynchronous transformation
+   Does not support transformation that return Publisher(mono, Flux) | Use it with transformation that returns Publisher.
+
+
+
+### flatMapMany() in Mono `tx -> Mono to Flux`
 
   - **When Mono transformation returns a Flux type then use flatMapMany()**
   
@@ -324,7 +338,7 @@ by expressing expectations about the events that will happen upon subscription.
 
   ```
 
-### transform()
+### transform() tx -> (Flux/Mono) to (Flux/Mono)
 
 - Used to transform from one type to another type.
 - Nothing fancy here moving the common functionality to a Functional interface and used it across the project
@@ -348,10 +362,10 @@ You extract the common functionality here filterMap and assign it to a Function 
     }
   ```
      
-### defaultIfEmpty() or switchIfEmpty()
+### defaultIfEmpty() `default value` or switchIfEmpty() `alternate publisher`
 
 - It is not mandatory for a datasource to emit data all the time
-- Use defaultIfEmpty() or switchIfEmpty() operator when no data emit and want to provide default values.
+- Use defaultIfEmpty() or switchIfEmpty() operator when no data emit and want to provide default values.(e.g) DB call returns nothing no onNext() event, and only onComplete()
 
 - defaultIfEmpty() accepts the actual type string "default"
 
@@ -366,21 +380,23 @@ You extract the common functionality here filterMap and assign it to a Function 
 ```
 
 - switchIfEmpty()
+  
 - Returning the Flux 
 ```java   
    //Creating a function functional interface
         Function<Flux<String>, Flux<String>> fluxFunction = name -> 
-                name.filter(s -> s.length() > length)
+                name.filter(s -> s.length() > 7)
                 .map(String::toUpperCase);
 
         Flux<String> defaultFlux = Flux.just("default").transform(fluxFunction);
-        //"D", "E", "F", "A", "U", "L", "T"
+        //"DEFAULT"
 
         return Flux.fromIterable(List.of("Alex", "Ben", "Charlie"))
                 .transform(fluxFunction)
-                .switchIfEmpty(defaultFlux)
+                .switchIfEmpty(defaultFlux) // accepts the Publisher Flux/Mono
                 .log(); 
 ```
+
 ## Introduction to combining reactive stream
 
 why `Combining Flux & Mono` ?
@@ -509,6 +525,54 @@ Difference between concat and merge?
   return monoa.zipWith(monob).map(t1-> t1.getT1() + t1.getT2()); // AD
 ```
 >Note: ZipWith on Mono returns Mono unlike other operators like concatWith and MergeWith which returns Flux 
+
+## Exception in Reactive Stream
+
+```java
+
+    public Flux<String> nameFluxException() {
+
+      return  Flux.just("A", "B", "C")
+                .concatWith(Flux.error(new RuntimeException("Exception Occurred")))
+                .concatWith(Flux.just("D")).log();
+    }
+
+   @Test
+    public void testNameFluxException() {
+        StepVerifier.create(srcToTest.nameFluxException())
+                .expectNext("A", "B", "C")
+                .expectError(RuntimeException.class)
+                .verify();
+
+        StepVerifier.create(srcToTest.nameFluxException())
+                    .expectNext("A", "B", "C")
+                    .expectErrorMessage("Exception Occurred")
+                    .verify();
+    }
+```
+
+- Two Categories of Operators:
+  
+   Recover from an Exception | Take an action on the exception and re-throw the exception 
+   --- | ---
+    onErrorReturn(), onErrorResume(), onErrorContinue()   | onErrorMap(), doOnError()- Its like try catch
+
+   - onErrorReturn()
+    ```java
+     public Flux<String> onErrorReturn() {
+        return  Flux.just("A", "B", "C")
+                    .concatWith(Flux.error(new RuntimeException("Exception Occurred")))
+                .onErrorReturn("D");
+     }
+
+       @Test
+    public void testOnErrorReturn() {
+        StepVerifier.create(srcToTest.onErrorReturn())
+                    .expectNext("A", "B", "C", "D")
+                    .verifyComplete();
+    }
+    ```
+
 
 [Project Reactor Examples](https://github.com/bradclarke2/Reactor-example-completed/blob/master/src/main/java/io/pivotal/literx/Part03StepVerifier.java)
 [Reactor Playground](https://tech.io/playgrounds/929/reactive-programming-with-reactor-3)
