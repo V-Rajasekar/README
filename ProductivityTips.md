@@ -85,7 +85,12 @@ VS Marketplace Link: https://marketplace.visualstudio.com/items?itemName=vscjava
 Name: Spring Initializr Java Support
 Id: vscjava.vscode-spring-initializr
 Description: A lightweight extension based on Spring Initializr to generate quick start Spring Boot Java projects.
-Version: 0.11.1
-Publisher: Microsoft
+Version: 0.11.1, Publisher: Microsoft
 VS Marketplace Link: https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-spring-initializr
+---
+Name: Code Runner
+Id: formulahendry.code-runner
+Description: Run C, C++, Java, JS, PHP, Python, Perl, Ruby, Go, Lua, Groovy, PowerShell, CMD, BASH, F#, C#, VBScript, TypeScript, CoffeeScript, Scala, Swift, Julia, Crystal, OCaml, R, AppleScript, Elixir, VB.NET, Clojure, Haxe, Obj-C, Rust, Racket, Scheme, AutoHotkey, AutoIt, Kotlin, Dart, Pascal, Haskell, Nim, 
+Version: 0.12.2, Publisher: Jun Han
+VS Marketplace Link: https://marketplace.visualstudio.com/items?itemName=formulahendry.code-runner
 ```
