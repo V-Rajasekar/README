@@ -24,6 +24,7 @@
 				- [Select](#select)
 		- [Web Frameworks](#web-frameworks)
 		- [Database Drivers](#database-drivers)
+  		- [Go mod import](#Go-mod-import)
 
 - [2. Types](./Go_Types.md) 	
 - [3. Go Control Statements](./Go_ControlStatements.md) 	
@@ -372,3 +373,14 @@ func main() {
 - Driver interfaces: database/sql/driver
 - Available for relational and NoSQL databases.
 
+### Go mod import
+
+How to import library/modules to your project? Follow the below steps to get the mod and upload to your project
+
+```go
+go get github.com/ShiraazMoollatjie/goluhn 
+go mod tidy 
+go mod why  
+go get github.com/ShiraazMoollatjie/goluhn 
+go mod vendor // command to upload the library to your vendor, only after this you can use in your code repo. 
+```
