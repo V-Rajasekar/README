@@ -7,7 +7,10 @@
 - [Logging](#logging)
 - [Utility code to scrap selected lines](#utility-code-to-scrap-selected-lines)
 - [How to use optimistic locking?](#how-to-use-optimistic-locking)
-- [SQL Fundamentals](#SQL-Fundamentals)
+- [CouchBase Resources](#couchbase-resources)
+- [Publish Kafka messages via Tools for Apacke Kafka](#publish-kafka-messages-via-tools-for-apacke-kafka)
+- [SQL Fundamentals](#sql-fundamentals)
+- [Useful resources](#useful-resources)
   
 
 ## Implementing the Resilence4j 
@@ -130,6 +133,14 @@ import org.springframework.core.io.ResourceLoader;
 
 [optimistic-locking-version-property-jpa-hibernate-sample](https://github.com/V-Rajasekar/bax-interview-assignment-master)
 
+## CouchBase Resources
+
+- https://docs.couchbase.com/java-sdk/current/hello-world/start-using-sdk.html
+- https://www.youtube.com/watch?v=MrgNH2Zt6mQ
+- https://www.youtube.com/watch?v=u8Q07O7aePU
+- https://docs.couchbase.com/java-sdk/3.5/howtos/kv-operations.html#document-expiration
+- https://github.com/couchbase/docs-sdk-java/blob/da7167f6b77c4e3a8f3998bab558976520711c6b/modules/howtos/examples/KvOperations.java#L196-L197
+  
 ## Publish Kafka messages via Tools for Apacke Kafka
 - [Tools for Apacke Kafka ](https://marketplace.visualstudio.com/items?itemName=jeppeandersen.vscode-kafka)
 - Create a file kafka-producer.kafka and copy past the below content to publish messages to a topic.
