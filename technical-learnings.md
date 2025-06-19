@@ -154,5 +154,50 @@ key: BuyMilk
 ## SQL Fundamentals
 - [SQL Fundamentals notes and Slides](https://github.com/thomasnield/oreilly_sql_fundamentals_for_data/tree/master/notes_and_slides)
 
+## Architecture performance scaling
+
+![image](https://github.com/user-attachments/assets/ab1e63e3-2f53-4c8e-88cc-23eba1f2749b)
+
+Scalability
+
+What is Vertical Scaling? 
+- Adding more resources (CPU, RAM, storage) to a single server
+- Improves the capacity of a single machine
+- Example: Uprading a server from 16 GB RAM to 64 GB  Ram
+
+Pros
+- Simple to implement and manage
+- No changes required to the application architecture.
+- Suitable for monolithic applications.
+Cons
+- Limited by hardware capacity.
+- Single point of failure.
+- Downtime may be required for upgrades.
+
+When to use
+- Suitable for smaller systems or monolithic applications.
+- When simplicity and quick upgrades are required.
+
+What is Horizontal Scaling?
+- Adding more servers or nodes to distribute the workload.
+- Increase the system's capacity by scaling out.
+- Example: Adding more servers to a load-balance cluster
+
+Pros
+ - Better fault tolerance and redundancy.
+ - Virtually unlimited scalability
+ - No downtime during scaling
+Cons
+ - More complex to implement and manage.
+ - Requires changes to application architecture(e.g, stateless design)
+ - Higher operationsl costs due to multiple servers.
+When to use
+ - Ideal for large-scale, distributed systems.
+ - When high availability, fault tolerance, and scalability are crticial.
+
+### Rate Limiting
+![Screenshot 2025-06-12 at 10 55 14](https://github.com/user-attachments/assets/95881f7a-332c-422d-adaf-cc26f7269b80)
+
+
 ## Useful resources
 - [linux-file-permissions-explained](https://www.redhat.com/en/blog/linux-file-permissions-explained)
